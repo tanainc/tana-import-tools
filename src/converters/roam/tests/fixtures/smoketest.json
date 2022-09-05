@@ -1,0 +1,587 @@
+[
+  {
+    "uid": "_Cduk0pZZ",
+    "create-time": 1644310166832,
+    "edit-time": 1644310166832,
+    "title": "Stian Håklev"
+  },
+  {
+    "create-time": 1644310166834,
+    "title": "February 8th, 2022",
+    ":log/id": 1644310166834,
+    "children": [
+      {
+        "string": "a",
+        "uid": "y7Tvpja6V",
+        "create-time": 1644310435794,
+        "edit-time": 1644310437251
+      },
+      {
+        "string": "[*](((y7Tvpja6V)))",
+        "create-time": 1644310437238,
+        ":block/refs": [{ ":block/uid": "y7Tvpja6V" }],
+        "refs": [{ "uid": "y7Tvpja6V" }],
+        "uid": "mOmgcpT2V",
+        "edit-time": 1644310453852
+      },
+      {
+        "string": "This is a [[TanaCool]] vs [[Roam]] thing",
+        "create-time": 1644310446026,
+        ":block/refs": [{ ":block/uid": "nvRC9UrHS" }, { ":block/uid": "EgHGCM9y3" }],
+        "refs": [{ "uid": "nvRC9UrHS" }, { "uid": "EgHGCM9y3" }],
+        "uid": "u5OhRHw1X",
+        "edit-time": 1644394861958
+      },
+      {
+        "string": "This is a #TanaCool vs #Roam thing also",
+        "create-time": 1644321282603,
+        ":block/refs": [{ ":block/uid": "nvRC9UrHS" }, { ":block/uid": "EgHGCM9y3" }],
+        "refs": [{ "uid": "nvRC9UrHS" }, { "uid": "EgHGCM9y3" }],
+        "uid": "lceg4YBQi",
+        "edit-time": 1644394861958
+      },
+      {
+        "string": "I read an [[Article about [[TanaCool]]]]",
+        "create-time": 1644321248374,
+        ":block/refs": [{ ":block/uid": "nvRC9UrHS" }, { ":block/uid": "rYhPEPXSI" }],
+        "refs": [{ "uid": "nvRC9UrHS" }, { "uid": "rYhPEPXSI" }],
+        "uid": "LAauZG1JH",
+        "edit-time": 1644394861958
+      },
+      {
+        "edit-time": 1644394861958,
+        "children": [
+          {
+            "string": "demo",
+            "uid": "CJqbhzKpz",
+            "create-time": 1644334924221,
+            "edit-time": 1644334926789
+          }
+        ],
+        "refs": [{ "uid": "nvRC9UrHS" }],
+        "uid": "0XSxHxqQ_",
+        ":block/refs": [{ ":block/uid": "nvRC9UrHS" }],
+        "string": "[[TanaCool]]",
+
+        "create-time": 1644334760459
+      }
+    ],
+    "uid": "DATE_INVALID_UUID",
+    "edit-time": 1644310166834
+  },
+  {
+    "uid": "jP0IFnfwy",
+    "create-time": 1644310214718,
+    "edit-time": 1644310214718,
+    "title": "Eirik Hoem"
+  },
+  {
+    "uid": "nvRC9UrHS",
+    "create-time": 1644318652639,
+    "edit-time": 1644394861958,
+    "title": "TanaCool"
+  },
+  {
+    "uid": "EgHGCM9y3",
+    "create-time": 1644318652639,
+    "edit-time": 1644318652640,
+    "title": "Roam"
+  },
+  {
+    "edit-time": 1644394861958,
+    "children": [
+      {
+        "string": "Some content",
+        "uid": "g8O4ABYif",
+        "create-time": 1644321276367,
+        "edit-time": 1644321279106
+      }
+    ],
+    "refs": [{ "uid": "nvRC9UrHS" }],
+    "uid": "rYhPEPXSI",
+    ":block/refs": [{ ":block/uid": "nvRC9UrHS" }],
+
+    "title": "Article about [[TanaCool]]",
+    "create-time": 1644321257128
+  },
+  {
+    "create-time": 1644394759884,
+    "title": "February 9th, 2022",
+
+    ":log/id": 1644394759884,
+    "uid": "02-09-2022",
+    "edit-time": 1644394759884
+  },
+  {
+    "create-time": 1644574914666,
+    "title": "February 11th, 2022",
+
+    ":log/id": 1644574914666,
+    "children": [
+      {
+        "string": "A #meeting with [[John Dutton]] and [[Jack Black]]",
+        "create-time": 1644574917167,
+        ":block/refs": [{ ":block/uid": "u9lXrWFu6" }, { ":block/uid": "tyVc0m4F4" }, { ":block/uid": "4OCCWhi0L" }],
+        "refs": [{ "uid": "u9lXrWFu6" }, { "uid": "tyVc0m4F4" }, { "uid": "4OCCWhi0L" }],
+
+        "uid": "5GjX-TrMR",
+        "edit-time": 1644574936551
+      }
+    ],
+    "uid": "02-11-2022",
+    "edit-time": 1644574914666
+  },
+  {
+    "create-time": 1644574936552,
+    "title": "John Dutton",
+
+    "children": [
+      {
+        "string": "**Email:** john@dutton.com",
+        "uid": "cSJ6pPyUh",
+        "create-time": 1644574957433,
+        "edit-time": 1644574961432
+      },
+      {
+        "string": "**State:** Montana",
+        "uid": "QE_e4E99Z",
+        "create-time": 1644574962203,
+        "edit-time": 1644574971387
+      },
+      {
+        "string": "**Favorite meal:** Blue steak",
+        "uid": "5LF80RmzI",
+        "create-time": 1644574990834,
+        "edit-time": 1644574993423
+      }
+    ],
+    "uid": "u9lXrWFu6",
+    "edit-time": 1644574936553
+  },
+  {
+    "create-time": 1644574936552,
+    "title": "Jack Black",
+
+    "children": [
+      {
+        "string": "**Email:** jack@black.com",
+        "uid": "x5IGFsvlc",
+        "create-time": 1644574940592,
+        "edit-time": 1644574955209
+      },
+      {
+        "string": "**State:** California",
+        "uid": "3kWCIC0m3",
+        "create-time": 1644574974820,
+        "edit-time": 1644574979127
+      },
+      {
+        "string": "**Favorite meal:** Pizza",
+        "uid": "-tNUyBXZE",
+        "create-time": 1644574980956,
+        "edit-time": 1644574986911
+      }
+    ],
+    "uid": "tyVc0m4F4",
+    "edit-time": 1651753276960
+  },
+  {
+    "uid": "4OCCWhi0L",
+    "create-time": 1644574936552,
+    "edit-time": 1644574936553,
+    "title": "meeting"
+  },
+  {
+    "create-time": 1646474703697,
+    "title": "March 5th, 2022",
+
+    ":log/id": 1646474703696,
+    "uid": "03-05-2022",
+    "edit-time": 1646474703697
+  },
+  {
+    "create-time": 1647849585764,
+    "title": "March 21st, 2022",
+
+    ":log/id": 1647849585763,
+    "children": [
+      {
+        "string": "List of people I know",
+        "create-time": 1647849589510,
+
+        "children": [
+          {
+            "string": "[[John Dutton]]",
+            "create-time": 1647849601541,
+            ":block/refs": [{ ":block/uid": "u9lXrWFu6" }],
+            "refs": [{ "uid": "u9lXrWFu6" }],
+
+            "uid": "zDNhOTbzm",
+            "edit-time": 1647849604741
+          },
+          {
+            "string": "#[[Jack Black]]",
+            "create-time": 1647849605450,
+            ":block/refs": [{ ":block/uid": "tyVc0m4F4" }],
+            "refs": [{ "uid": "tyVc0m4F4" }],
+
+            "uid": "hUhUEPbA-",
+            "edit-time": 1647849613440
+          }
+        ],
+        "uid": "0W8LZ2YkS",
+        "edit-time": 1647849601546
+      }
+    ],
+    "uid": "03-21-2022",
+    "edit-time": 1647849585764
+  },
+  {
+    "create-time": 1648128560048,
+    "title": "March 24th, 2022",
+
+    ":log/id": 1648128560048,
+    "children": [
+      {
+        "string": "See also [[February 8th, 2022]]",
+        "create-time": 1648128583336,
+        ":block/refs": [{ ":block/uid": "02-08-2022" }],
+        "refs": [{ "uid": "02-08-2022" }],
+
+        "uid": "HrkJgQ8j-",
+        "edit-time": 1648128589863
+      }
+    ],
+    "uid": "03-24-2022",
+    "edit-time": 1648128560048
+  },
+  {
+    "create-time": 1648758787377,
+    "title": "March 31st, 2022",
+
+    ":log/id": 1648758787376,
+    "children": [
+      {
+        "string": "Testing text formatting",
+        "create-time": 1648758791084,
+
+        "children": [
+          {
+            "string": "This has **some bold** text here",
+            "uid": "jZrpj6hQk",
+            "create-time": 1648758800722,
+            "edit-time": 1648758816876
+          },
+          {
+            "string": "This has __some italic__ text here",
+            "uid": "ClLZwh_h-",
+            "create-time": 1648758808385,
+            "edit-time": 1648758818525
+          }
+        ],
+        "uid": "kWSw5eSAz",
+        "edit-time": 1648758796934
+      }
+    ],
+    "uid": "03-31-2022",
+    "edit-time": 1648758787377
+  },
+  {
+    "create-time": 1649161833586,
+    "title": "April 5th, 2022",
+
+    ":log/id": 1649161833586,
+    "children": [
+      {
+        "string": "{{[[TODO]]}} fwefw",
+        "create-time": 1649161834564,
+        ":block/refs": [{ ":block/uid": "ZlZFdxYbJ" }],
+        "refs": [{ "uid": "ZlZFdxYbJ" }],
+
+        "uid": "cJlybnHTL",
+        "edit-time": 1649161836875
+      },
+      {
+        "string": "fewfwewf",
+        "create-time": 1649161836869,
+
+        "children": [
+          {
+            "string": "fewfew",
+            "uid": "xhhj0Jz9M",
+            "create-time": 1649170051708,
+            "edit-time": 1649170053050
+          }
+        ],
+        "uid": "WYCT-Y7rt",
+        "edit-time": 1649161870007
+      },
+      {
+        "string": "few",
+        "uid": "Mb36iTKOb",
+        "create-time": 1649161859859,
+        "edit-time": 1649161860514
+      },
+      {
+        "string": "",
+        "uid": "ZZhzgz7b0",
+        "create-time": 1649161860656,
+        "edit-time": 1649161860656
+      },
+      {
+        "string": "",
+        "uid": "Jk8onbQDW",
+        "create-time": 1649161860508,
+        "edit-time": 1649161860508
+      }
+    ],
+    "uid": "04-05-2022",
+    "edit-time": 1649161833587
+  },
+  {
+    "uid": "ZlZFdxYbJ",
+    "create-time": 1649161835822,
+    "edit-time": 1649161835823,
+    "title": "TODO"
+  },
+  {
+    "create-time": 1649335944939,
+    "title": "April 7th, 2022",
+
+    ":log/id": 1649335944939,
+    "uid": "04-07-2022",
+    "edit-time": 1649335944939
+  },
+  {
+    "create-time": 1650998354212,
+    "title": "April 26th, 2022",
+
+    ":log/id": 1650998354211,
+    "children": [
+      {
+        "string": "DEMO FOR CONTENT",
+        "create-time": 1650998355907,
+
+        "children": [
+          {
+            "string": "  This has **some bold** text here",
+            "uid": "5ZoJuOl6R",
+            "edit-time": 1650998358537
+          },
+          {
+            "string": "  This has __some italic__ text here",
+            "uid": "e5UhY0ibZ",
+            "edit-time": 1650998358537
+          }
+        ],
+        "uid": "jla_OwVN4",
+        "edit-time": 1650998358264
+      },
+      {
+        "string": "[ALIAS NODE]([[Jack Black]])",
+        "create-time": 1650998371492,
+        ":block/refs": [{ ":block/uid": "tyVc0m4F4" }],
+        "refs": [{ "uid": "tyVc0m4F4" }],
+
+        "uid": "xPud-srPm",
+        "edit-time": 1650998427299
+      },
+      {
+        "string": "OUTER [[ALL ABOUT [[MASTER LEVEL]] HERE]] AFTER",
+        "create-time": 1650998478543,
+        ":block/refs": [{ ":block/uid": "zCUtAZLlP" }, { ":block/uid": "9ERTUgDKi" }],
+        "refs": [{ "uid": "zCUtAZLlP" }, { "uid": "9ERTUgDKi" }],
+
+        "uid": "CzbdUrVSX",
+        "edit-time": 1651002497166
+      },
+      {
+        "string": "[[ALL ABOUT [[MASTER LEVEL]] HERE]]",
+        "create-time": 1650998466762,
+        ":block/refs": [{ ":block/uid": "zCUtAZLlP" }, { ":block/uid": "9ERTUgDKi" }],
+        "refs": [{ "uid": "zCUtAZLlP" }, { "uid": "9ERTUgDKi" }],
+
+        "uid": "SLtnu_rqs",
+        "edit-time": 1651000569278
+      },
+      {
+        "string": "[[MASTER LEVEL]]",
+        "create-time": 1650998410957,
+        ":block/refs": [{ ":block/uid": "zCUtAZLlP" }],
+        "refs": [{ "uid": "zCUtAZLlP" }],
+
+        "uid": "RaSJTnd3D",
+        "edit-time": 1650998478011
+      }
+    ],
+    "uid": "04-26-2022",
+    "edit-time": 1650998354212
+  },
+  {
+    "uid": "zCUtAZLlP",
+    "create-time": 1650998478012,
+    "edit-time": 1651753276960,
+    "title": "MASTER LEVEL"
+  },
+  {
+    "create-time": 1651000569280,
+    ":block/refs": [{ ":block/uid": "zCUtAZLlP" }],
+    "title": "ALL ABOUT [[MASTER LEVEL]] HERE",
+    "refs": [{ "uid": "zCUtAZLlP" }],
+
+    "uid": "9ERTUgDKi",
+    "edit-time": 1651753276960
+  },
+  {
+    "create-time": 1651612593268,
+    "title": "May 3rd, 2022",
+
+    ":log/id": 1651612593267,
+    "children": [
+      {
+        "string": "{{[[TODO]]}} This is a todo",
+        "create-time": 1651612595089,
+        ":block/refs": [{ ":block/uid": "ZlZFdxYbJ" }],
+        "refs": [{ "uid": "ZlZFdxYbJ" }],
+
+        "uid": "lRsP_fHjK",
+        "edit-time": 1651612598161
+      },
+      {
+        "string": "{{[[DONE]]}} This is a completed todo",
+        "create-time": 1651612598153,
+        ":block/refs": [{ ":block/uid": "Qje9i6OEx" }],
+        "refs": [{ "uid": "Qje9i6OEx" }],
+
+        "uid": "q4CdQw0NJ",
+        "edit-time": 1651612601933
+      },
+      {
+        "string": "https://direkte.vg.no/nyhetsdognet/news/donetsk-guvernoer-21-innbyggere-drept-i-russiske-angrep.ZVsmVPb8O?utm_source=vgfront&utm_content=direktewidget&utm_medium=direktewidget_nyhetsdognet",
+        "uid": "wUF5x2jrI",
+        "create-time": 1651613627533,
+        "edit-time": 1651613627631
+      },
+      {
+        "edit-time": 1651614000771,
+        "children": [
+          {
+            "string": "Current City::Oslo",
+            "create-time": 1651614007284,
+            ":block/refs": [{ ":block/uid": "8pRoPjCNK" }],
+            "refs": [{ "uid": "8pRoPjCNK" }],
+
+            "uid": "QaY4Nz1cF",
+            "edit-time": 1651614015311
+          }
+        ],
+        "refs": [{ "uid": "tyVc0m4F4" }],
+        "uid": "gVh74aED7",
+        ":block/refs": [{ ":block/uid": "tyVc0m4F4" }],
+        "string": "#[[Jack Black]]",
+
+        "create-time": 1651613635899
+      },
+      {
+        "string": "Start [Some title](https://www.insider.com/michael-jordan-grove-xxiii-23-golf-course-2021-4) here",
+        "uid": "z61xsYXA3",
+        "create-time": 1651612602054,
+        "edit-time": 1651613654936
+      }
+    ],
+    "uid": "05-03-2022",
+    "edit-time": 1651612593268
+  },
+  {
+    "uid": "Qje9i6OEx",
+    "create-time": 1651612601939,
+    "edit-time": 1651612601940,
+    "title": "DONE"
+  },
+  {
+    "uid": "8pRoPjCNK",
+    "create-time": 1651614015313,
+    "edit-time": 1651614015314,
+    "title": "Current City"
+  },
+  {
+    "create-time": 1651615512987,
+    "title": "May 4th, 2022",
+
+    ":log/id": 1651615512986,
+    "uid": "05-04-2022",
+    "edit-time": 1651615512987
+  },
+  {
+    "create-time": 1651753132367,
+    "title": "May 5th, 2022",
+
+    ":log/id": 1651753132366,
+    "children": [
+      {
+        "string": "Some __italic__ and more __here__ and __some at end__ and **bold** and **bolder** and the **boldest**",
+        "uid": "O_VdBkb2A",
+        "create-time": 1651753133072,
+        "edit-time": 1651753156733
+      },
+      {
+        "string": "[[SomeCololNode [[Jack Black]] [[ALL ABOUT [[MASTER LEVEL]] HERE]]]]",
+        "create-time": 1651753161022,
+        ":block/refs": [
+          { ":block/uid": "tyVc0m4F4" },
+          { ":block/uid": "zCUtAZLlP" },
+          { ":block/uid": "9ERTUgDKi" },
+          { ":block/uid": "7Cy0YrnhQ" }
+        ],
+        "refs": [{ "uid": "tyVc0m4F4" }, { "uid": "zCUtAZLlP" }, { "uid": "9ERTUgDKi" }, { "uid": "7Cy0YrnhQ" }],
+
+        "uid": "UKY_G4l-h",
+        "edit-time": 1651753276957
+      },
+      {
+        "string": "Hello #[[May 5th, 2022]] ",
+        "create-time": 1651753161147,
+        ":block/refs": [{ ":block/uid": "05-05-2022" }],
+        "refs": [{ "uid": "05-05-2022" }],
+
+        "uid": "TVCeV7_ek",
+        "edit-time": 1651753247747
+      },
+      {
+        "string": "[[May 3rd, 2022]]",
+        "create-time": 1651753160879,
+        ":block/refs": [{ ":block/uid": "05-03-2022" }],
+        "refs": [{ "uid": "05-03-2022" }],
+
+        "uid": "keo6z2eiG",
+        "edit-time": 1651753165124
+      }
+    ],
+    "uid": "05-05-2022",
+    "edit-time": 1651753132367
+  },
+  {
+    "uid": "I4kKDywyc",
+    "create-time": 1651753256591,
+    "edit-time": 1651753264795,
+    "title": "SomeCololNodew"
+  },
+  {
+    "create-time": 1651753270658,
+    ":block/refs": [{ ":block/uid": "tyVc0m4F4" }],
+    "title": "SomeCololNode [[Jack Black]]",
+    "refs": [{ "uid": "tyVc0m4F4" }],
+
+    "uid": "E48m07e3D",
+    "edit-time": 1651753270659
+  },
+  {
+    "create-time": 1651753276959,
+    ":block/refs": [{ ":block/uid": "tyVc0m4F4" }, { ":block/uid": "zCUtAZLlP" }, { ":block/uid": "9ERTUgDKi" }],
+    "title": "SomeCololNode [[Jack Black]] [[ALL ABOUT [[MASTER LEVEL]] HERE]]",
+    "refs": [{ "uid": "tyVc0m4F4" }, { "uid": "zCUtAZLlP" }, { "uid": "9ERTUgDKi" }],
+
+    "uid": "7Cy0YrnhQ",
+    "edit-time": 1651753276960
+  }
+]

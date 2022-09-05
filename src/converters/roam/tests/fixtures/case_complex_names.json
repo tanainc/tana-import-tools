@@ -1,0 +1,158 @@
+[
+  {
+    "uid": "theyKey",
+    "create-time": 1654375416934,
+    "edit-time": 1654375416935,
+    "title": "🔑"
+  },
+  {
+    "create-time": 1654375416934,
+    ":block/refs": [{ ":block/uid": "theyKey" }],
+    "title": "[[🔑]] - schema-driven analogizing",
+    "refs": [{ "uid": "theyKey" }],
+    "uid": "schemaDriven",
+    "edit-time": 1654375416935
+  },
+
+  {
+    "create-time": 1654375416934,
+    ":block/refs": [{ ":block/uid": "theyKey" }],
+    "title": "[[🔑]] - case-driven analogizing",
+    "refs": [{ "uid": "theyKey" }],
+    "uid": "caseDriven",
+    "edit-time": 1654375416935
+  },
+  {
+    "children": [
+      {
+        "string": "expect experts to focus on [[[[🔑]] - schema-driven analogizing]] and novices to focus on [[[[🔑]] - case-driven analogizing]]",
+        "create-time": 1654375415180,
+        ":block/refs": [{ ":block/uid": "schemaDriven" }, { ":block/uid": "theyKey" }, { ":block/uid": "caseDriven" }],
+        "refs": [{ "uid": "schemaDriven" }, { "uid": "theyKey" }, { "uid": "caseDriven" }],
+
+        "uid": "theComplexOne",
+        "edit-time": 1654375416932
+      }
+    ],
+    "string": "  complex page names sometimes not parsed",
+    "uid": "-bNv5W01p",
+    "edit-time": 1654374278545
+  },
+
+  {
+    "string": "Teasing out the design vs. science ([make vs. understand](((connecting)))) [distinction]([[fundamental distinction between make and understand]]), with implications for [[D/Computational Analogy]] - this FEELS IMPORTANT  [[[[interval]]:32.7]] [[[[factor]]:2.30]] [[April 27th, 2021]]",
+    "create-time": 1604527807382,
+    ":block/refs": [
+      { ":block/uid": "computationalAnalogy" },
+      { ":block/uid": "interval" },
+      { ":block/uid": "factor" },
+      { ":block/uid": "connecting" },
+      { ":block/uid": "fundamentalDistinction" },
+      { ":block/uid": "interval32" },
+      { ":block/uid": "factor230" },
+      { ":block/uid": "04-27-2021" }
+    ],
+    "refs": [
+      { "uid": "computationalAnalogy" },
+      { "uid": "interval" },
+      { "uid": "factor" },
+      { "uid": "connecting" },
+      { "uid": "fundamentalDistinction" },
+      { "uid": "interval32" },
+      { "uid": "factor230" },
+      { "uid": "04-27-2021" }
+    ],
+    "uid": "theBigOne",
+    "edit-time": 1618021863571,
+    "children": []
+  },
+  {
+    "string": "--> ((theBigOne))",
+    "create-time": 1605735768957,
+    ":block/refs": [{ ":block/uid": "theBigOne" }],
+    "refs": [{ "uid": "theBigOne" }],
+    "uid": "linkToTheBigOne",
+    "edit-time": 1605735771246,
+    "children": []
+  },
+  {
+    "create-time": 1580242157825,
+    "title": "D/Computational Analogy",
+    "children": [],
+    "uid": "computationalAnalogy",
+    "edit-time": 1635450417615
+  },
+  {
+    "create-time": 1589677399979,
+    "title": "interval",
+    "children": [],
+    "uid": "interval",
+    "edit-time": 1639682966441
+  },
+  {
+    "uid": "factor",
+    "create-time": 1589677399979,
+    "edit-time": 1639682960216,
+    "title": "factor",
+
+    "children": []
+  },
+
+  {
+    "edit-time": 1618021863571,
+    "children": [],
+    "refs": [{ "uid": "computationalAnalogy" }, { "uid": "farAnalogies" }, { "uid": "fundamentalDistinction" }],
+    "uid": "connecting",
+    ":block/refs": [
+      { ":block/uid": "computationalAnalogy" },
+      { ":block/uid": "farAnalogies" },
+      { ":block/uid": "fundamentalDistinction" }
+    ],
+    "string": "Connecting this to [[D/Computational Analogy]], I keep thinking about the [[fundamental distinction between make and understand]], and how the [[far analogies]] stuff just seems to fit so much better with the \"make\" side of things, which seems like a designerly thing (make stuff that works!) vs. understanding the nature of something.",
+
+    "create-time": 1604525786553
+  },
+  {
+    "uid": "fundamentalDistinction",
+    "create-time": 1609299521798,
+    "edit-time": 1609299521800,
+    "title": "fundamental distinction between make and understand",
+
+    "children": []
+  },
+  {
+    "create-time": 1616647766903,
+    ":block/refs": [{ ":block/uid": "interval" }],
+    "title": "[[interval]]:32.7",
+    "refs": [{ "uid": "interval" }],
+
+    "uid": "interval32",
+    "edit-time": 1616647766905,
+
+    "children": []
+  },
+  {
+    "create-time": 1616647766903,
+    ":block/refs": [{ ":block/uid": "factor" }],
+    "title": "[[factor]]:2.30",
+    "refs": [{ "uid": "factor" }],
+    "uid": "factor230",
+    "edit-time": 1616647766905,
+    "children": []
+  },
+  {
+    "create-time": 1616647766903,
+    "title": "April 27th, 2021",
+    ":log/id": 1619496000000,
+    "children": [],
+    "uid": "04-27-2021",
+    "edit-time": 1616647766905
+  },
+  {
+    "uid": "farAnalogies",
+    "create-time": 1600823659908,
+    "edit-time": 1624905988735,
+    "title": "far analogies",
+    "children": []
+  }
+]

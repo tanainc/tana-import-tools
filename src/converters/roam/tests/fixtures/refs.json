@@ -1,0 +1,24 @@
+[
+  {
+    "refs": [{ "uid": "firstId" }, { "uid": "secondId" }],
+    "string": "See [[first [[second]]]]",
+    "uid": "container",
+    "edit-time": 1654375472356,
+    ":block/refs": [{ "uid": "firstId" }, { "uid": "secondId" }]
+  },
+
+  {
+    "uid": "firstId",
+    "create-time": 1654374658770,
+    "edit-time": 1654374658772,
+    "title": "first [[second]]",
+    "refs": [{ "uid": "secondId" }],
+    ":block/refs": [{ "uid": "secondId" }]
+  },
+  {
+    "uid": "secondId",
+    "create-time": 1654374658770,
+    "edit-time": 1654374658772,
+    "title": "second"
+  }
+]

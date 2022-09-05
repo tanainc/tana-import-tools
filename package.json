@@ -1,0 +1,78 @@
+{
+  "name": "tana-import-tools",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "type": "module",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "ci": "yarn lint && yarn test",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "lint": "eslint --ext .ts src/",
+    "prepare": "rm -rf dist/ && ./node_modules/.bin/tsc  --project tsconfig.build.json",
+    "build": "yarn prepare",
+    "convert:roam": "yarn build && node --experimental-modules --es-module-specifier-resolution=node dist/runner.js roam",
+    "convert:workflowy": "yarn build && node --experimental-modules --es-module-specifier-resolution=node dist/runner.js workflowy",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.18.6",
+    "@babel/preset-typescript": "^7.18.6",
+    "@jest/globals": "^28.1.2",
+    "@types/jest": "^28.1.4",
+    "@types/node": "^18.0.3",
+    "@typescript-eslint/eslint-plugin": "^5.32.0",
+    "@typescript-eslint/parser": "^5.32.0",
+    "eslint": "^8.21.0",
+    "jest": "^28.1.2",
+    "prettier": "^2.7.1",
+    "typescript": "^4.7.4"
+  },
+  "dependencies": {
+    "opml": "^0.4.24"
+  },
+  "eslintConfig": {
+    "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/recommended"
+    ],
+    "plugins": [],
+    "rules": {
+      "curly": [
+        "error",
+        "all"
+      ],
+      "no-shadow": "off",
+      "@typescript-eslint/no-shadow": [
+        "error"
+      ],
+      "prefer-const": [
+        "error",
+        {
+          "destructuring": "any",
+          "ignoreReadBeforeAssign": false
+        }
+      ]
+    },
+    "overrides": [
+      {
+        "files": [
+          "**/*.test.ts"
+        ],
+        "rules": {
+          "@typescript-eslint/no-unused-expressions": "off",
+          "@typescript-eslint/no-non-null-assertion": "off"
+        }
+      }
+    ]
+  },
+  "jest": {
+    "testMatch": [
+      "**/?(*.)+(test).[t]s?(x)"
+    ]
+  }
+}

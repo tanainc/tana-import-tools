@@ -1,0 +1,40 @@
+[
+  {
+    "create-time": 1654674792663,
+    "string": "**the bold**",
+    "uid": "bold",
+    "edit-time": 1654674792663
+  },
+  {
+    "create-time": 1654674792663,
+    "string": "__the underlined__",
+    "uid": "underline",
+    "edit-time": 1654674792663
+  },
+  {
+    "create-time": 1654674792663,
+    "string": "^^the highlighted^^",
+    "uid": "highlight",
+    "edit-time": 1654674792663
+  },
+  {
+    "create-time": 1654674792663,
+    "string": "~~the striked~~",
+    "uid": "striked",
+    "edit-time": 1654674792663
+  },
+  {
+    "create-time": 1654674792663,
+    "string": "FieldHolder",
+    "uid": "fieldHolder",
+    "edit-time": 1654674792663,
+    "children": [
+      {
+        "create-time": 1654674792663,
+        "string": "Cool::**Stuff**",
+        "uid": "fieldBold",
+        "edit-time": 1654674792663
+      }
+    ]
+  }
+]

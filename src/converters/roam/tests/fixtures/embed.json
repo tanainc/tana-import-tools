@@ -1,0 +1,46 @@
+[
+  {
+    "string": "Lets {{embed: ((theEmbedded))}}",
+    "create-time": 1649087897018,
+    ":block/refs": [{ ":block/uid": "theEmbedded" }],
+    "refs": [{ "uid": "theEmbedded" }],
+    "uid": "embed1",
+    "edit-time": 1649087902143,
+    "children": []
+  },
+  {
+    "string": "Lets also {{[[embed]]: ((theEmbedded))}}",
+    "create-time": 1649087897018,
+    ":block/refs": [{ ":block/uid": "theEmbedded" }],
+    "refs": [{ "uid": "theEmbedded" }],
+    "uid": "embed2",
+    "edit-time": 1649087902143,
+    "children": []
+  },
+
+  {
+    "string": "Lets link {{embed: [[Embedded]]}}",
+    "create-time": 1649087897018,
+    ":block/refs": [{ ":block/uid": "theEmbedded" }],
+    "refs": [{ "uid": "theEmbedded" }],
+    "uid": "link1",
+    "edit-time": 1649087902143,
+    "children": []
+  },
+  {
+    "string": "Lets also link {{[[embed]]: [[Embedded]]}}",
+    "create-time": 1649087897018,
+    ":block/refs": [{ ":block/uid": "theEmbedded" }],
+    "refs": [{ "uid": "theEmbedded" }],
+    "uid": "link2",
+    "edit-time": 1649087902143,
+    "children": []
+  },
+  {
+    "string": "Embedded",
+    "create-time": 1649087780140,
+    "children": [],
+    "uid": "theEmbedded",
+    "edit-time": 1649087780915
+  }
+]

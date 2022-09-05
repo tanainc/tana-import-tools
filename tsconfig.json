@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist",
+
+    "rootDir": "./src",
+    "declaration": true,
+    "target": "es2016",
+    "module": "ESNext",
+    "experimentalDecorators": true,
+    "downlevelIteration": true,
+    "noFallthroughCasesInSwitch": true,
+    "lib": ["dom", "esnext"],
+    "esModuleInterop": true,
+    "sourceMap": false,
+    "moduleResolution": "node",
+
+    "types": ["node"],
+    "noImplicitAny": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["./src"]
+}

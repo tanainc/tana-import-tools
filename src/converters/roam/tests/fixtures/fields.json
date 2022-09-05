@@ -1,0 +1,79 @@
+[
+  {
+    "string": "Holder",
+    "create-time": 1654675093252,
+    "children": [
+      {
+        "string": "Owner:: [[Jack]]",
+        "create-time": 1587504733429,
+        ":block/refs": [
+          {
+            ":block/uid": "jack"
+          }
+        ],
+        "refs": [
+          {
+            "uid": "jack"
+          }
+        ],
+        "uid": "jackFiled",
+        "edit-time": 1588368755940
+      },
+      {
+        "string": "definition:: Now an alias for [foo](((someRefId)))",
+        "create-time": 1587504733429,
+        ":block/refs": [
+          {
+            ":block/uid": "someRefId"
+          }
+        ],
+        "refs": [
+          {
+            "uid": "someRefId"
+          }
+        ],
+        "uid": "fieldHolder",
+        "edit-time": 1588368755940
+      },
+      {
+        "string": "SomeField:: [[Pete]] [[Jack]] [[Janet]] ",
+        "create-time": 1654675093252,
+        ":block/refs": [{ ":block/uid": "jack" }],
+        "refs": [{ "uid": "jack" }],
+        "uid": "multipleValuesSomeBroken",
+        "edit-time": 1654675099061
+      }
+    ],
+    "uid": "mainholder",
+    "edit-time": 1654675099061
+  },
+
+  {
+    "string": "Holder of fields",
+    "create-time": 1587504733429,
+    "uid": "subsequentBrokenHolder",
+    "edit-time": 1588368755940,
+
+    "children": [
+      {
+        "string": "Color:: [[Red]]\nCity:: [[Oslo]]",
+        "create-time": 1587504733429,
+        "uid": "subsequentBroken",
+        "edit-time": 1588368755940
+      }
+    ]
+  },
+
+  {
+    "create-time": 1651753276959,
+    "title": "MyNode",
+    "uid": "someRefId",
+    "edit-time": 1651753276960
+  },
+  {
+    "create-time": 1651753276959,
+    "title": "Jack",
+    "uid": "jack",
+    "edit-time": 1651753276960
+  }
+]

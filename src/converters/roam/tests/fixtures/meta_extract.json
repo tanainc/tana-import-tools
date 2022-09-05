@@ -1,0 +1,75 @@
+[
+  {
+    "create-time": 1654674792663,
+    "title": "Testcase: Fields+nodes in meta",
+    "children": [
+      {
+        "string": "Meta",
+        "uid": "firstmeta",
+        "create-time": 1654674805380,
+        "edit-time": 1654674816685,
+
+        "children": [
+          {
+            "string": "SomeField::SomeValue",
+            "create-time": 1654675093252,
+            "uid": "firstfield",
+            "edit-time": 1654675099061
+          },
+          {
+            "string": "Just a node",
+            "create-time": 1654675093252,
+            "uid": "someNode",
+            "edit-time": 1654675099061
+          }
+        ]
+      }
+    ],
+    "uid": "first",
+    "edit-time": 1654674792663
+  },
+  {
+    "create-time": 1654674792663,
+    "title": "Testcase: Meta with only field",
+    "children": [
+      {
+        "string": "Meta",
+        "uid": "secondmeta",
+        "create-time": 1654674805380,
+        "edit-time": 1654674816685,
+        "children": [
+          {
+            "string": "SomeField::SomeValue",
+            "create-time": 1654675093252,
+            "uid": "secondfield",
+            "edit-time": 1654675099061
+          }
+        ]
+      }
+    ],
+    "uid": "second",
+    "edit-time": 1654674792663
+  },
+  {
+    "create-time": 1654674792663,
+    "title": "Testcase: Meta with only node",
+    "children": [
+      {
+        "string": "Meta",
+        "uid": "thirdmeta",
+        "create-time": 1654674805380,
+        "edit-time": 1654674816685,
+        "children": [
+          {
+            "string": "SomeNode",
+            "create-time": 1654675093252,
+            "uid": "thridSomeNode",
+            "edit-time": 1654675099061
+          }
+        ]
+      }
+    ],
+    "uid": "third",
+    "edit-time": 1654674792663
+  }
+]

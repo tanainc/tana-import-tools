@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+
+  "exclude": [
+    "src/**/*.test.ts",
+    "src/**/*.test.ts",
+    "src/importers/roam/tests",
+    "src/importers/workflowy/tests",
+    "src/testUtils"
+  ]
+}

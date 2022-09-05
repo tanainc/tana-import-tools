@@ -1,0 +1,40 @@
+[
+  {
+    "create-time": 1651753276959,
+    "title": "Jack Black",
+    "uid": "jackBlack",
+    "edit-time": 1651753276960
+  },
+  {
+    "create-time": 1651753276959,
+    ":block/refs": [{ ":block/uid": "jackBlack" }],
+    "title": "#[[Jack Black]]",
+    "refs": [{ "uid": "jackBlack" }],
+    "uid": "blockAliasJackBlack",
+    "edit-time": 1651753276960
+  },
+  {
+    "create-time": 1651753276959,
+    ":block/refs": [{ ":block/uid": "jackBlack" }],
+    "title": "((jackBlack))",
+    "refs": [{ "uid": "jackBlack" }],
+    "uid": "embedJackBlack",
+    "edit-time": 1651753276960
+  },
+  {
+    "create-time": 1651753276959,
+    ":block/refs": [{ ":block/uid": "jackBlack" }],
+    "title": "[foobar]([[Jack Black]])",
+    "refs": [{ "uid": "jackBlack" }],
+    "uid": "aliasLink",
+    "edit-time": 1651753276960
+  },
+  {
+    "create-time": 1651753276959,
+    ":block/refs": [{ ":block/uid": "jackBlack" }],
+    "title": "[foobar](((jackBlack)))",
+    "refs": [{ "uid": "jackBlack" }],
+    "uid": "aliasBlockRef",
+    "edit-time": 1651753276960
+  }
+]

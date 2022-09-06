@@ -1,0 +1,90 @@
+{
+  "version": "TanaIntermediateFile V0.1",
+  "summary": {
+    "leafNodes": 6,
+    "topLevelNodes": 0,
+    "totalNodes": 9,
+    "calendarNodes": 0,
+    "fields": 0,
+    "brokenRefs": 0
+  },
+  "nodes": [
+    {
+      "uid": "etrnap7dc3ayi6bmkfvgc",
+      "name": "Hello",
+      "children": [
+        {
+          "uid": "3xvy3myb6qsz0eo6qppef",
+          "name": "This is a workflowy node",
+          "children": [
+            {
+              "uid": "pd28b7uh3pn977n5ikwugn",
+              "name": "This is a child with a #tag",
+              "children": [],
+              "createdAt": 1662497981278,
+              "editedAt": 1662497981278,
+              "type": "node"
+            },
+            {
+              "uid": "7w2xlywhef5uti0pr0sxrk",
+              "name": "This is also a child, with the same #tag",
+              "children": [],
+              "createdAt": 1662497981278,
+              "editedAt": 1662497981278,
+              "type": "node"
+            },
+            {
+              "uid": "5j6spol0jcld86ooeq9an",
+              "name": "The <b>bold</b>, the <u>underlined</u> and the <i>italic</i>",
+              "children": [],
+              "createdAt": 1662497981278,
+              "editedAt": 1662497981278,
+              "type": "node"
+            },
+            {
+              "uid": "s6wa74csi4ga0disgi77sp",
+              "name": "More nodes here",
+              "children": [],
+              "createdAt": 1662497981278,
+              "editedAt": 1662497981278,
+              "type": "node"
+            },
+            {
+              "uid": "f0tybu7bn5igkdu7ydm17c",
+              "name": "Tasks",
+              "children": [
+                {
+                  "uid": "83ak0s59d6ev2ud5psi3hk",
+                  "name": "Completed task 1",
+                  "children": [],
+                  "createdAt": 1662497981278,
+                  "editedAt": 1662497981278,
+                  "type": "node",
+                  "todoState": "done"
+                },
+                {
+                  "uid": "fvcggvb15750bodlte9t29t",
+                  "name": "Completed task 2",
+                  "children": [],
+                  "createdAt": 1662497981278,
+                  "editedAt": 1662497981278,
+                  "type": "node",
+                  "todoState": "done"
+                }
+              ],
+              "createdAt": 1662497981278,
+              "editedAt": 1662497981278,
+              "type": "node"
+            }
+          ],
+          "createdAt": 1662497981278,
+          "editedAt": 1662497981278,
+          "type": "node"
+        }
+      ],
+      "createdAt": 1662497981278,
+      "editedAt": 1662497981278,
+      "type": "node"
+    }
+  ]
+}

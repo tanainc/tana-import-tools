@@ -26,14 +26,15 @@ export class WorkflowyConverter {
       return undefined;
     }
 
+    const rootLevelNodes = [];
     for (const sub of outline.opml.body.subs) {
-      this.createTanaNode(sub);
+      rootLevelNodes.push(this.createTanaNode(sub));
     }
 
     return {
       version: 'TanaIntermediateFile V0.1',
       summary: this.summary,
-      nodes: [...this.nodesForImport.values()],
+      nodes: [...rootLevelNodes],
     };
   }
 

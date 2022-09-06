@@ -1,6 +1,6 @@
 <img alt="Twitter Follow" src="https://img.shields.io/twitter/follow/tana_inc?style=for-the-badge">
 
-<img src='https://img.shields.io/github/license/tagrhub/tana-import-tools?style=for-the-badge'>
+<img src='https://img.shields.io/github/license/tanainc/tana-import-tools?style=for-the-badge'>
 
 # 👨‍💻 How to use
 

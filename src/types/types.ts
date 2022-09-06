@@ -55,8 +55,12 @@ export type TanaIntermediateNode = {
   uid: string;
 
   /**
-   * contents of the node.
+   * Contents of the node.
+   *
    * For type=date this must contain the date : "MM-DD-YYYY"
+   *
+   * Supported text formatting: **bold** __italic__ ~~striked~~ ^^highlighted^^
+   *
    * Link formats:
    * - external content: [See Tana](https://wwww.tana.inc)
    * - internal: [[uid]]
@@ -68,7 +72,6 @@ export type TanaIntermediateNode = {
   children?: TanaIntermediateNode[];
 
   // reference uids
-  // TODO: can we get rid of this and just parse the name earlier
   refs?: string[];
 
   // created at timestamp

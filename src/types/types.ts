@@ -11,7 +11,7 @@ export type TanaIntermediateFile = {
   // all attributes
   attributes?: TanaIntermediateAttribute[];
 
-  // all attributes
+  // all supertags
   supertags?: TanaIntermediateSupertag[];
 };
 

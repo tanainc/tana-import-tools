@@ -399,6 +399,9 @@ test('Corner cases', () => {
 
   // Link wrapped in brace: [[alias]([[@someNodeName]])]
   expect(f('theBroken')?.name).toEqual(`[[alias]([[someNodeId]])]`);
+
+  // Top level page with Field::value
+  expect(f('topLevelField')?.name).toEqual('Top level page with Field::value');
 });
 
 test('Skips {{[[roam/js]]}} etc', () => {

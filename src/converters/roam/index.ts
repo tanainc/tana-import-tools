@@ -397,10 +397,11 @@ export class RoamConverter implements IConverter {
 
     if (hasField(intermediateNode.name)) {
       this.summary.fields += 1;
-      if (!parentNode) {
-        throw new Error('Cannot create field without a parent node');
+      if (parentNode) {
+        this.convertToField(intermediateNode, parentNode);
+      } else {
+        console.warn(`Field ${intermediateNode.name}, skipped. Fields on top level not supported yet`);
       }
-      this.convertToField(intermediateNode, parentNode);
     }
 
     if (intermediateNode.type !== 'codeblock') {

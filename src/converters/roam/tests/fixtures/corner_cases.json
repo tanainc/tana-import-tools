@@ -62,5 +62,13 @@
     "refs": [{ "uid": "someNodeId" }],
     "uid": "theBroken",
     "edit-time": 1602863923041
+  },
+  {
+    "string": "Top level page with Field::value",
+    "create-time": 1600827785212,
+    ":block/refs": [],
+    "refs": [],
+    "uid": "topLevelField",
+    "edit-time": 1602863923041
   }
 ]

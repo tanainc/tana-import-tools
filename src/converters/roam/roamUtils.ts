@@ -99,7 +99,6 @@ export function getAttributeDefintionsFromName(node: string): string[] {
     if (line.startsWith('`')) {
       continue;
     }
-    debugger;
     const attrMatch = line.match(/^(.+)::/i);
     if (attrMatch && attrMatch[1]) {
       attrDefs.push(attrMatch[1].replace('[[', '').replace(']]', ''));

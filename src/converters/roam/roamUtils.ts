@@ -81,6 +81,8 @@ export function getValueForAttribute(fieldName: string, node: string): string | 
       return line.split(`${fieldName}::`)[1].trim();
     } else if (line.startsWith(`**${fieldName}:**`)) {
       return line.split(`**${fieldName}:**`)[1].trim();
+    } else if (line.startsWith(`[[${fieldName}]]:`)) {
+      return line.split(`[[${fieldName}]]::`)[1].trim();
     }
   }
 }
@@ -97,15 +99,16 @@ export function getAttributeDefintionsFromName(node: string): string[] {
     if (line.startsWith('`')) {
       continue;
     }
+    debugger;
     const attrMatch = line.match(/^(.+)::/i);
     if (attrMatch && attrMatch[1]) {
-      attrDefs.push(attrMatch[1]);
+      attrDefs.push(attrMatch[1].replace('[[', '').replace(']]', ''));
       continue;
     }
 
     const attrMatchAlt = line.match(/^\*\*(.+):\*\*/i);
     if (attrMatchAlt && attrMatchAlt[1]) {
-      attrDefs.push(attrMatchAlt[1]);
+      attrDefs.push(attrMatchAlt[1].replace('[[', '').replace(']]', ''));
       continue;
     }
   }

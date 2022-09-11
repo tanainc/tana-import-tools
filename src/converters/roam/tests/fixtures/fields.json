@@ -20,6 +20,28 @@
         "edit-time": 1588368755940
       },
       {
+        "string": "[[Contact]]:: [[Jack]]",
+        "create-time": 1587504733429,
+        ":block/refs": [
+          {
+            ":block/uid": "jack"
+          },
+          {
+            ":block/uid": "contact"
+          }
+        ],
+        "refs": [
+          {
+            "uid": "jack"
+          },
+          {
+            "uid": "contact"
+          }
+        ],
+        "uid": "linkInFieldDef",
+        "edit-time": 1588368755940
+      },
+      {
         "string": "definition:: Now an alias for [foo](((someRefId)))",
         "create-time": 1587504733429,
         ":block/refs": [
@@ -74,6 +96,12 @@
     "create-time": 1651753276959,
     "title": "Jack",
     "uid": "jack",
+    "edit-time": 1651753276960
+  },
+  {
+    "create-time": 1651753276959,
+    "title": "Contact",
+    "uid": "contact",
     "edit-time": 1651753276960
   }
 ]

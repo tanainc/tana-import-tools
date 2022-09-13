@@ -15,8 +15,6 @@ export interface Hierarchy {
 }
 
 export interface ObsidianNode extends Hierarchy {
-  startPos: number;
-  endPos: number;
   content: string;
 }
 
@@ -28,12 +26,46 @@ export function readNodes(content: string): ObsidianNode[] {
     if (element == '\n') continue;
     const hierarchy = getHierarchy(element, content, index);
     const endPos = findEndPosition(content, index, hierarchy);
-    nodeDescs.push({ ...hierarchy, endPos, startPos: index, content: content.slice(index, endPos + 1) });
+    nodeDescs.push({
+      ...hierarchy,
+      content: cutNodeContent(content, index, endPos, hierarchy),
+    });
 
+    //we increment immediately afterwards due to the loop
     index = endPos;
   }
 
   return nodeDescs;
+}
+
+function cutNodeContent(content: string, startPos: number, endPos: number, hierarchy: Hierarchy) {
+  let sliceStart = startPos;
+  let sliceEnd = endPos + 1;
+
+  //removing prefixing empty space
+  let startChar = content[sliceStart];
+  while (startChar === ' ' || startChar === '\t') {
+    sliceStart++;
+    startChar = content[sliceStart];
+  }
+
+  if (hierarchy.type === HierarchyType.OUTLINE) {
+    sliceStart += 2; //2 = *-char and empty space after that
+  }
+
+  //TODO: might need to convert it
+  if (hierarchy.type === HierarchyType.HEADING) {
+    sliceStart += hierarchy.level + 1; //heading symbols and empty space after that
+  }
+
+  //removing trailing empty space, newlines are already excluded
+  let endChar = content[sliceEnd - 1];
+  while (endChar === ' ' || endChar === '\t') {
+    sliceEnd--;
+    endChar = content[sliceEnd - 1];
+  }
+
+  return content.slice(sliceStart, sliceEnd);
 }
 
 function isOutlinerNodeStart(char: string) {

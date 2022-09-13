@@ -50,4 +50,6 @@ export function convertVault(vaultPath: string, today: number = Date.now(), idGe
     addComma = true;
   }
   appendFileSync(targetFileName, '\n  ],\n  "summary": \n' + JSON.stringify(summary, null, 2) + '\n}');
+
+  return summary;
 }

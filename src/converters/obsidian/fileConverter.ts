@@ -1,4 +1,4 @@
-import { TanaIntermediateNode, TanaIntermediateSummary } from '../../types/types';
+import { TanaIntermediateFile, TanaIntermediateNode, TanaIntermediateSummary } from '../../types/types';
 import { getBracketLinks, idgenerator } from '../../utils/utils';
 import { HierarchyType, ObsidianNode, readNodes } from './obsidianNodes';
 
@@ -11,6 +11,16 @@ function createRootNode(fileName: string, today: number): TanaIntermediateNode {
 }
 
 export type IdGenerator = () => string;
+
+export function ObsidianSingleFileConverter(fileName: string, fileContent: string): TanaIntermediateFile {
+  const [node, summary] = convertObsidianFile(fileName, fileContent) as [TanaIntermediateNode, TanaIntermediateSummary];
+
+  return {
+    version: 'TanaIntermediateFile V0.1',
+    summary,
+    nodes: [node],
+  };
+}
 
 export function convertObsidianFile(
   fileName: string, //without ending

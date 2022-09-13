@@ -1,5 +1,5 @@
 import { expect, test } from '@jest/globals';
-import { countEmptySpace, nextNewLine } from './utils';
+import { countEmptySpace, nextNewLine } from '../utils';
 
 test('empty space util', () => {
   expect(countEmptySpace('a   b c', 1)).toBe(3);

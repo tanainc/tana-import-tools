@@ -1,14 +1,33 @@
-import { NodeDescription, Hierarchy, HierarchyType } from './obsidianNodes.types';
 import { countEmptySpace, nextNewLine } from './utils';
 
-export function readNodes(content: string): NodeDescription[] {
-  const nodeDescs: NodeDescription[] = [];
+export enum HierarchyType {
+  ROOT = 'Root',
+  HEADING = 'Heading',
+  OUTLINE = 'Outliner Node',
+  PARAGRAPH = 'Paragraph',
+}
+
+export interface Hierarchy {
+  type: HierarchyType;
+  //lower = higher in the hierarchy
+  //for outliner nodes also used as a measure of empty space
+  level: number;
+}
+
+export interface ObsidianNode extends Hierarchy {
+  startPos: number;
+  endPos: number;
+  content: string;
+}
+
+export function readNodes(content: string): ObsidianNode[] {
+  const nodeDescs: ObsidianNode[] = [];
 
   for (let index = 0; index < content.length; index++) {
     const element = content[index];
     if (element == '\n') continue;
     const hierarchy = getHierarchy(element, content, index);
-    const endPos = endPosition(content, index, hierarchy);
+    const endPos = findEndPosition(content, index, hierarchy);
     nodeDescs.push({ ...hierarchy, endPos, startPos: index, content: content.slice(index, endPos + 1) });
 
     index = endPos;
@@ -17,9 +36,7 @@ export function readNodes(content: string): NodeDescription[] {
   return nodeDescs;
 }
 
-const HIERARCHY_INDICATORS = ['#', '*', '-'];
-
-function isOutlinerNode(char: string) {
+function isOutlinerNodeStart(char: string) {
   return char === '*' || char === '-';
 }
 
@@ -41,14 +58,20 @@ export function getHierarchy(curChar: string, content: string, curPosition: numb
 
   //for nodes we need a precise level === empty space, so we can detect multi line node content
   const emptySpaces = countEmptySpace(content, curPosition);
-  if (isOutlinerNode(content[curPosition + emptySpaces]) && content[curPosition + emptySpaces + 1] === ' ') {
+  if (isOutlinerNodeStart(content[curPosition + emptySpaces]) && content[curPosition + emptySpaces + 1] === ' ') {
     return { type: HierarchyType.OUTLINE, level: Math.max(emptySpaces) };
   }
 
   return { type: HierarchyType.PARAGRAPH, level: 0 };
 }
 
-export function endPosition(content: string, curPosition: number, hierarchy: Hierarchy): number {
+const HIERARCHY_INDICATORS = ['#', '*', '-'];
+
+//TODO: change to return str instead of just searching endpos for even less O(n)
+/**
+ * Returns the index in the content-string of the endposition of the current obsidian node.
+ */
+export function findEndPosition(content: string, curPosition: number, hierarchy: Hierarchy): number {
   let endPosition = nextNewLine(content, curPosition);
   let char = content[endPosition];
 
@@ -71,13 +94,15 @@ export function endPosition(content: string, curPosition: number, hierarchy: Hie
   }
 
   if (hierarchy.type === HierarchyType.PARAGRAPH) {
+    let lastChar = char;
     endPosition++;
     char = content[endPosition];
     //paragraphs end with double newlines or a new hierarchy
     while (true) {
-      if (char === '\n' || HIERARCHY_INDICATORS.includes(char) || char === undefined) {
+      if ((char === '\n' && lastChar === '\n') || HIERARCHY_INDICATORS.includes(char) || char === undefined) {
         return endPosition - 2;
       }
+      lastChar = char;
       endPosition++;
       char = content[endPosition];
     }

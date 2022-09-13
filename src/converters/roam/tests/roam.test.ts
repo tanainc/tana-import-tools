@@ -40,10 +40,16 @@ test('Smoke test import preview ', async () => {
 test('fields', () => {
   const [file, f, fn] = importRoamFile('fields.json');
   // TODO: We do not set fixed values yet
+
   expect(file.attributes).toEqual([
     {
       count: 1,
       name: 'Owner',
+      values: ['[[Jack]]'],
+    },
+    {
+      count: 1,
+      name: 'Contact',
       values: ['[[Jack]]'],
     },
     {
@@ -86,6 +92,9 @@ test('fields', () => {
   for (const child of f('subsequentBrokenHolder')!.children!) {
     expect(child.refs).toEqual([]);
   }
+
+  // [[Contact]]:: [[Jack]]
+  expectField('linkInFieldDef', 'Contact', [fn('Jack')!], f);
 });
 
 test('meta node extraction', () => {

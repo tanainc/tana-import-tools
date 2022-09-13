@@ -17,6 +17,7 @@
     "build": "yarn prepare",
     "convert:roam": "yarn build && node --experimental-modules --es-module-specifier-resolution=node dist/runner.js roam",
     "convert:workflowy": "yarn build && node --experimental-modules --es-module-specifier-resolution=node dist/runner.js workflowy",
+    "convert:obsidian": "yarn build && node --experimental-modules --es-module-specifier-resolution=node dist/runner.js obsidian",
     "test": "jest"
   },
   "devDependencies": {

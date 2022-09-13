@@ -24,6 +24,10 @@ function* getFiles(dir: string): Generator<string> {
 export function convertVault(vaultPath: string, today: number = Date.now(), idGenerator: IdGenerator = idgenerator) {
   const iter = getFiles(vaultPath);
 
+  if (vaultPath.endsWith('/')) {
+    vaultPath = vaultPath.slice(0, -1);
+  }
+
   const targetFileName = `${vaultPath}.tif.json`;
   try {
     unlinkSync(targetFileName);

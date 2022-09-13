@@ -10,7 +10,7 @@ function createRootNode(fileName: string, today: number): TanaIntermediateNode {
   return { uid: fileName, name: '', createdAt: today, editedAt: today, type: 'node' };
 }
 
-type IdGenerator = () => string;
+export type IdGenerator = () => string;
 
 export function convertObsidianFile(
   fileName: string, //without ending

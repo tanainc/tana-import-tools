@@ -68,7 +68,7 @@ export function convertObsidianFile(
     const childNode = createChildNode(node, today, idGenerator);
     processRawTanaNode(childNode);
     if (childNode.refs) {
-      newPages = newPages.concat(childNode.refs);
+      newPages.push(...childNode.refs);
     }
     insertNodeIntoHierarchy(childNode, node, lastObsidianNodes, lastTanaNodes);
   }

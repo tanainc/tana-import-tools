@@ -1,4 +1,3 @@
-import he from 'he';
 import { appendFile, appendFileSync, readdirSync, readFileSync, unlinkSync, writeFileSync } from 'fs';
 import path, { resolve } from 'path';
 import { TanaIntermediateNode, TanaIntermediateSummary, TanaIntermediateFile } from '../../types/types';
@@ -20,6 +19,14 @@ function* getFiles(dir: string): Generator<string> {
     }
   }
 }
+
+const maybeDecode = (x: string) => {
+  try {
+    return decodeURIComponent(x);
+  } catch (e) {
+    return x;
+  }
+};
 
 /**
  * Converts the vault to the Tana format and incrementally saves it, otherwise it would be to memory intensive on big vaults.
@@ -55,7 +62,7 @@ export function convertVault(vaultPath: string, today: number = Date.now(), idGe
       today,
       idGenerator,
     ) as [TanaIntermediateNode, TanaIntermediateSummary, string[]];
-    newLinks = newLinks.concat(links);
+    newLinks.push(...links);
     pagesCreated.push(fileNode.uid);
     summary = updatedSummary;
     appendFileSync(targetFileName, JSON.stringify(fileNode, null, 2));
@@ -64,7 +71,7 @@ export function convertVault(vaultPath: string, today: number = Date.now(), idGe
 
   const pagesToCreate = getDifference(newLinks, pagesCreated);
   const pagesInTana = [...pagesToCreate]
-    .map((x) => JSON.stringify(createRootNode(x, decodeURIComponent(x), today), null, 2))
+    .map((x) => JSON.stringify(createRootNode(x, maybeDecode(x), today), null, 2))
     .join(',');
   if (summary) {
     summary.topLevelNodes = (summary?.topLevelNodes || 0) + pagesInTana.length;

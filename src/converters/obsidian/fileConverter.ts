@@ -6,14 +6,18 @@ function createChildNode(obsidianNode: ObsidianNode, today: number, idGenerator:
   return { uid: idGenerator(), name: obsidianNode.content, createdAt: today, editedAt: today, type: 'node' };
 }
 
-function createRootNode(fileName: string, today: number): TanaIntermediateNode {
-  return { uid: fileName, name: '', createdAt: today, editedAt: today, type: 'node' };
+export function createRootNode(fileName: string, displayName: string, today: number): TanaIntermediateNode {
+  return { uid: fileName, name: displayName, createdAt: today, editedAt: today, type: 'node' };
 }
 
 export type IdGenerator = () => string;
 
 export function ObsidianSingleFileConverter(fileName: string, fileContent: string): TanaIntermediateFile {
-  const [node, summary] = convertObsidianFile(fileName, fileContent) as [TanaIntermediateNode, TanaIntermediateSummary];
+  const [node, summary] = convertObsidianFile(fileName, fileContent) as [
+    TanaIntermediateNode,
+    TanaIntermediateSummary,
+    string[],
+  ];
 
   return {
     version: 'TanaIntermediateFile V0.1',
@@ -35,10 +39,24 @@ export function convertObsidianFile(
   },
   today: number = Date.now(),
   idGenerator: IdGenerator = idgenerator,
-) {
-  const rootNode = createRootNode(fileName, today);
+): [TanaIntermediateNode, TanaIntermediateSummary, string[]] {
+  let newPages: string[] = [];
+  let obsidianNodes = readNodes(fileContent);
+  let displayName = fileName;
+  const name = obsidianNodes[0] && obsidianNodes[0].content.match(/^title::(.+)$/);
+  if (name) {
+    displayName = name[1];
+    obsidianNodes = obsidianNodes.slice(1);
+  }
+
+  // common in Obsidian to repeat the filename in the first line, remove first line if so
+  if (obsidianNodes[0] && obsidianNodes[0].content.replace(/^#+/, '').trim() === displayName.trim()) {
+    obsidianNodes = obsidianNodes.slice(1);
+  }
+
+  const rootNode = createRootNode(fileName, displayName, today);
   summary.topLevelNodes++;
-  const obsidianNodes = readNodes(fileContent);
+
   summary.leafNodes += obsidianNodes.length;
   summary.totalNodes += 1 + obsidianNodes.length;
   //TODO: broken refs
@@ -49,16 +67,28 @@ export function convertObsidianFile(
   for (const node of obsidianNodes) {
     const childNode = createChildNode(node, today, idGenerator);
     processRawTanaNode(childNode);
+    if (childNode.refs) {
+      newPages = newPages.concat(childNode.refs);
+    }
     insertNodeIntoHierarchy(childNode, node, lastObsidianNodes, lastTanaNodes);
   }
 
-  return [rootNode, summary];
+  return [rootNode, summary, newPages];
 }
 
 function processRawTanaNode(tanaNode: TanaIntermediateNode) {
   //TODO: links to headings [[..#..]] / blocks [[filename#^dcf64c]]
   //TODO: aliases
   //TODO: convert to different node types, remove markdown formatting etc.
+  const n = tanaNode.name;
+  tanaNode.name = tanaNode.name.replace('collapsed:: true', '').replace(/^#+ /, '').trim();
+  // links with alias
+  tanaNode.name = tanaNode.name.replace(/\[\[([^|]+)\|([^\]]+)\]\]/g, '[$1]([[$2]])');
+  // links with anchor, just remove anchor for now
+  tanaNode.name = tanaNode.name.replace(/\[\[([^#]+)#([^#\]]+)\]\]/g, '[[$1]]');
+  // tags, convert to links for now
+  tanaNode.name = tanaNode.name.replace(/(?:\s|^)(#([^\[]]+?))(?:(?=\s)|$)/g, ' #[[$2]]');
+
   const foundUids = getBracketLinks(tanaNode.name, true);
 
   if (foundUids.length > 0) {

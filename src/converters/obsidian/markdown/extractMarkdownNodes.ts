@@ -1,4 +1,5 @@
 import { countEmptySpace, nextNewLine } from '../utils';
+import { postProcessMarkdownNodes } from './postProcessMarkdownNodes';
 
 export enum HierarchyType {
   ROOT = 'Root',
@@ -29,7 +30,7 @@ export function extractMarkdownNodes(content: string): MarkdownNode[] {
     const endPos = findEndPosition(content, index, hierarchy);
     nodeDescs.push({
       ...hierarchy,
-      content: content.slice(index, endPos),
+      content: postProcessMarkdownNodes(content.slice(index, endPos), hierarchy),
     });
 
     //we increment immediately afterwards due to the loop
@@ -73,7 +74,23 @@ export function getHierarchy(curChar: string, content: string, curPosition: numb
   return { type: HierarchyType.PARAGRAPH, level: 0 };
 }
 
-const HIERARCHY_INDICATORS = ['#', '*', '-'];
+function isHeadingStart(content: string, pos: number) {
+  //yeah yeah RegEx and all, but I really want this to be fast
+  if (content[pos] !== '#') return false;
+  let curPos = pos + 1;
+  while (content[curPos] === '#') {
+    curPos++;
+  }
+  return content[curPos] == ' ';
+}
+
+function isBlockQuoteStart(content: string, pos: number) {
+  return content[pos] === '>' && content[pos + 1] === ' ';
+}
+
+function isHierarchyStart(content: string, pos: number) {
+  return isHeadingStart(content, pos) || isOutlinerNodeStart(content, pos) || isBlockQuoteStart(content, pos);
+}
 
 /**
  * Returns the index in the content-string of the endposition of the current obsidian node.
@@ -106,7 +123,10 @@ export function findEndPosition(content: string, curPosition: number, hierarchy:
     char = content[endPosition];
     //paragraphs end with double newlines or a new hierarchy
     while (true) {
-      if ((char === '\n' && lastChar === '\n') || HIERARCHY_INDICATORS.includes(char) || char === undefined) {
+      if (char === undefined) {
+        endPosition = endPosition - 1;
+        break;
+      } else if ((char === '\n' && lastChar === '\n') || isHierarchyStart(content, endPosition)) {
         endPosition = endPosition - 2;
         break;
       }

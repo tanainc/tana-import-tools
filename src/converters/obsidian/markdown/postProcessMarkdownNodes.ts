@@ -1,5 +1,8 @@
 import { Hierarchy, HierarchyType } from './extractMarkdownNodes';
 
+/**
+ * We remove the parts of the markdown nodes that just signify their type, e.g. "- " for outline nodes.
+ */
 export function postProcessMarkdownNodes(content: string, hierarchy: Hierarchy) {
   if (hierarchy.type === HierarchyType.OUTLINE) {
     //remove empty prefix
@@ -14,6 +17,10 @@ export function postProcessMarkdownNodes(content: string, hierarchy: Hierarchy) 
 
   if (hierarchy.type === HierarchyType.HEADING) {
     return content.slice(hierarchy.level + 1); //heading symbols and empty space after that
+  }
+
+  if (hierarchy.type === HierarchyType.PARAGRAPH) {
+    return content.trimEnd();
   }
 
   return content;

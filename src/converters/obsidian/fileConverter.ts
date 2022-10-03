@@ -1,12 +1,11 @@
 import { TanaIntermediateFile, TanaIntermediateNode, TanaIntermediateSummary } from '../../types/types';
 import { getBracketLinks, idgenerator } from '../../utils/utils';
 import { HierarchyType, MarkdownNode, extractMarkdownNodes } from './markdown/extractMarkdownNodes';
-import { postProcessMarkdownNodes } from './markdown/postProcessMarkdownNodes';
 
 function createChildNode(obsidianNode: MarkdownNode, today: number, idGenerator: IdGenerator): TanaIntermediateNode {
   return {
     uid: idGenerator(),
-    name: postProcessMarkdownNodes(obsidianNode.content, obsidianNode),
+    name: obsidianNode.content,
     createdAt: today,
     editedAt: today,
     type: 'node',

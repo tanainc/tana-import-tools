@@ -1,48 +1,75 @@
 import { expect, test } from '@jest/globals';
 import { readFileSync } from 'fs';
-import { HierarchyType, readNodes } from '../obsidianNodes';
+import { HierarchyType, fileContentToNodes } from '../obsidianNodes';
 
 test('headings', () => {
-  expect(readNodes('## Heading ')).toStrictEqual([{ content: 'Heading', level: 2, type: HierarchyType.HEADING }]);
-  expect(readNodes('## Heading\n')).toStrictEqual([{ content: 'Heading', level: 2, type: HierarchyType.HEADING }]);
-  expect(readNodes('## Heading\n\n')).toStrictEqual([{ content: 'Heading', level: 2, type: HierarchyType.HEADING }]);
+  expect(fileContentToNodes('## Heading ')).toStrictEqual([
+    { content: 'Heading', level: 2, type: HierarchyType.HEADING },
+  ]);
+  expect(fileContentToNodes('## Heading\n')).toStrictEqual([
+    { content: 'Heading', level: 2, type: HierarchyType.HEADING },
+  ]);
+  expect(fileContentToNodes('## Heading\n\n')).toStrictEqual([
+    { content: 'Heading', level: 2, type: HierarchyType.HEADING },
+  ]);
 });
 
 test('paragraphs', () => {
-  expect(readNodes('Starting without heading. ')).toStrictEqual([
+  expect(fileContentToNodes('Starting without heading. ')).toStrictEqual([
     { content: 'Starting without heading.', level: 0, type: HierarchyType.PARAGRAPH },
   ]);
-  expect(readNodes(' Starting without heading.')).toStrictEqual([
+  expect(fileContentToNodes(' Starting without heading.')).toStrictEqual([
     { content: 'Starting without heading.', level: 0, type: HierarchyType.PARAGRAPH },
   ]);
-  expect(readNodes('Starting without heading.\n')).toStrictEqual([
+  expect(fileContentToNodes('Starting without heading.\n')).toStrictEqual([
     { content: 'Starting without heading.', level: 0, type: HierarchyType.PARAGRAPH },
   ]);
-  expect(readNodes('Starting without heading.\n\n')).toStrictEqual([
+  expect(fileContentToNodes('Starting without heading.\n\n')).toStrictEqual([
     { content: 'Starting without heading.', level: 0, type: HierarchyType.PARAGRAPH },
   ]);
-  expect(readNodes('Directly followed by hierachy.\n# Heading')).toStrictEqual([
+  expect(fileContentToNodes('Directly followed by hierachy.\n# Heading')).toStrictEqual([
     { content: 'Directly followed by hierachy.', level: 0, type: HierarchyType.PARAGRAPH },
     { content: 'Heading', level: 1, type: HierarchyType.HEADING },
   ]);
-  expect(readNodes('# Heading\nPrefixed by hierachy.')).toStrictEqual([
+  expect(fileContentToNodes('# Heading\nPrefixed by hierachy.')).toStrictEqual([
     { content: 'Heading', level: 1, type: HierarchyType.HEADING },
     { content: 'Prefixed by hierachy.', level: 0, type: HierarchyType.PARAGRAPH },
   ]);
-  expect(readNodes('# Heading\n\nPrefixed by hierachy.')).toStrictEqual([
+  expect(fileContentToNodes('# Heading\n\nPrefixed by hierachy.')).toStrictEqual([
     { content: 'Heading', level: 1, type: HierarchyType.HEADING },
     { content: 'Prefixed by hierachy.', level: 0, type: HierarchyType.PARAGRAPH },
   ]);
-  expect(readNodes('Stuff but with\na newline.\n\n')).toStrictEqual([
+  expect(fileContentToNodes('Stuff but with\na newline.\n\n')).toStrictEqual([
     { content: 'Stuff but with\na newline.', level: 0, type: HierarchyType.PARAGRAPH },
   ]);
 });
 
 test('outliner nodes', () => {
-  expect(readNodes('- Node')).toStrictEqual([{ content: 'Node', level: 0, type: HierarchyType.OUTLINE }]);
-  expect(readNodes(' - Node')).toStrictEqual([{ content: 'Node', level: 1, type: HierarchyType.OUTLINE }]);
+  expect(fileContentToNodes('- Node')).toStrictEqual([{ content: 'Node', level: 0, type: HierarchyType.OUTLINE }]);
+  expect(fileContentToNodes(' - Node')).toStrictEqual([{ content: 'Node', level: 1, type: HierarchyType.OUTLINE }]);
   expect(
-    readNodes(
+    fileContentToNodes(`* Text
+  * Foo
+  * Bar`),
+  ).toStrictEqual([
+    {
+      content: 'Text',
+      level: 0,
+      type: HierarchyType.OUTLINE,
+    },
+    {
+      content: 'Foo',
+      level: 2,
+      type: HierarchyType.OUTLINE,
+    },
+    {
+      content: 'Bar',
+      level: 2,
+      type: HierarchyType.OUTLINE,
+    },
+  ]);
+  expect(
+    fileContentToNodes(
       `- Some
     - Node
   - Fun`,
@@ -65,7 +92,7 @@ test('outliner nodes', () => {
     },
   ]);
   expect(
-    readNodes(
+    fileContentToNodes(
       `- Node with multi lines work.
   As long as the empty space is equivalent.
   How many you like.`,
@@ -82,7 +109,9 @@ test('outliner nodes', () => {
 });
 
 test('mixed nodes', () => {
-  expect(readNodes(readFileSync('./src/converters/obsidian/tests/fixtures/vault/test.md', 'utf-8'))).toStrictEqual([
+  expect(
+    fileContentToNodes(readFileSync('./src/converters/obsidian/tests/fixtures/vault/test.md', 'utf-8')),
+  ).toStrictEqual([
     {
       content: 'Starting without [[heading]].',
       level: 0,

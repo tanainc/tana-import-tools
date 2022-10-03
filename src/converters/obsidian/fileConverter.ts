@@ -1,16 +1,22 @@
 import { TanaIntermediateFile, TanaIntermediateNode, TanaIntermediateSummary } from '../../types/types';
 import { getBracketLinks, idgenerator } from '../../utils/utils';
-import { HierarchyType, ObsidianNode, readNodes } from './obsidianNodes';
+import { HierarchyType, ObsidianNode, fileContentToNodes } from './obsidianNodes';
 
 function createChildNode(obsidianNode: ObsidianNode, today: number, idGenerator: IdGenerator): TanaIntermediateNode {
   return { uid: idGenerator(), name: obsidianNode.content, createdAt: today, editedAt: today, type: 'node' };
 }
 
-export function createRootNode(fileName: string, displayName: string, today: number): TanaIntermediateNode {
-  return { uid: fileName, name: displayName, createdAt: today, editedAt: today, type: 'node' };
+export function createFileNode(displayName: string, today: number, uidFinder: UidFinder): TanaIntermediateNode {
+  return { uid: uidFinder(displayName), name: displayName, createdAt: today, editedAt: today, type: 'node' };
 }
 
 export type IdGenerator = () => string;
+
+/**
+ * We can not just take the obsidian link because we might already have created a node for that link.
+ * This function should return the correct Uid.
+ */
+export type UidFinder = (obsidianLink: string) => string;
 
 export function ObsidianSingleFileConverter(fileName: string, fileContent: string): TanaIntermediateFile {
   const [node, summary] = convertObsidianFile(fileName, fileContent) as [
@@ -39,9 +45,10 @@ export function convertObsidianFile(
   },
   today: number = Date.now(),
   idGenerator: IdGenerator = idgenerator,
+  uidFinder: UidFinder = (link) => link,
 ): [TanaIntermediateNode, TanaIntermediateSummary, string[]] {
   let newPages: string[] = [];
-  let obsidianNodes = readNodes(fileContent);
+  let obsidianNodes = fileContentToNodes(fileContent);
   let displayName = fileName;
   const name = obsidianNodes[0] && obsidianNodes[0].content.match(/^title::(.+)$/);
   if (name) {
@@ -54,7 +61,7 @@ export function convertObsidianFile(
     obsidianNodes = obsidianNodes.slice(1);
   }
 
-  const rootNode = createRootNode(fileName, displayName, today);
+  const rootNode = createFileNode(displayName, today, uidFinder);
   summary.topLevelNodes++;
 
   summary.leafNodes += obsidianNodes.length;
@@ -89,6 +96,7 @@ function processRawTanaNode(tanaNode: TanaIntermediateNode) {
   // tags, convert to links for now
   tanaNode.name = tanaNode.name.replace(/(?:\s|^)(#([^\[]]+?))(?:(?=\s)|$)/g, ' #[[$2]]');
 
+  //TODO: replace with correct UIDs
   const foundUids = getBracketLinks(tanaNode.name, true);
 
   if (foundUids.length > 0) {

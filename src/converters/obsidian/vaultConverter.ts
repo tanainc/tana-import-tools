@@ -1,8 +1,8 @@
-import { appendFile, appendFileSync, readdirSync, readFileSync, unlinkSync, writeFileSync } from 'fs';
+import { appendFileSync, readdirSync, readFileSync, unlinkSync } from 'fs';
 import path, { resolve } from 'path';
-import { TanaIntermediateNode, TanaIntermediateSummary, TanaIntermediateFile } from '../../types/types';
+import { TanaIntermediateNode, TanaIntermediateSummary } from '../../types/types';
 import { idgenerator } from '../../utils/utils';
-import { convertObsidianFile, IdGenerator, createRootNode } from './fileConverter';
+import { convertObsidianFile, IdGenerator, createFileNode } from './fileConverter';
 
 //bobbyhadz.com/blog/javascript-get-difference-between-two-sets#:~:text=To%20get%20the%20difference%20between,array%20back%20to%20a%20Set%20.
 const getDifference = (setA: any[], setB: any[]) => new Set([...setA].filter((element) => !setB.includes(element)));
@@ -71,7 +71,13 @@ export function convertVault(vaultPath: string, today: number = Date.now(), idGe
 
   const pagesToCreate = getDifference(newLinks, pagesCreated);
   const pagesInTana = [...pagesToCreate]
-    .map((x) => JSON.stringify(createRootNode(x, maybeDecode(x), today), null, 2))
+    .map((x) =>
+      JSON.stringify(
+        createFileNode(maybeDecode(x), today, (link) => link),
+        null,
+        2,
+      ),
+    )
     .join(',');
   if (summary) {
     summary.topLevelNodes = (summary?.topLevelNodes || 0) + pagesInTana.length;

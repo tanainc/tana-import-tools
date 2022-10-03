@@ -11,6 +11,7 @@ export interface Hierarchy {
   type: HierarchyType;
   //lower = higher in the hierarchy
   //for outliner nodes also used as a measure of empty space
+  //for heading nodes this is the number of #'s
   level: number;
 }
 
@@ -18,7 +19,7 @@ export interface ObsidianNode extends Hierarchy {
   content: string;
 }
 
-export function readNodes(content: string): ObsidianNode[] {
+export function fileContentToNodes(content: string): ObsidianNode[] {
   const nodeDescs: ObsidianNode[] = [];
 
   for (let index = 0; index < content.length; index++) {
@@ -115,7 +116,7 @@ export function findEndPosition(content: string, curPosition: number, hierarchy:
     while (true) {
       //new lines that start with the number of empty spaces of the level+1 are considered part of the node
       const emptySpaces = countEmptySpace(content, endPosition + 1);
-      if (emptySpaces == hierarchy.level + 2) {
+      if (emptySpaces == hierarchy.level + 2 && !isOutlinerNodeStart(content[endPosition + 1 + emptySpaces])) {
         endPosition = nextNewLine(content, endPosition + 1);
         char = content[endPosition];
       } else {

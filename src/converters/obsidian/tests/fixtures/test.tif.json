@@ -3,7 +3,7 @@
   "nodes": [
     {
       "uid": "test2",
-      "name": "",
+      "name": "test2",
       "createdAt": 1,
       "editedAt": 1,
       "type": "node",
@@ -84,7 +84,7 @@
     },
     {
       "uid": "test",
-      "name": "",
+      "name": "test",
       "createdAt": 1,
       "editedAt": 1,
       "type": "node",

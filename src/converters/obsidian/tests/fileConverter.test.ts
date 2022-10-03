@@ -10,7 +10,7 @@ test('obsidian file converter', () => {
     {
       createdAt: 1,
       editedAt: 1,
-      name: '',
+      name: 'test',
       type: 'node',
       uid: 'test',
       children: [

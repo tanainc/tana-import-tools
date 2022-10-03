@@ -1,9 +1,16 @@
 import { TanaIntermediateFile, TanaIntermediateNode, TanaIntermediateSummary } from '../../types/types';
 import { getBracketLinks, idgenerator } from '../../utils/utils';
-import { HierarchyType, ObsidianNode, fileContentToNodes } from './obsidianNodes';
+import { HierarchyType, MarkdownNode, extractMarkdownNodes } from './markdown/extractMarkdownNodes';
+import { postProcessMarkdownNodes } from './markdown/postProcessMarkdownNodes';
 
-function createChildNode(obsidianNode: ObsidianNode, today: number, idGenerator: IdGenerator): TanaIntermediateNode {
-  return { uid: idGenerator(), name: obsidianNode.content, createdAt: today, editedAt: today, type: 'node' };
+function createChildNode(obsidianNode: MarkdownNode, today: number, idGenerator: IdGenerator): TanaIntermediateNode {
+  return {
+    uid: idGenerator(),
+    name: postProcessMarkdownNodes(obsidianNode.content, obsidianNode),
+    createdAt: today,
+    editedAt: today,
+    type: 'node',
+  };
 }
 
 export function createFileNode(displayName: string, today: number, uidFinder: UidFinder): TanaIntermediateNode {
@@ -48,7 +55,7 @@ export function convertObsidianFile(
   uidFinder: UidFinder = (link) => link,
 ): [TanaIntermediateNode, TanaIntermediateSummary, string[]] {
   let newPages: string[] = [];
-  let obsidianNodes = fileContentToNodes(fileContent);
+  let obsidianNodes = extractMarkdownNodes(fileContent);
   let displayName = fileName;
   const name = obsidianNodes[0] && obsidianNodes[0].content.match(/^title::(.+)$/);
   if (name) {
@@ -68,7 +75,7 @@ export function convertObsidianFile(
   summary.totalNodes += 1 + obsidianNodes.length;
   //TODO: broken refs
 
-  const lastObsidianNodes: ObsidianNode[] = [{ type: HierarchyType.ROOT, level: -1 } as ObsidianNode];
+  const lastObsidianNodes: MarkdownNode[] = [{ type: HierarchyType.ROOT, level: -1 } as MarkdownNode];
   const lastTanaNodes = [rootNode];
 
   for (const node of obsidianNodes) {
@@ -106,8 +113,8 @@ function processRawTanaNode(tanaNode: TanaIntermediateNode) {
 
 function insertNodeIntoHierarchy(
   tanaNode: TanaIntermediateNode,
-  obsidianNode: ObsidianNode,
-  lastObsidianNodes: ObsidianNode[],
+  obsidianNode: MarkdownNode,
+  lastObsidianNodes: MarkdownNode[],
   lastTanaNodes: TanaIntermediateNode[],
 ) {
   //once the non-parent nodes are removed, the next one is the parent
@@ -123,8 +130,8 @@ function insertNodeIntoHierarchy(
 }
 
 function removeNonParentNodes(
-  obsidianNode: ObsidianNode,
-  lastObsidianNodes: ObsidianNode[],
+  obsidianNode: MarkdownNode,
+  lastObsidianNodes: MarkdownNode[],
   lastTanaNodes: TanaIntermediateNode[],
 ) {
   let lastObsidianNode = lastObsidianNodes[lastObsidianNodes.length - 1];
@@ -137,7 +144,7 @@ function removeNonParentNodes(
   }
 }
 
-function isChild(potentialParent: ObsidianNode, potentialChild: ObsidianNode) {
+function isChild(potentialParent: MarkdownNode, potentialChild: MarkdownNode) {
   if (potentialParent.type === HierarchyType.ROOT) return true;
 
   //HEADING is always a parent of non-headings

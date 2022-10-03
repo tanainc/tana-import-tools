@@ -1,4 +1,4 @@
-import { countEmptySpace, nextNewLine } from './utils';
+import { countEmptySpace, nextNewLine } from '../utils';
 
 export enum HierarchyType {
   ROOT = 'Root',
@@ -15,12 +15,12 @@ export interface Hierarchy {
   level: number;
 }
 
-export interface ObsidianNode extends Hierarchy {
+export interface MarkdownNode extends Hierarchy {
   content: string;
 }
 
-export function fileContentToNodes(content: string): ObsidianNode[] {
-  const nodeDescs: ObsidianNode[] = [];
+export function extractMarkdownNodes(content: string): MarkdownNode[] {
+  const nodeDescs: MarkdownNode[] = [];
 
   for (let index = 0; index < content.length; index++) {
     const element = content[index];
@@ -29,7 +29,7 @@ export function fileContentToNodes(content: string): ObsidianNode[] {
     const endPos = findEndPosition(content, index, hierarchy);
     nodeDescs.push({
       ...hierarchy,
-      content: cutNodeContent(content, index, endPos, hierarchy),
+      content: content.slice(index, endPos),
     });
 
     //we increment immediately afterwards due to the loop
@@ -39,38 +39,13 @@ export function fileContentToNodes(content: string): ObsidianNode[] {
   return nodeDescs;
 }
 
-function cutNodeContent(content: string, startPos: number, endPos: number, hierarchy: Hierarchy) {
-  let sliceStart = startPos;
-  let sliceEnd = endPos + 1;
-
-  //removing prefixing empty space
-  let startChar = content[sliceStart];
-  while (startChar === ' ' || startChar === '\t') {
-    sliceStart++;
-    startChar = content[sliceStart];
+function isOutlinerNodeStart(content: string, pos: number) {
+  const char = content[pos];
+  const secondChar = content[pos + 1];
+  if ((char === '*' || char === '-') && secondChar === ' ') {
+    return true;
   }
-
-  if (hierarchy.type === HierarchyType.OUTLINE) {
-    sliceStart += 2; //2 = *-char and empty space after that
-  }
-
-  //TODO: might need to convert it
-  if (hierarchy.type === HierarchyType.HEADING) {
-    sliceStart += hierarchy.level + 1; //heading symbols and empty space after that
-  }
-
-  //removing trailing empty space, newlines are already excluded
-  let endChar = content[sliceEnd - 1];
-  while (endChar === ' ' || endChar === '\t') {
-    sliceEnd--;
-    endChar = content[sliceEnd - 1];
-  }
-
-  return content.slice(sliceStart, sliceEnd);
-}
-
-function isOutlinerNodeStart(char: string) {
-  return char === '*' || char === '-';
+  return !isNaN(parseInt(char)) && secondChar === '.' && content[pos + 2] === ' ';
 }
 
 export function getHierarchy(curChar: string, content: string, curPosition: number): Hierarchy {
@@ -91,7 +66,7 @@ export function getHierarchy(curChar: string, content: string, curPosition: numb
 
   //for nodes we need a precise level === empty space, so we can detect multi line node content
   const emptySpaces = countEmptySpace(content, curPosition);
-  if (isOutlinerNodeStart(content[curPosition + emptySpaces]) && content[curPosition + emptySpaces + 1] === ' ') {
+  if (isOutlinerNodeStart(content, curPosition + emptySpaces)) {
     return { type: HierarchyType.OUTLINE, level: Math.max(emptySpaces) };
   }
 
@@ -100,7 +75,6 @@ export function getHierarchy(curChar: string, content: string, curPosition: numb
 
 const HIERARCHY_INDICATORS = ['#', '*', '-'];
 
-//TODO: change to return str instead of just searching endpos for even less O(n)
 /**
  * Returns the index in the content-string of the endposition of the current obsidian node.
  */
@@ -109,31 +83,32 @@ export function findEndPosition(content: string, curPosition: number, hierarchy:
   let char = content[endPosition];
 
   if (char === undefined || hierarchy.type === HierarchyType.HEADING) {
-    return endPosition - 1;
-  }
-
-  if (hierarchy.type === HierarchyType.OUTLINE) {
+    endPosition = endPosition - 1;
+  } else if (hierarchy.type === HierarchyType.OUTLINE) {
     while (true) {
       //new lines that start with the number of empty spaces of the level+1 are considered part of the node
       const emptySpaces = countEmptySpace(content, endPosition + 1);
-      if (emptySpaces == hierarchy.level + 2 && !isOutlinerNodeStart(content[endPosition + 1 + emptySpaces])) {
+      if (emptySpaces == hierarchy.level + 2 && !isOutlinerNodeStart(content, endPosition + 1 + emptySpaces)) {
         endPosition = nextNewLine(content, endPosition + 1);
         char = content[endPosition];
       } else {
-        return endPosition - 1;
+        endPosition = endPosition - 1;
+        break;
       }
-      if (char === undefined) return endPosition - 1;
+      if (char === undefined) {
+        endPosition = endPosition - 1;
+        break;
+      }
     }
-  }
-
-  if (hierarchy.type === HierarchyType.PARAGRAPH) {
+  } else if (hierarchy.type === HierarchyType.PARAGRAPH) {
     let lastChar = char;
     endPosition++;
     char = content[endPosition];
     //paragraphs end with double newlines or a new hierarchy
     while (true) {
       if ((char === '\n' && lastChar === '\n') || HIERARCHY_INDICATORS.includes(char) || char === undefined) {
-        return endPosition - 2;
+        endPosition = endPosition - 2;
+        break;
       }
       lastChar = char;
       endPosition++;
@@ -141,5 +116,7 @@ export function findEndPosition(content: string, curPosition: number, hierarchy:
     }
   }
 
-  throw 'Hierarchy type not detected.';
+  endPosition++;
+
+  return endPosition;
 }

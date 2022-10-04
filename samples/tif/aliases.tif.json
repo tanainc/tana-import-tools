@@ -1,0 +1,15 @@
+{
+  "version": "TanaIntermediateFile V0.1",
+  "nodes": [
+    {
+      "name": "See [my alias]([[testsRefId]])",
+      "refs": ["testsRefId"],
+      "type": "node"
+    },
+    {
+      "uid": "testsRefId",
+      "name": "tests",
+      "type": "node"
+    }
+  ]
+}

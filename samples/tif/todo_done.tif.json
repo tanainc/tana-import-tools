@@ -1,0 +1,15 @@
+{
+  "version": "TanaIntermediateFile V0.1",
+  "nodes": [
+    {
+      "name": "A task",
+      "type": "node",
+      "todoState": "todo"
+    },
+    {
+      "name": "A completed task",
+      "type": "node",
+      "todoState": "done"
+    }
+  ]
+}

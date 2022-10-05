@@ -1,12 +1,12 @@
 import { TanaIntermediateNode } from '../../types/types';
 
 // TODO and DONE in roam
-const TODO_FLAG = '{{[[TODO]]}} ';
-const DONE_FLAG = '{{[[DONE]]}} ';
+const TODO_FLAG = 'TODO';
+const DONE_FLAG = 'DONE';
 
 // some custom variations of TODO and DONE
-const TODO_FLAG_ALT = '{{{[[TODO]]}}}} ';
-const DONE_FLAG_ALT = '{{{[[DONE]]}}}} ';
+const TODO_FLAG_ALT = 'TODO';
+const DONE_FLAG_ALT = 'DONE';
 
 export function hasField(node: string) {
   return node.includes('::') || node.includes(':*');
@@ -16,24 +16,19 @@ export function hasImages(name: string) {
   return name.includes('![](https://');
 }
 export function isTodo(name: string) {
-  return name.substring(0, TODO_FLAG.length) === TODO_FLAG || name.substring(0, TODO_FLAG_ALT.length) === TODO_FLAG_ALT;
+  return name.substring(0, TODO_FLAG.length) === TODO_FLAG;
 }
 
 export function isDone(name: string) {
-  return name.substring(0, DONE_FLAG.length) === DONE_FLAG || name.substring(0, DONE_FLAG_ALT.length) === DONE_FLAG_ALT;
+  return name.substring(0, DONE_FLAG.length) === DONE_FLAG;
 }
 
 export function setNodeAsTodo(node: TanaIntermediateNode) {
-  node.name = node.name.substring(
-    node.name.substring(0, TODO_FLAG.length) === TODO_FLAG ? TODO_FLAG.length : TODO_FLAG_ALT.length,
-  );
+  node.name = node.name.substring(TODO_FLAG.length);
   node.todoState = 'todo';
 }
 export function setNodeAsDone(node: TanaIntermediateNode) {
-  node.name = node.name.substring(
-    node.name.substring(0, TODO_FLAG.length) === DONE_FLAG ? DONE_FLAG.length : DONE_FLAG_ALT.length,
-  );
-
+  node.name = node.name.substring(DONE_FLAG.length);
   node.todoState = 'done';
 }
 const months = [

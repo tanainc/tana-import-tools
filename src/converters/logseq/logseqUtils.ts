@@ -131,21 +131,11 @@ export function findPreceedingAlias(nodeName: string, aliasEndIndex: number): st
 export function replaceRoamSyntax(nameToUse: string) {
   if (nameToUse.includes('{{embed')) {
     // Replace {embed:((id))} with ((id))
-    nameToUse = nameToUse.replace(/\{\{embed:\s?\(\((.+)\)\)\}\}/, function (match, contents) {
+    nameToUse = nameToUse.replace(/\{\{embed\s?\(\((.+)\)\)\}\}/, function (match, contents) {
       return `((${contents}))`;
     });
     // Replace {embed:[[name]]} with [[name]]
-    nameToUse = nameToUse.replace(/\{\{embed:\s?\[\[(.+)\]\]\}\}/, function (match, contents) {
-      return `[[${contents}]]`;
-    });
-  }
-  if (nameToUse.includes('{{[[embed')) {
-    // Replace {[[embed]]:((id))} with ((id))
-    nameToUse = nameToUse.replace(/\{\{\[\[embed\]\]:\s?\(\((.+)\)\)\}\}/, function (match, contents) {
-      return `((${contents}))`;
-    });
-    // Replace {[[embed]]:[[name]]} with [[name]]
-    nameToUse = nameToUse.replace(/\{\{\[\[embed\]\]:\s?\[\[(.+)\]\]\}\}/, function (match, contents) {
+    nameToUse = nameToUse.replace(/\{\{embed\s?\[\[(.+)\]\]\}\}/, function (match, contents) {
       return `[[${contents}]]`;
     });
   }

@@ -1,6 +1,7 @@
-import { TanaIntermediateFile, TanaIntermediateNode, TanaIntermediateSummary } from '../../types/types';
+import { TanaIntermediateNode, TanaIntermediateSummary } from '../../types/types';
 import { getBracketLinks, idgenerator } from '../../utils/utils';
 import { HierarchyType, MarkdownNode, extractMarkdownNodes } from './markdown/extractMarkdownNodes';
+import { VaultContext } from './VaultContext';
 
 function createChildNode(obsidianNode: MarkdownNode, today: number, idGenerator: IdGenerator): TanaIntermediateNode {
   return {
@@ -12,46 +13,18 @@ function createChildNode(obsidianNode: MarkdownNode, today: number, idGenerator:
   };
 }
 
-export function createFileNode(displayName: string, today: number, uidFinder: UidFinder): TanaIntermediateNode {
-  return { uid: uidFinder(displayName), name: displayName, createdAt: today, editedAt: today, type: 'node' };
+export function createFileNode(displayName: string, today: number, context: VaultContext): TanaIntermediateNode {
+  return { uid: context.getUid(displayName), name: displayName, createdAt: today, editedAt: today, type: 'node' };
 }
 
 export type IdGenerator = () => string;
 
-/**
- * We can not just take the obsidian link because we might already have created a node for that link.
- * This function should return the correct Uid.
- */
-export type UidFinder = (obsidianLink: string) => string;
-
-export function ObsidianSingleFileConverter(fileName: string, fileContent: string): TanaIntermediateFile {
-  const [node, summary] = convertObsidianFile(fileName, fileContent) as [
-    TanaIntermediateNode,
-    TanaIntermediateSummary,
-    string[],
-  ];
-
-  return {
-    version: 'TanaIntermediateFile V0.1',
-    summary,
-    nodes: [node],
-  };
-}
-
 export function convertObsidianFile(
   fileName: string, //without ending
   fileContent: string,
-  summary: TanaIntermediateSummary = {
-    leafNodes: 0,
-    topLevelNodes: 0,
-    totalNodes: 0,
-    calendarNodes: 0,
-    fields: 0,
-    brokenRefs: 0,
-  },
+  context: VaultContext = new VaultContext(),
   today: number = Date.now(),
   idGenerator: IdGenerator = idgenerator,
-  uidFinder: UidFinder = (link) => link,
 ): [TanaIntermediateNode, TanaIntermediateSummary, string[]] {
   let newPages: string[] = [];
   let obsidianNodes = extractMarkdownNodes(fileContent);
@@ -67,11 +40,11 @@ export function convertObsidianFile(
     obsidianNodes = obsidianNodes.slice(1);
   }
 
-  const rootNode = createFileNode(displayName, today, uidFinder);
-  summary.topLevelNodes++;
+  const rootNode = createFileNode(displayName, today, context);
+  context.summary.topLevelNodes++;
 
-  summary.leafNodes += obsidianNodes.length;
-  summary.totalNodes += 1 + obsidianNodes.length;
+  context.summary.leafNodes += obsidianNodes.length;
+  context.summary.totalNodes += 1 + obsidianNodes.length;
   //TODO: broken refs
 
   const lastObsidianNodes: MarkdownNode[] = [{ type: HierarchyType.ROOT, level: -1 } as MarkdownNode];
@@ -86,7 +59,7 @@ export function convertObsidianFile(
     insertNodeIntoHierarchy(childNode, node, lastObsidianNodes, lastTanaNodes);
   }
 
-  return [rootNode, summary, newPages];
+  return [rootNode, context.summary, newPages];
 }
 
 function processRawTanaNode(tanaNode: TanaIntermediateNode) {

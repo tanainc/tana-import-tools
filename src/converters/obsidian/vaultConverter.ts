@@ -3,6 +3,7 @@ import path, { resolve } from 'path';
 import { TanaIntermediateNode, TanaIntermediateSummary } from '../../types/types';
 import { idgenerator } from '../../utils/utils';
 import { convertObsidianFile, IdGenerator, createFileNode } from './fileConverter';
+import { VaultContext } from './VaultContext';
 
 //bobbyhadz.com/blog/javascript-get-difference-between-two-sets#:~:text=To%20get%20the%20difference%20between,array%20back%20to%20a%20Set%20.
 const getDifference = (setA: any[], setB: any[]) => new Set([...setA].filter((element) => !setB.includes(element)));
@@ -45,7 +46,7 @@ export function convertVault(vaultPath: string, today: number = Date.now(), idGe
   } catch (e) {}
   appendFileSync(targetFileName, '{\n  "version": "TanaIntermediateFile V0.1",\n  "nodes": [\n');
 
-  let summary;
+  let vaultContext: VaultContext = new VaultContext();
   let newLinks: string[] = [];
   let pagesCreated: string[] = [];
   let addComma = false;
@@ -58,33 +59,27 @@ export function convertVault(vaultPath: string, today: number = Date.now(), idGe
     const [fileNode, updatedSummary, links] = convertObsidianFile(
       path.basename(filePath).replace('.md', ''),
       readFileSync(filePath, 'utf-8'),
-      summary,
+      vaultContext,
       today,
       idGenerator,
     ) as [TanaIntermediateNode, TanaIntermediateSummary, string[]];
     newLinks.push(...links);
     pagesCreated.push(fileNode.uid);
-    summary = updatedSummary;
+    vaultContext.summary = updatedSummary;
     appendFileSync(targetFileName, JSON.stringify(fileNode, null, 2));
     addComma = true;
   }
 
   const pagesToCreate = getDifference(newLinks, pagesCreated);
   const pagesInTana = [...pagesToCreate]
-    .map((x) =>
-      JSON.stringify(
-        createFileNode(maybeDecode(x), today, (link) => link),
-        null,
-        2,
-      ),
-    )
+    .map((x) => JSON.stringify(createFileNode(maybeDecode(x), today, vaultContext), null, 2))
     .join(',');
-  if (summary) {
-    summary.topLevelNodes = (summary?.topLevelNodes || 0) + pagesInTana.length;
+  if (vaultContext.summary) {
+    vaultContext.summary.topLevelNodes = (vaultContext.summary?.topLevelNodes || 0) + pagesInTana.length;
   }
 
   appendFileSync(targetFileName, ',' + pagesInTana);
-  appendFileSync(targetFileName, '\n  ],\n  "summary": \n' + JSON.stringify(summary, null, 2) + '\n}');
+  appendFileSync(targetFileName, '\n  ],\n  "summary": \n' + JSON.stringify(vaultContext.summary, null, 2) + '\n}');
 
-  return summary;
+  return vaultContext.summary;
 }

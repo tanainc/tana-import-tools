@@ -49,7 +49,7 @@ function isOutlinerNodeStart(content: string, pos: number) {
   return !isNaN(parseInt(char)) && secondChar === '.' && content[pos + 2] === ' ';
 }
 
-export function getHierarchy(curChar: string, content: string, curPosition: number): Hierarchy {
+function getHierarchy(curChar: string, content: string, curPosition: number): Hierarchy {
   if (curChar === '#') {
     let pos = curPosition + 1;
     let char = content[pos];
@@ -95,7 +95,7 @@ function isHierarchyStart(content: string, pos: number) {
 /**
  * Returns the index in the content-string of the endposition of the current obsidian node.
  */
-export function findEndPosition(content: string, curPosition: number, hierarchy: Hierarchy): number {
+function findEndPosition(content: string, curPosition: number, hierarchy: Hierarchy): number {
   let endPosition = nextNewLine(content, curPosition);
   let char = content[endPosition];
 

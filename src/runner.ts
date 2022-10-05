@@ -5,7 +5,7 @@ import { RoamConverter } from './converters/roam/index';
 import { TanaIntermediateFile } from './types/types';
 import { WorkflowyConverter } from './converters/workflowy';
 import { lstatSync } from 'fs';
-import { ObsidianSingleFileConverter } from './converters/obsidian/fileConverter';
+import { ObsidianSingleFileConverter } from './converters/obsidian/ObsidianSingleFileConverter';
 import path from 'path';
 import { convertVault } from './converters/obsidian/vaultConverter';
 

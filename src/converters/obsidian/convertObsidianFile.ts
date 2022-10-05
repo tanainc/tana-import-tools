@@ -1,32 +1,14 @@
-import { TanaIntermediateNode, TanaIntermediateSummary } from '../../types/types';
-import { getBracketLinks, idgenerator } from '../../utils/utils';
-import { HierarchyType, MarkdownNode, extractMarkdownNodes } from './markdown/extractMarkdownNodes';
-import { VaultContext } from './VaultContext';
-
-function createChildNode(obsidianNode: MarkdownNode, today: number, idGenerator: IdGenerator): TanaIntermediateNode {
-  return {
-    uid: idGenerator(),
-    name: obsidianNode.content,
-    createdAt: today,
-    editedAt: today,
-    type: 'node',
-  };
-}
-
-export function createFileNode(displayName: string, today: number, context: VaultContext): TanaIntermediateNode {
-  return { uid: context.getUid(displayName), name: displayName, createdAt: today, editedAt: today, type: 'node' };
-}
-
-export type IdGenerator = () => string;
+import { TanaIntermediateNode } from '../../types/types';
+import { convertMarkdownNodeToTanaNode } from './convertMarkdownNodeToTanaNode';
+import { HierarchyType, MarkdownNode, extractMarkdownNodes } from './extractMarkdownNodes';
+import { UidRequestType, VaultContext } from './VaultContext';
 
 export function convertObsidianFile(
   fileName: string, //without ending
   fileContent: string,
-  context: VaultContext = new VaultContext(),
+  context: VaultContext,
   today: number = Date.now(),
-  idGenerator: IdGenerator = idgenerator,
-): [TanaIntermediateNode, TanaIntermediateSummary, string[]] {
-  let newPages: string[] = [];
+) {
   let obsidianNodes = extractMarkdownNodes(fileContent);
   let displayName = fileName;
   const name = obsidianNodes[0] && obsidianNodes[0].content.match(/^title::(.+)$/);
@@ -40,47 +22,30 @@ export function convertObsidianFile(
     obsidianNodes = obsidianNodes.slice(1);
   }
 
-  const rootNode = createFileNode(displayName, today, context);
-  context.summary.topLevelNodes++;
+  const fileNode = createFileNode(displayName, today, context);
 
   context.summary.leafNodes += obsidianNodes.length;
-  context.summary.totalNodes += 1 + obsidianNodes.length;
+  context.summary.totalNodes += obsidianNodes.length;
   //TODO: broken refs
 
   const lastObsidianNodes: MarkdownNode[] = [{ type: HierarchyType.ROOT, level: -1 } as MarkdownNode];
-  const lastTanaNodes = [rootNode];
-
+  const lastTanaNodes = [fileNode];
   for (const node of obsidianNodes) {
-    const childNode = createChildNode(node, today, idGenerator);
-    processRawTanaNode(childNode);
-    if (childNode.refs) {
-      newPages.push(...childNode.refs);
-    }
+    const childNode = convertMarkdownNodeToTanaNode(node, today, context);
     insertNodeIntoHierarchy(childNode, node, lastObsidianNodes, lastTanaNodes);
   }
 
-  return [rootNode, context.summary, newPages];
+  return fileNode;
 }
 
-function processRawTanaNode(tanaNode: TanaIntermediateNode) {
-  //TODO: links to headings [[..#..]] / blocks [[filename#^dcf64c]]
-  //TODO: aliases
-  //TODO: convert to different node types, remove markdown formatting etc.
-  const n = tanaNode.name;
-  tanaNode.name = tanaNode.name.replace('collapsed:: true', '').replace(/^#+ /, '').trim();
-  // links with alias
-  tanaNode.name = tanaNode.name.replace(/\[\[([^|]+)\|([^\]]+)\]\]/g, '[$1]([[$2]])');
-  // links with anchor, just remove anchor for now
-  tanaNode.name = tanaNode.name.replace(/\[\[([^#]+)#([^#\]]+)\]\]/g, '[[$1]]');
-  // tags, convert to links for now
-  tanaNode.name = tanaNode.name.replace(/(?:\s|^)(#([^\[]]+?))(?:(?=\s)|$)/g, ' #[[$2]]');
-
-  //TODO: replace with correct UIDs
-  const foundUids = getBracketLinks(tanaNode.name, true);
-
-  if (foundUids.length > 0) {
-    tanaNode.refs = foundUids;
-  }
+function createFileNode(displayName: string, today: number, context: VaultContext): TanaIntermediateNode {
+  return {
+    uid: context.uidRequest(displayName, UidRequestType.FILE),
+    name: displayName,
+    createdAt: today,
+    editedAt: today,
+    type: 'node',
+  };
 }
 
 function insertNodeIntoHierarchy(
@@ -91,8 +56,8 @@ function insertNodeIntoHierarchy(
 ) {
   //once the non-parent nodes are removed, the next one is the parent
   removeNonParentNodes(obsidianNode, lastObsidianNodes, lastTanaNodes);
-  let lastObsidianNode = lastObsidianNodes[lastObsidianNodes.length - 1];
-  let lastTanaNode = lastTanaNodes[lastTanaNodes.length - 1];
+  const lastObsidianNode = lastObsidianNodes[lastObsidianNodes.length - 1];
+  const lastTanaNode = lastTanaNodes[lastTanaNodes.length - 1];
   if (lastObsidianNode && lastTanaNode) {
     lastTanaNode.children = lastTanaNode.children ?? [];
     lastTanaNode.children.push(tanaNode);
@@ -117,7 +82,9 @@ function removeNonParentNodes(
 }
 
 function isChild(potentialParent: MarkdownNode, potentialChild: MarkdownNode) {
-  if (potentialParent.type === HierarchyType.ROOT) return true;
+  if (potentialParent.type === HierarchyType.ROOT) {
+    return true;
+  }
 
   //HEADING is always a parent of non-headings
   if (potentialParent.type === HierarchyType.HEADING && potentialChild.type !== HierarchyType.HEADING) {

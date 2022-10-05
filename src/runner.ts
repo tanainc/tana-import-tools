@@ -5,9 +5,8 @@ import { RoamConverter } from './converters/roam/index';
 import { TanaIntermediateFile } from './types/types';
 import { WorkflowyConverter } from './converters/workflowy';
 import { lstatSync } from 'fs';
-import { ObsidianSingleFileConverter } from './converters/obsidian/ObsidianSingleFileConverter';
 import path from 'path';
-import { convertVault } from './converters/obsidian/vaultConverter';
+import { ObsidianSingleFileConverter, ObsidianVaultConverter } from './converters/obsidian';
 
 const fileType = process.argv[2];
 const file = process.argv[3];
@@ -71,7 +70,7 @@ function handleFolderConversion() {
   let summary;
   switch (fileType) {
     case 'obsidian':
-      summary = convertVault(file);
+      summary = ObsidianVaultConverter(file);
       break;
     default:
       console.log(`File type ${fileType} is not supported for folders`);

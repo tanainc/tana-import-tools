@@ -1,0 +1,164 @@
+{
+  "version": "TanaIntermediateFile V0.1",
+  "nodes": [
+    {
+      "uid": "0",
+      "name": "vault",
+      "createdAt": 1,
+      "editedAt": 1,
+      "type": "node",
+      "children": [
+        {
+          "uid": "1",
+          "name": "folder",
+          "createdAt": 1,
+          "editedAt": 1,
+          "type": "node",
+          "children": [
+            {
+              "uid": "2",
+              "name": "folder",
+              "createdAt": 1,
+              "editedAt": 1,
+              "type": "node",
+              "children": [{ "uid": "3", "name": "test4", "createdAt": 1, "editedAt": 1, "type": "node" }]
+            },
+            {
+              "uid": "4",
+              "name": "test2",
+              "createdAt": 1,
+              "editedAt": 1,
+              "type": "node",
+              "children": [
+                {
+                  "uid": "5",
+                  "name": "Starting without [[6]] 2.",
+                  "createdAt": 1,
+                  "editedAt": 1,
+                  "type": "node",
+                  "refs": ["6"]
+                },
+                {
+                  "uid": "7",
+                  "name": "Heading here",
+                  "createdAt": 1,
+                  "editedAt": 1,
+                  "type": "node",
+                  "children": [
+                    { "uid": "8", "name": "[[9]]", "createdAt": 1, "editedAt": 1, "type": "node", "refs": ["9"] },
+                    {
+                      "uid": "10",
+                      "name": "Stuff but with\na newline.",
+                      "createdAt": 1,
+                      "editedAt": 1,
+                      "type": "node"
+                    },
+                    {
+                      "uid": "11",
+                      "name": "Heading 2",
+                      "createdAt": 1,
+                      "editedAt": 1,
+                      "type": "node",
+                      "children": [
+                        {
+                          "uid": "12",
+                          "name": "Some",
+                          "createdAt": 1,
+                          "editedAt": 1,
+                          "type": "node",
+                          "children": [
+                            {
+                              "uid": "13",
+                              "name": "Node with [[14]] [[15]]",
+                              "createdAt": 1,
+                              "editedAt": 1,
+                              "type": "node",
+                              "refs": ["14", "15"]
+                            },
+                            { "uid": "16", "name": "Fun", "createdAt": 1, "editedAt": 1, "type": "node" }
+                          ]
+                        },
+                        { "uid": "17", "name": "Out of Level", "createdAt": 1, "editedAt": 1, "type": "node" }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            { "uid": "18", "name": "test3", "createdAt": 1, "editedAt": 1, "type": "node" }
+          ]
+        },
+        {
+          "uid": "19",
+          "name": "test",
+          "createdAt": 1,
+          "editedAt": 1,
+          "type": "node",
+          "children": [
+            {
+              "uid": "20",
+              "name": "Starting without [[6]].",
+              "createdAt": 1,
+              "editedAt": 1,
+              "type": "node",
+              "refs": ["6"]
+            },
+            {
+              "uid": "21",
+              "name": "Heading here",
+              "createdAt": 1,
+              "editedAt": 1,
+              "type": "node",
+              "children": [
+                { "uid": "22", "name": "[[9]]", "createdAt": 1, "editedAt": 1, "type": "node", "refs": ["9"] },
+                { "uid": "23", "name": "Stuff but with\na newline.", "createdAt": 1, "editedAt": 1, "type": "node" },
+                {
+                  "uid": "24",
+                  "name": "Heading 2",
+                  "createdAt": 1,
+                  "editedAt": 1,
+                  "type": "node",
+                  "children": [
+                    {
+                      "uid": "25",
+                      "name": "Some",
+                      "createdAt": 1,
+                      "editedAt": 1,
+                      "type": "node",
+                      "children": [
+                        {
+                          "uid": "26",
+                          "name": "Node with [[14]] [[15]]",
+                          "createdAt": 1,
+                          "editedAt": 1,
+                          "type": "node",
+                          "refs": ["14", "15"]
+                        },
+                        { "uid": "27", "name": "Fun", "createdAt": 1, "editedAt": 1, "type": "node" }
+                      ]
+                    },
+                    { "uid": "28", "name": "Out of Level", "createdAt": 1, "editedAt": 1, "type": "node" }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uid": "29",
+      "name": "Missing Nodes for vault",
+      "createdAt": 1,
+      "editedAt": 1,
+      "type": "node",
+      "children": [
+        { "uid": "6", "name": "heading", "createdAt": 1, "editedAt": 1, "type": "node" },
+        { "uid": "14", "name": "Link", "createdAt": 1, "editedAt": 1, "type": "node" },
+        { "uid": "15", "name": "Link2", "createdAt": 1, "editedAt": 1, "type": "node" },
+        { "uid": "9", "name": "Some", "createdAt": 1, "editedAt": 1, "type": "node" }
+      ]
+    }
+  ],
+  "summary": { "leafNodes": 29, "topLevelNodes": 1, "totalNodes": 30, "calendarNodes": 0, "fields": 0, "brokenRefs": 0 }
+}

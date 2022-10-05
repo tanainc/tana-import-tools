@@ -1,16 +1,26 @@
-import { TanaIntermediateFile, TanaIntermediateNode, TanaIntermediateSummary } from '../../types/types';
-import { convertObsidianFile } from './fileConverter';
+import path from 'path';
+import { TanaIntermediateFile } from '../../types/types';
+import { convertObsidianFile } from './convertObsidianFile';
+import { createUnlinkedNodes } from './createUnlinkedNodes';
+import { VaultContext } from './VaultContext';
 
-export function ObsidianSingleFileConverter(fileName: string, fileContent: string): TanaIntermediateFile {
-  const [node, summary] = convertObsidianFile(fileName, fileContent) as [
-    TanaIntermediateNode,
-    TanaIntermediateSummary,
-    string[],
-  ];
+export function ObsidianSingleFileConverter(
+  fileName: string,
+  fileContent: string,
+  today: number = Date.now(),
+  vaultContext: VaultContext = new VaultContext(),
+): TanaIntermediateFile {
+  const importName = path.basename(fileName).replace('.md', '');
+  const node = convertObsidianFile(importName, fileContent, vaultContext, today);
+  //the file node needs to be counted as a top level node
+  vaultContext.summary.leafNodes--;
+  vaultContext.summary.topLevelNodes++;
+
+  const collectedUnlinkedNodes = createUnlinkedNodes(importName, today, vaultContext);
 
   return {
     version: 'TanaIntermediateFile V0.1',
-    summary,
-    nodes: [node],
+    summary: vaultContext.summary,
+    nodes: [node, collectedUnlinkedNodes],
   };
 }

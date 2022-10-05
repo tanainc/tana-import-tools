@@ -1,7 +1,7 @@
 import { NodeType, TanaIntermediateNode } from '../../types/types';
 import { UidRequestType, VaultContext } from './VaultContext';
 
-export function createUnlinkedNodes(
+export function createUnlinkedTanaNodes(
   importName: string,
   today: number,
   vaultContext: VaultContext,

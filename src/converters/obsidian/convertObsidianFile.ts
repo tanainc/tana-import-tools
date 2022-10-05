@@ -1,5 +1,5 @@
 import { TanaIntermediateNode } from '../../types/types';
-import { convertMarkdownNodeToTanaNode } from './convertMarkdownNodeToTanaNode';
+import { convertMarkdownNode } from './convertMarkdownNode';
 import { HierarchyType, MarkdownNode, extractMarkdownNodes } from './extractMarkdownNodes';
 import { UidRequestType, VaultContext } from './VaultContext';
 
@@ -31,7 +31,7 @@ export function convertObsidianFile(
   const lastObsidianNodes: MarkdownNode[] = [{ type: HierarchyType.ROOT, level: -1 } as MarkdownNode];
   const lastTanaNodes = [fileNode];
   for (const node of obsidianNodes) {
-    const childNode = convertMarkdownNodeToTanaNode(node, today, context);
+    const childNode = convertMarkdownNode(node, today, context);
     insertNodeIntoHierarchy(childNode, node, lastObsidianNodes, lastTanaNodes);
   }
 

@@ -3,7 +3,7 @@ import { getBracketLinks } from '../../utils/utils';
 import { MarkdownNode } from './extractMarkdownNodes';
 import { UidRequestType, VaultContext } from './VaultContext';
 
-export function convertMarkdownNodeToTanaNode(
+export function convertMarkdownNode(
   obsidianNode: MarkdownNode,
   today: number,
   context: VaultContext,

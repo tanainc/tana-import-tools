@@ -1,6 +1,6 @@
 import { appendFileSync, unlinkSync } from 'fs';
 import path from 'path';
-import { createUnlinkedNodes } from './createUnlinkedNodes';
+import { createUnlinkedTanaNodes } from './createUnlinkedTanaNodes';
 import { addFileNode, addParentNodeEnd, addParentNodeStart, handleVault } from './vault';
 import { VaultContext } from './VaultContext';
 
@@ -35,7 +35,7 @@ export function ObsidianVaultConverter(
   vaultContext.summary.leafNodes--;
   vaultContext.summary.topLevelNodes++;
 
-  const collectedUnlinkedNodes = createUnlinkedNodes(path.basename(vaultPath), today, vaultContext);
+  const collectedUnlinkedNodes = createUnlinkedTanaNodes(path.basename(vaultPath), today, vaultContext);
   appendFileSync(targetPath, ', ' + JSON.stringify(collectedUnlinkedNodes, null, 2));
 
   appendFileSync(targetPath, '\n  ],\n  "summary": \n' + JSON.stringify(vaultContext.summary, null, 2) + '\n}');

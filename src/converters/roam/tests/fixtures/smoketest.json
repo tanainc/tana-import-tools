@@ -137,19 +137,19 @@
 
     "children": [
       {
-        "string": "**Email:** john@dutton.com",
+        "string": "Email:: john@dutton.com",
         "uid": "cSJ6pPyUh",
         "create-time": 1644574957433,
         "edit-time": 1644574961432
       },
       {
-        "string": "**State:** Montana",
+        "string": "State:: Montana",
         "uid": "QE_e4E99Z",
         "create-time": 1644574962203,
         "edit-time": 1644574971387
       },
       {
-        "string": "**Favorite meal:** Blue steak",
+        "string": "Favorite meal:: Blue steak",
         "uid": "5LF80RmzI",
         "create-time": 1644574990834,
         "edit-time": 1644574993423
@@ -164,19 +164,19 @@
 
     "children": [
       {
-        "string": "**Email:** jack@black.com",
+        "string": "Email:: jack@black.com",
         "uid": "x5IGFsvlc",
         "create-time": 1644574940592,
         "edit-time": 1644574955209
       },
       {
-        "string": "**State:** California",
+        "string": "State:: California",
         "uid": "3kWCIC0m3",
         "create-time": 1644574974820,
         "edit-time": 1644574979127
       },
       {
-        "string": "**Favorite meal:** Pizza",
+        "string": "Favorite meal:: Pizza",
         "uid": "-tNUyBXZE",
         "create-time": 1644574980956,
         "edit-time": 1644574986911

@@ -22,6 +22,8 @@ export function convertMarkdownNode(
 }
 
 function processRawTanaNode(tanaNode: TanaIntermediateNode, vaultContext: VaultContext) {
+  //TODO: reuse the regexs
+
   //TODO: links to headings [[..#..]] / blocks [[filename#^dcf64c]]
   //TODO: aliases
   //TODO: convert to different node types, remove markdown formatting etc.

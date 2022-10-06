@@ -176,7 +176,7 @@ export function postProcessMarkdownNodes(content: string, hierarchy: Hierarchy) 
   }
 
   if (hierarchy.type === HierarchyType.HEADING) {
-    return content.slice(hierarchy.level + 1); //heading symbols and empty space after that
+    return content.slice(hierarchy.level).trim(); //heading symbols and empty space
   }
 
   if (hierarchy.type === HierarchyType.PARAGRAPH) {

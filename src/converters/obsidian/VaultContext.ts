@@ -45,6 +45,11 @@ export class VaultContext {
       return this.handleFolder();
     }
 
+    if (requestType === UidRequestType.CONTENT) {
+      //Obsidian ignores whitespace, too many other edge cases to handle but this is the least we can do
+      obsidianLink = obsidianLink.trim();
+    }
+
     const uidData = this.uidMap.get(obsidianLink);
     if (!uidData) {
       return this.setInitialUid(obsidianLink, requestType);

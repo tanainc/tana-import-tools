@@ -395,6 +395,18 @@ export class LogseqConverter implements IConverter {
   }
 
   private normalizeLinksAndSetAliases(nodeForImport: TanaIntermediateNode) {
+    findGroups(nodeForImport.name, '((', '))').forEach((g) => {
+      // make sure we do not insert anything invalid.
+      if (!g.content.includes('(')) {
+        if (!nodeForImport.refs || !nodeForImport.refs.includes(g.content)) {
+          if (!nodeForImport.refs) {
+            nodeForImport.refs = [];
+          }
+          nodeForImport.refs.push(g.content);
+        }
+      }
+    });
+
     if (!nodeForImport.refs) {
       return;
     }

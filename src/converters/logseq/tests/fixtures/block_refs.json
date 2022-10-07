@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "blocks": [
+    {
+      "id": "page1",
+      "page-name": "Test page 1",
+      "format": "markdown",
+      "children": [
+        {
+          "id": "child1",
+          "format": "markdown",
+          "children": [],
+          "content": "this is a block ref"
+        }
+      ]
+    },
+    {
+      "id": "page2",
+      "page-name": "Test page 2",
+      "format": "markdown",
+      "children": [
+        {
+          "id": "child2",
+          "format": "markdown",
+          "children": [],
+          "content": "((child1))"
+        }
+      ]
+    },
+    {
+      "id": "page3",
+      "page-name": "Test page 3",
+      "format": "markdown",
+      "children": [
+        {
+          "id": "child3",
+          "format": "markdown",
+          "children": [],
+          "content": "See ((child2))"
+        }
+      ]
+    }
+  ]
+}

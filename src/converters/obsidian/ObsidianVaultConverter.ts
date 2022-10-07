@@ -36,7 +36,9 @@ export function ObsidianVaultConverter(
   vaultContext.summary.topLevelNodes++;
 
   const collectedUnlinkedNodes = createUnlinkedTanaNodes(path.basename(vaultPath), today, vaultContext);
-  appendFileSync(targetPath, ', ' + JSON.stringify(collectedUnlinkedNodes, null, 2));
+  if (collectedUnlinkedNodes) {
+    appendFileSync(targetPath, ', ' + JSON.stringify(collectedUnlinkedNodes, null, 2));
+  }
 
   appendFileSync(targetPath, '\n  ],\n  "summary": \n' + JSON.stringify(vaultContext.summary, null, 2) + '\n}');
 

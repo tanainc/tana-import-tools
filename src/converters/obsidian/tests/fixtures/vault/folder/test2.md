@@ -10,6 +10,8 @@ a newline.
 
 - Some
     - Node with [[Link]] [[Link2]]
-  - Fun
+  - Fun with missing block ref [[test#^MISSING]] [[missing#^MISSING]]
 
 #### Out of Level
+
+Referencing a block [[test#^BLOCK_UID]]

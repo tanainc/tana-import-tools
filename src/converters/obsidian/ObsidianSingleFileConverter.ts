@@ -17,10 +17,13 @@ export function ObsidianSingleFileConverter(
   vaultContext.summary.topLevelNodes++;
 
   const collectedUnlinkedNodes = createUnlinkedTanaNodes(importName, today, vaultContext);
-
+  const nodes = [node];
+  if (collectedUnlinkedNodes) {
+    nodes.push(collectedUnlinkedNodes);
+  }
   return {
     version: 'TanaIntermediateFile V0.1',
     summary: vaultContext.summary,
-    nodes: [node, collectedUnlinkedNodes],
+    nodes: nodes,
   };
 }

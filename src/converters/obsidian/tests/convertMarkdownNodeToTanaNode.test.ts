@@ -204,7 +204,7 @@ https://some.url/
       type: HierarchyType.OUTLINE,
     },
     {
-      content: 'Node with [[Link]] [[Link2]]',
+      content: 'Block with [[Link]] [[Link2]] ^BLOCK_UID',
       level: 4,
       type: HierarchyType.OUTLINE,
     },

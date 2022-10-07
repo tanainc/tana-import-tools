@@ -1,7 +1,7 @@
 import { appendFileSync, Dirent, readdirSync, readFileSync } from 'fs';
 import path, { resolve } from 'path';
 import { convertObsidianFile } from './convertObsidianFile';
-import { UidRequestType, VaultContext } from './VaultContext';
+import { VaultContext } from './VaultContext';
 
 enum ChildrenPosition {
   NOT_LAST = 'NOT_LAST',
@@ -40,7 +40,7 @@ export function handleVault(
 export function addParentNodeStart(targetPath: string, today: number, vaultContext: VaultContext) {
   return (dir: string) => {
     const name = path.basename(dir);
-    const uid = vaultContext.uidRequest(name, UidRequestType.FOLDER);
+    const uid = vaultContext.randomUid();
     appendFileSync(
       targetPath,
       `{

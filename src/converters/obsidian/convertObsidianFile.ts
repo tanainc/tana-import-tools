@@ -24,14 +24,12 @@ export function convertObsidianFile(
 
   const fileNode = createFileNode(displayName, today, context);
 
-  context.summary.leafNodes += obsidianNodes.length;
-  context.summary.totalNodes += obsidianNodes.length;
   //TODO: broken refs
 
   const lastObsidianNodes: MarkdownNode[] = [{ type: HierarchyType.ROOT, level: -1 } as MarkdownNode];
   const lastTanaNodes = [fileNode];
   for (const node of obsidianNodes) {
-    const childNode = convertMarkdownNode(node, today, context);
+    const childNode = convertMarkdownNode(fileName, node, today, context);
     insertNodeIntoHierarchy(childNode, node, lastObsidianNodes, lastTanaNodes);
   }
 

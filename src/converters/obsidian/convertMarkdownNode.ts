@@ -4,37 +4,30 @@ import { MarkdownNode } from './extractMarkdownNodes';
 import { UidRequestType, VaultContext } from './VaultContext';
 
 export function convertMarkdownNode(
+  fileName: string,
   obsidianNode: MarkdownNode,
   today: number,
-  context: VaultContext,
+  vaultContext: VaultContext,
 ): TanaIntermediateNode {
-  const childNode = {
-    uid: context.idGenerator(),
-    name: obsidianNode.content,
+  const [uid, content] = vaultContext.contentUid(fileName, obsidianNode.content);
+  const tanaNode: TanaIntermediateNode = {
+    uid,
+    name: content,
     createdAt: today,
     editedAt: today,
     type: 'node' as NodeType,
   };
 
-  processRawTanaNode(childNode, context);
-
-  return childNode;
-}
-
-function processRawTanaNode(tanaNode: TanaIntermediateNode, vaultContext: VaultContext) {
   //TODO: reuse the regexs
 
-  //TODO: links to headings [[..#..]] / blocks [[filename#^dcf64c]]
   //TODO: aliases
   //TODO: convert to different node types, remove markdown formatting etc.
   const n = tanaNode.name;
   tanaNode.name = tanaNode.name.replace('collapsed:: true', '').replace(/^#+ /, '').trim();
   // links with alias
   tanaNode.name = tanaNode.name.replace(/\[\[([^|]+)\|([^\]]+)\]\]/g, '[$1]([[$2]])');
-  // links with anchor, just remove anchor for now
-  tanaNode.name = tanaNode.name.replace(/\[\[([^#]+)#([^#\]]+)\]\]/g, '[[$1]]');
   // tags, convert to links for now
-  tanaNode.name = tanaNode.name.replace(/(?:\s|^)(#([^\[]]+?))(?:(?=\s)|$)/g, ' #[[$2]]');
+  tanaNode.name = tanaNode.name.replace(/(?:\s|^)(#([^[]]+?))(?:(?=\s)|$)/g, ' #[[$2]]');
 
   const foundUids = getBracketLinks(tanaNode.name, true).map((link) => [
     link,
@@ -45,8 +38,10 @@ function processRawTanaNode(tanaNode: TanaIntermediateNode, vaultContext: VaultC
     tanaNode.refs = [];
   }
 
-  for (const [link, uid] of foundUids) {
-    tanaNode.refs?.push(uid);
-    tanaNode.name = tanaNode.name.replaceAll('[[' + link + ']]', '[[' + uid + ']]');
+  for (const [link, linkUid] of foundUids) {
+    tanaNode.refs?.push(linkUid);
+    tanaNode.name = tanaNode.name.replaceAll('[[' + link + ']]', '[[' + linkUid + ']]');
   }
+
+  return tanaNode;
 }

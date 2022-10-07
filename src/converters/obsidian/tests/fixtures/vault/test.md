@@ -9,7 +9,7 @@ a newline.
 ## Heading 2
 
 - Some
-    - Node with [[Link]] [[Link2]]
+    - Block with [[Link]] [[Link2]] ^BLOCK_UID
   - Fun
 
 #### Out of Level

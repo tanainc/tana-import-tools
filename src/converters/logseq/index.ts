@@ -294,6 +294,15 @@ export class LogseqConverter implements IConverter {
 
     let type: NodeType = 'node';
     if (nameToUse.includes('`')) {
+      if (nameToUse.startsWith('```')) {
+        const newlineIndex = nameToUse.trim().indexOf('\n');
+        // strip language type
+        if (newlineIndex > 3) {
+          const chars = nameToUse.split('');
+          chars.splice(3, newlineIndex - 3);
+          nameToUse = chars.join('');
+        }
+      }
       const code = getCodeIfCodeblock(nameToUse);
       if (code) {
         nameToUse = code;

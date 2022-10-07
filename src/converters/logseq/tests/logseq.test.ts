@@ -50,6 +50,16 @@ test('Block references', () => {
   expect(child3?.refs).toEqual(['child2']);
 });
 
+test('Codeblocks', () => {
+  const [file, f] = importLogseqFile('codeblocks.json');
+  // console.log(JSON.stringify(file, null, 2));
+
+  expect(f('block-with-type')?.name).toEqual('\nconst tana = "cool";\n');
+  expect(f('block-with-type')?.type).toEqual('codeblock');
+  expect(f('inline-block')?.type).toEqual('node');
+  expect(f('block-no-type')?.name).toEqual('\nno language type here\n');
+});
+
 test('Images', () => {
   const [, f] = importLogseqFile('images.json');
 

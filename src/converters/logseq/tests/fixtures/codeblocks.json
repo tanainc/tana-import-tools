@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "blocks": [
+    {
+      "id": "page1",
+      "page-name": "Code blocks",
+      "format": "markdown",
+      "children": [
+        {
+          "id": "block-with-type",
+          "format": "markdown",
+          "children": [],
+          "content": "```typescript\nconst tana = \"cool\";\n```"
+        },
+        {
+          "id": "inline-block",
+          "format": "markdown",
+          "children": [],
+          "content": "Inline code `test`"
+        },
+        {
+          "id": "block-no-type",
+          "format": "markdown",
+          "children": [],
+          "content": "```\nno language type here\n```"
+        }
+      ]
+    }
+  ]
+}

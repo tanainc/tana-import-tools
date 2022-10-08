@@ -50,10 +50,6 @@ function detectLinkType(link: string[]) {
   return LinkType.DEFAULT;
 }
 
-//this is used for easier replacing the Heading Link UIDs in the post processing
-//whoever uses this string in his text will be disregarded
-export const HEADING_LINK_PREFIX = '$$!HEADING_LINK!$$';
-
 export function extractBlockId(content: string): [string, string | undefined] {
   let id;
 
@@ -172,9 +168,9 @@ export class VaultContext {
     const fileName = link[0];
     const fileHeadingData = this.headingLinkTracker.get(fileName) ?? [];
     this.headingLinkTracker.set(fileName, fileHeadingData);
-    //TODO:
     //these "uids" are replaced and counted later
-    const uid = HEADING_LINK_PREFIX + fileHeadingData.length;
+    //but for the tests it needs to be understood that the id generator is called more times than are valid ids in the end
+    const uid = this.idGenerator();
     fileHeadingData.push({ uid, link: link.slice(1) });
     return uid;
   }
@@ -209,7 +205,10 @@ export class VaultContext {
   }
 
   addInvalidLinks(links: { uid: string; link: string }[]) {
-    this.invalidLinks.push(...links);
+    links.forEach((link) => {
+      this.invalidLinks.push(link);
+      this.incrementSummary();
+    });
   }
 
   getAllInvalidContentLinks() {

@@ -12,6 +12,7 @@ test('obsidian file converter', () => {
     1,
     vaultContext,
   );
+  // console.log(JSON.stringify(result));
   const expected = JSON.parse(readFileSync('./src/converters/obsidian/tests/fixtures/single.tif.json', 'utf-8'));
   expect(result).toStrictEqual(expected);
 });

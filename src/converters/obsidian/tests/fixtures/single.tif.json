@@ -1,9 +1,9 @@
 {
   "version": "TanaIntermediateFile V0.1",
   "summary": {
-    "leafNodes": 14,
+    "leafNodes": 15,
     "topLevelNodes": 1,
-    "totalNodes": 15,
+    "totalNodes": 16,
     "calendarNodes": 0,
     "fields": 0,
     "brokenRefs": 0
@@ -35,23 +35,24 @@
               "children": [
                 {
                   "uid": "8",
-                  "name": "Some",
+                  "name": "Invalid Heading [[9]]",
                   "createdAt": 1,
                   "editedAt": 1,
                   "type": "node",
+                  "refs": ["9"],
                   "children": [
                     {
-                      "uid": "9",
-                      "name": "Block with [[10]] [[11]]",
+                      "uid": "10",
+                      "name": "Block with [[11]] [[12]]",
                       "createdAt": 1,
                       "editedAt": 1,
                       "type": "node",
-                      "refs": ["10", "11"]
+                      "refs": ["11", "12"]
                     },
-                    { "uid": "12", "name": "Fun", "createdAt": 1, "editedAt": 1, "type": "node" }
+                    { "uid": "13", "name": "Fun", "createdAt": 1, "editedAt": 1, "type": "node" }
                   ]
                 },
-                { "uid": "13", "name": "Out of Level", "createdAt": 1, "editedAt": 1, "type": "node" }
+                { "uid": "14", "name": "Out of Level", "createdAt": 1, "editedAt": 1, "type": "node" }
               ]
             }
           ]
@@ -59,15 +60,16 @@
       ]
     },
     {
-      "uid": "14",
+      "uid": "15",
       "name": "Missing Nodes for test",
       "createdAt": 1,
       "editedAt": 1,
       "type": "node",
       "children": [
         { "uid": "2", "name": "heading", "createdAt": 1, "editedAt": 1, "type": "node" },
-        { "uid": "10", "name": "Link", "createdAt": 1, "editedAt": 1, "type": "node" },
-        { "uid": "11", "name": "Link2", "createdAt": 1, "editedAt": 1, "type": "node" },
+        { "uid": "9", "name": "Heading 2#Heading here", "createdAt": 1, "editedAt": 1, "type": "node" },
+        { "uid": "11", "name": "Link", "createdAt": 1, "editedAt": 1, "type": "node" },
+        { "uid": "12", "name": "Link2", "createdAt": 1, "editedAt": 1, "type": "node" },
         { "uid": "5", "name": "Some", "createdAt": 1, "editedAt": 1, "type": "node" }
       ]
     }

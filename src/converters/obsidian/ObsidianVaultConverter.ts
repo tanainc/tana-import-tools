@@ -2,7 +2,7 @@ import { appendFileSync, readFileSync, unlinkSync } from 'fs';
 import path from 'path';
 import { createUnlinkedTanaNodes } from './createUnlinkedTanaNodes';
 import { HeadingTracker } from './filterHeadingLinks';
-// import { postProcessTIFFIle } from './postProcessTIFFile';
+import { postProcessTIFFIle } from './postProcessTIFFile';
 import { addFileNode, addParentNodeEnd, addParentNodeStart, handleVault } from './vault';
 import { VaultContext } from './VaultContext';
 
@@ -39,14 +39,16 @@ export async function ObsidianVaultConverter(
   vaultContext.summary.leafNodes--;
   vaultContext.summary.topLevelNodes++;
 
+  //post processing can be done before unlinked (it will add unlinked headings)
+  //because the unlinked summary nodes are just created by the converter and have no connection to the rest
+  await postProcessTIFFIle(targetPath, vaultContext, headingTracker);
+
   const collectedUnlinkedNodes = createUnlinkedTanaNodes(path.basename(vaultPath), today, vaultContext);
   if (collectedUnlinkedNodes) {
     appendFileSync(targetPath, ', ' + JSON.stringify(collectedUnlinkedNodes, null, 2));
   }
 
   appendFileSync(targetPath, '\n  ],\n  "summary": \n' + JSON.stringify(vaultContext.summary, null, 2) + '\n}');
-
-  // await postProcessTIFFIle(targetPath, vaultContext, headingTracker);
 
   return vaultContext.summary;
 }

@@ -199,7 +199,7 @@ https://some.url/
       type: HierarchyType.HEADING,
     },
     {
-      content: 'Some',
+      content: 'Invalid Heading [[test2#Heading 2#Heading here]]',
       level: 0,
       type: HierarchyType.OUTLINE,
     },

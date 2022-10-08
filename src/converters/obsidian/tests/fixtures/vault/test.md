@@ -8,7 +8,7 @@ a newline.
 
 ## Heading 2
 
-- Some
+- Invalid Heading [[test2#Heading 2#Heading here]]
     - Block with [[Link]] [[Link2]] ^BLOCK_UID
   - Fun
 

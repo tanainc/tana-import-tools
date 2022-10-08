@@ -12,9 +12,9 @@ interface UidData {
   obsidianLink: string;
 }
 
-interface HeadingUidData {
+export interface HeadingUidData {
   uid: string;
-  link: string[];
+  link: string[]; //without the fileName
 }
 
 enum BlockUidRequestType {
@@ -86,12 +86,14 @@ export class VaultContext {
     brokenRefs: 0,
   };
   //we will need to expand this to be able to support relative paths
+
   //all normal ([[fileName]]), file or folder uids: <name, UidData>
   defaultLinkTracker = new Map<string, UidData>();
   //all heading temp-uids: <fileName, HeadingUidData[]>
   headingLinkTracker = new Map<string, HeadingUidData[]>();
   //all block uids: <fileName, <blockObsidianUid, TanaUid>>
-  blockLinkTrack = new Map<string, Map<string, BlockUidData>>();
+  blockLinkTracker = new Map<string, Map<string, BlockUidData>>();
+  invalidLinks: { uid: string; link: string }[] = [];
 
   constructor(public idGenerator: () => string = randomGenerator) {}
 
@@ -179,8 +181,8 @@ export class VaultContext {
 
   private handleBlockLink(link: string[], requestType: BlockUidRequestType) {
     const fileName = link[0];
-    const blockUidMap = this.blockLinkTrack.get(fileName) ?? new Map<string, BlockUidData>();
-    this.blockLinkTrack.set(fileName, blockUidMap);
+    const blockUidMap = this.blockLinkTracker.get(fileName) ?? new Map<string, BlockUidData>();
+    this.blockLinkTracker.set(fileName, blockUidMap);
     const blockObsidianUid = link[1];
     let blockUidData = blockUidMap.get(blockObsidianUid);
     if (!blockUidData) {
@@ -206,14 +208,18 @@ export class VaultContext {
     this.summary.leafNodes++;
   }
 
+  addInvalidLinks(links: { uid: string; link: string }[]) {
+    this.invalidLinks.push(...links);
+  }
+
   getAllInvalidContentLinks() {
-    const unlinkedNodes: { uid: string; link: string }[] = [];
+    const unlinkedNodes: { uid: string; link: string }[] = [...this.invalidLinks];
     for (const node of this.defaultLinkTracker.values()) {
       if (node.type === UidRequestType.CONTENT) {
         unlinkedNodes.push({ uid: node.uid, link: node.obsidianLink });
       }
     }
-    for (const fileBlockLinks of this.blockLinkTrack.values()) {
+    for (const fileBlockLinks of this.blockLinkTracker.values()) {
       for (const blockLink of fileBlockLinks.values()) {
         if (blockLink.type === BlockUidRequestType.LINK) {
           unlinkedNodes.push({ uid: blockLink.uid, link: blockLink.obsidianLink });

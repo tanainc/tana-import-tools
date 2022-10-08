@@ -1,6 +1,8 @@
 import { appendFileSync, unlinkSync } from 'fs';
 import path from 'path';
 import { createUnlinkedTanaNodes } from './createUnlinkedTanaNodes';
+import { HeadingTracker } from './filterHeadingLinks';
+import { postProcessTIFFIle } from './postProcessTIFFile';
 import { addFileNode, addParentNodeEnd, addParentNodeStart, handleVault } from './vault';
 import { VaultContext } from './VaultContext';
 
@@ -24,11 +26,13 @@ export function ObsidianVaultConverter(
   } catch (e) {}
   appendFileSync(targetPath, '{\n  "version": "TanaIntermediateFile V0.1",\n  "nodes": [\n');
 
+  const headingTracker: HeadingTracker = new Map();
+
   handleVault(
     vaultPath,
     addParentNodeStart(targetPath, today, vaultContext),
     addParentNodeEnd(targetPath),
-    addFileNode(targetPath, today, vaultContext),
+    addFileNode(targetPath, today, vaultContext, headingTracker),
   );
 
   //the vault-node needs to be counted as a top level node
@@ -41,6 +45,8 @@ export function ObsidianVaultConverter(
   }
 
   appendFileSync(targetPath, '\n  ],\n  "summary": \n' + JSON.stringify(vaultContext.summary, null, 2) + '\n}');
+
+  postProcessTIFFIle(targetPath, vaultContext, headingTracker);
 
   return vaultContext.summary;
 }

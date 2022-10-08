@@ -22,7 +22,6 @@ export function convertMarkdownNode(
 
   //TODO: aliases
   //TODO: convert to different node types, remove markdown formatting etc.
-  const n = tanaNode.name;
   tanaNode.name = tanaNode.name.replace('collapsed:: true', '').replace(/^#+ /, '').trim();
   // links with alias
   tanaNode.name = tanaNode.name.replace(/\[\[([^|]+)\|([^\]]+)\]\]/g, '[$1]([[$2]])');

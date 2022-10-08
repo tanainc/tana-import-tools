@@ -65,12 +65,12 @@ function handleSingleFileConversion() {
   saveFile(file, tanaIntermediteFile);
 }
 
-function handleFolderConversion() {
+async function handleFolderConversion() {
   console.log(`\n\nReading folder: ${file} for import as: ${fileType}`);
   let summary;
   switch (fileType) {
     case 'obsidian':
-      summary = ObsidianVaultConverter(file);
+      summary = await ObsidianVaultConverter(file);
       break;
     default:
       console.log(`File type ${fileType} is not supported for folders`);

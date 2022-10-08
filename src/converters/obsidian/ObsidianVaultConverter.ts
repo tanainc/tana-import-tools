@@ -1,8 +1,8 @@
-import { appendFileSync, unlinkSync } from 'fs';
+import { appendFileSync, readFileSync, unlinkSync } from 'fs';
 import path from 'path';
 import { createUnlinkedTanaNodes } from './createUnlinkedTanaNodes';
 import { HeadingTracker } from './filterHeadingLinks';
-import { postProcessTIFFIle } from './postProcessTIFFile';
+// import { postProcessTIFFIle } from './postProcessTIFFile';
 import { addFileNode, addParentNodeEnd, addParentNodeStart, handleVault } from './vault';
 import { VaultContext } from './VaultContext';
 
@@ -10,7 +10,7 @@ import { VaultContext } from './VaultContext';
  * Converts the vault to the Tana format and incrementally saves it, otherwise it would be to memory intensive on big vaults.
  * Due to the incremental approach the output-file will be valid JSON but not be formatted perfectly.
  */
-export function ObsidianVaultConverter(
+export async function ObsidianVaultConverter(
   vaultPath: string,
   today: number = Date.now(),
   vaultContext: VaultContext = new VaultContext(),
@@ -46,7 +46,7 @@ export function ObsidianVaultConverter(
 
   appendFileSync(targetPath, '\n  ],\n  "summary": \n' + JSON.stringify(vaultContext.summary, null, 2) + '\n}');
 
-  postProcessTIFFIle(targetPath, vaultContext, headingTracker);
+  // await postProcessTIFFIle(targetPath, vaultContext, headingTracker);
 
   return vaultContext.summary;
 }

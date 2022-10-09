@@ -1,5 +1,6 @@
 import { NodeType, TanaIntermediateNode } from '../../types/types';
 import { getBracketLinks } from '../../utils/utils';
+import { extractImageLinks } from './extractImageLinks';
 import { MarkdownNode } from './extractMarkdownNodes';
 import { UidRequestType, VaultContext } from './VaultContext';
 
@@ -42,5 +43,43 @@ export function convertMarkdownNode(
     tanaNode.name = tanaNode.name.replaceAll('[[' + link + ']]', '[[' + linkUid + ']]');
   }
 
+  handleImages(tanaNode, today, vaultContext);
+
   return tanaNode;
+}
+
+function handleImages(tanaNode: TanaIntermediateNode, today: number, vaultContext: VaultContext) {
+  const imageData = extractImageLinks(tanaNode.name);
+  if (imageData.length === 0) {
+    return;
+  }
+  if (imageData.length === 1) {
+    const image = imageData[0];
+    tanaNode.type = 'image';
+    tanaNode.mediaUrl = image[1].trim();
+    tanaNode.name = tanaNode.name.replace('![' + image[0] + '](' + image[1] + ')', image[0].trim());
+    return;
+  }
+
+  //more than one image means we add them as child nodes
+  const childImageNodes: TanaIntermediateNode[] = [];
+
+  imageData.forEach((image) => {
+    //filter out duplicate image uses
+    if (childImageNodes.every((node) => image[0].trim() !== node.name || image[1].trim() !== node.mediaUrl)) {
+      const oldLink = '![' + image[0] + '](' + image[1] + ')';
+      const uid = vaultContext.randomUid();
+      tanaNode.name = tanaNode.name.replaceAll(oldLink, '[[' + uid + ']]');
+      childImageNodes.push({
+        uid,
+        name: image[0].trim(), //alt text
+        createdAt: today,
+        editedAt: today,
+        type: 'image' as NodeType,
+        mediaUrl: image[1].trim(),
+      });
+    }
+  });
+
+  tanaNode.children = [...(tanaNode.children ?? []), ...childImageNodes];
 }

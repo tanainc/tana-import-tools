@@ -1,9 +1,9 @@
 {
   "version": "TanaIntermediateFile V0.1",
   "summary": {
-    "leafNodes": 15,
+    "leafNodes": 22,
     "topLevelNodes": 1,
-    "totalNodes": 16,
+    "totalNodes": 23,
     "calendarNodes": 0,
     "fields": 0,
     "brokenRefs": 0
@@ -52,7 +52,73 @@
                     { "uid": "13", "name": "Fun", "createdAt": 1, "editedAt": 1, "type": "node" }
                   ]
                 },
-                { "uid": "14", "name": "Out of Level", "createdAt": 1, "editedAt": 1, "type": "node" }
+                {
+                  "uid": "14",
+                  "name": "Out of Level",
+                  "createdAt": 1,
+                  "editedAt": 1,
+                  "type": "node",
+                  "children": [
+                    {
+                      "uid": "15",
+                      "name": "single image",
+                      "createdAt": 1,
+                      "editedAt": 1,
+                      "type": "image",
+                      "mediaUrl": "https://mdg.imgix.net/assets/images/tux.png?auto=format&fit=clip&q=40&w=100"
+                    },
+                    {
+                      "uid": "16",
+                      "name": "single image some text",
+                      "createdAt": 1,
+                      "editedAt": 1,
+                      "type": "image",
+                      "mediaUrl": "https://mdg.imgix.net/assets/images/tux.png?auto=format&fit=clip&q=40&w=100"
+                    },
+                    {
+                      "uid": "17",
+                      "name": "[[18]] [[19]]",
+                      "createdAt": 1,
+                      "editedAt": 1,
+                      "type": "node",
+                      "children": [
+                        {
+                          "uid": "18",
+                          "name": "multiple images",
+                          "createdAt": 1,
+                          "editedAt": 1,
+                          "type": "image",
+                          "mediaUrl": "https://mdg.imgix.net/assets/images/tux.png?auto=format&fit=clip&q=40&w=100"
+                        },
+                        {
+                          "uid": "19",
+                          "name": "multiple images 2",
+                          "createdAt": 1,
+                          "editedAt": 1,
+                          "type": "image",
+                          "mediaUrl": "https://mdg.imgix.net/assets/images/tux.png?auto=format&fit=clip&q=40&w=100"
+                        }
+                      ]
+                    },
+                    {
+                      "uid": "20",
+                      "name": "[[21]] [[21]]",
+                      "createdAt": 1,
+                      "editedAt": 1,
+                      "type": "node",
+                      "children": [
+                        {
+                          "uid": "21",
+                          "name": "same image",
+                          "createdAt": 1,
+                          "editedAt": 1,
+                          "type": "image",
+                          "mediaUrl": "https://mdg.imgix.net/assets/images/tux.png?auto=format&fit=clip&q=40&w=100"
+                        }
+                      ]
+                    }
+                  ]
+                }
               ]
             }
           ]
@@ -60,7 +126,7 @@
       ]
     },
     {
-      "uid": "15",
+      "uid": "22",
       "name": "Missing Nodes for test",
       "createdAt": 1,
       "editedAt": 1,

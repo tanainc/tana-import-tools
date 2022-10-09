@@ -17,7 +17,7 @@ export function ObsidianSingleFileConverter(
   vaultContext.summary.topLevelNodes++;
 
   //by definition all heading links to other files are invalid because we only process one file
-  //TODO: support for same file-links
+  //TODO: support for same file-links, but honestly a single file converter does not make so much sense in the context of obsidian, might remove it
   const missingHeadingLinks = Array.from(vaultContext.headingLinkTracker.entries())
     .filter((entry) => entry[0] !== fileName)?.[0]?.[1]
     .map((headingLink) => ({ uid: headingLink.uid, link: headingLink.link.join('#') }));

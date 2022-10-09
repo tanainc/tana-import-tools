@@ -1,5 +1,5 @@
 export function extractImageLinks(content: string) {
-  const imageData = [];
+  const imageData: [string, string, number][] = [];
   let foundData = extractImageLink(content, 0);
   while (foundData !== null) {
     let nextIndex;
@@ -11,6 +11,7 @@ export function extractImageLinks(content: string) {
     }
     foundData = extractImageLink(content, nextIndex);
   }
+
   return imageData;
 }
 

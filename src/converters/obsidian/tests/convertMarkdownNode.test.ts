@@ -173,50 +173,36 @@ https://some.url/
   expect(
     extractMarkdownNodes(readFileSync('./src/converters/obsidian/tests/fixtures/vault/test.md', 'utf-8')),
   ).toStrictEqual([
+    { type: HierarchyType.PARAGRAPH, level: 0, content: 'Starting without [[heading]].' },
+    { type: HierarchyType.HEADING, level: 1, content: 'Heading here' },
+    { type: HierarchyType.PARAGRAPH, level: 0, content: '[[Some]]' },
+    { type: HierarchyType.PARAGRAPH, level: 0, content: 'Stuff but with\na newline.' },
+    { type: HierarchyType.HEADING, level: 2, content: 'Heading 2' },
+    { type: HierarchyType.OUTLINE, level: 0, content: 'Invalid Heading [[test2#Heading 2#Heading here]]' },
+    { type: HierarchyType.OUTLINE, level: 4, content: 'Block with [[Link]] [[Link2]] ^BLOCK_UID' },
+    { type: HierarchyType.OUTLINE, level: 2, content: 'Fun' },
+    { type: HierarchyType.HEADING, level: 4, content: 'Out of Level' },
     {
-      content: 'Starting without [[heading]].',
-      level: 0,
       type: HierarchyType.PARAGRAPH,
-    },
-    {
-      content: 'Heading here',
-      level: 1,
-      type: HierarchyType.HEADING,
-    },
-    {
-      content: '[[Some]]',
       level: 0,
+      content: '![single image](https://mdg.imgix.net/assets/images/tux.png?auto=format&fit=clip&q=40&w=100)',
+    },
+    {
       type: HierarchyType.PARAGRAPH,
+      level: 0,
+      content: '![single image](https://mdg.imgix.net/assets/images/tux.png?auto=format&fit=clip&q=40&w=100) some text',
     },
     {
-      content: 'Stuff but with\na newline.',
-      level: 0,
       type: HierarchyType.PARAGRAPH,
-    },
-    {
-      content: 'Heading 2',
-      level: 2,
-      type: HierarchyType.HEADING,
-    },
-    {
-      content: 'Invalid Heading [[test2#Heading 2#Heading here]]',
       level: 0,
-      type: HierarchyType.OUTLINE,
+      content:
+        '![multiple images](https://mdg.imgix.net/assets/images/tux.png?auto=format&fit=clip&q=40&w=100) ![multiple images 2](https://mdg.imgix.net/assets/images/tux.png?auto=format&fit=clip&q=40&w=100)',
     },
     {
-      content: 'Block with [[Link]] [[Link2]] ^BLOCK_UID',
-      level: 4,
-      type: HierarchyType.OUTLINE,
-    },
-    {
-      content: 'Fun',
-      level: 2,
-      type: HierarchyType.OUTLINE,
-    },
-    {
-      content: 'Out of Level',
-      level: 4,
-      type: HierarchyType.HEADING,
+      type: HierarchyType.PARAGRAPH,
+      level: 0,
+      content:
+        '![same image](https://mdg.imgix.net/assets/images/tux.png?auto=format&fit=clip&q=40&w=100) ![same image](https://mdg.imgix.net/assets/images/tux.png?auto=format&fit=clip&q=40&w=100)',
     },
   ]);
 });

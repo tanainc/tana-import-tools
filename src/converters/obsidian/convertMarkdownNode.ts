@@ -19,13 +19,10 @@ export function convertMarkdownNode(
     type: 'node' as NodeType,
   };
 
-  //TODO: reuse the regexs
-
-  //TODO: aliases
-  //TODO: convert to different node types, remove markdown formatting etc.
   tanaNode.name = tanaNode.name.replace('collapsed:: true', '').replace(/^#+ /, '').trim();
+
   // links with alias
-  // tanaNode.name = tanaNode.name.replace(/\[\[([^|]+)\|([^\]]+)\]\]/g, '[$1]([[$2]])');
+  tanaNode.name = tanaNode.name.replace(/\[\[([^|]+)\|([^\]]+)\]\]/g, '[$1]([[$2]])');
   // tags, convert to links for now
   tanaNode.name = tanaNode.name.replace(/(?:\s|^)(#([^[]]+?))(?:(?=\s)|$)/g, ' #[[$2]]');
 
@@ -74,7 +71,7 @@ function handleImages(tanaNode: TanaIntermediateNode, today: number, vaultContex
       tanaNode.name = tanaNode.name.replaceAll(oldLink, '[[' + uid + ']]');
       childImageNodes.push({
         uid,
-        name: altText.trim(), //alt text
+        name: altText.trim(),
         createdAt: today,
         editedAt: today,
         type: 'image' as NodeType,

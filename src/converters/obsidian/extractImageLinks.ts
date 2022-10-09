@@ -23,7 +23,7 @@ export function extractImageLinks(content: string) {
   return imageData;
 }
 
-//TODO: support titles after the URL
+//TODO: improve performance, this halfed the conversion speed of Eleanors vault
 
 function extractImageLink(content: string, startPositon: number): [string, string, number, string] | number | null {
   let lastFoundImageSignifier;

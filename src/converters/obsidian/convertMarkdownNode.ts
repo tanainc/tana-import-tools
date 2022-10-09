@@ -21,23 +21,30 @@ export function convertMarkdownNode(
 
   tanaNode.name = tanaNode.name.replace('collapsed:: true', '').replace(/^#+ /, '').trim();
 
-  // links with alias
-  tanaNode.name = tanaNode.name.replace(/\[\[([^|]+)\|([^\]]+)\]\]/g, '[$1]([[$2]])');
   // tags, convert to links for now
   tanaNode.name = tanaNode.name.replace(/(?:\s|^)(#([^[]]+?))(?:(?=\s)|$)/g, ' #[[$2]]');
 
-  const foundUids = getBracketLinks(tanaNode.name, true).map((link) => [
-    link,
-    vaultContext.uidRequest(link, UidRequestType.CONTENT),
-  ]);
+  const foundUids = getBracketLinks(tanaNode.name, true).map((bracketLink) => {
+    //handling aliases
+    const aliasArr = bracketLink.split('|');
+    const link = aliasArr[0];
+    const alias = aliasArr[1];
+    const foundUid = vaultContext.uidRequest(link, UidRequestType.CONTENT);
+    const result =
+      alias !== undefined && alias.trim() !== ''
+        ? '[' + alias.trim() + ']([[' + foundUid + ']])'
+        : '[[' + foundUid + ']]';
+
+    return [bracketLink, foundUid, result];
+  });
 
   if (foundUids.length > 0 && !tanaNode.refs) {
     tanaNode.refs = [];
   }
 
-  for (const [link, linkUid] of foundUids) {
-    tanaNode.refs?.push(linkUid);
-    tanaNode.name = tanaNode.name.replaceAll('[[' + link + ']]', '[[' + linkUid + ']]');
+  for (const [link, foundUid, result] of foundUids) {
+    tanaNode.refs?.push(foundUid);
+    tanaNode.name = tanaNode.name.replaceAll('[[' + link + ']]', result);
   }
 
   handleImages(tanaNode, today, vaultContext);

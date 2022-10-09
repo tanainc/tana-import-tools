@@ -20,7 +20,16 @@ export interface MarkdownNode extends Hierarchy {
 export function extractMarkdownNodes(content: string): MarkdownNode[] {
   const nodeDescs: MarkdownNode[] = [];
 
-  for (let index = 0; index < content.length; index++) {
+  let startIndex = 0;
+
+  if (content.startsWith('---\n')) {
+    const frontMatterEndIndex = content.indexOf('\n---\n');
+    if (frontMatterEndIndex !== -1) {
+      startIndex = frontMatterEndIndex + '\n---\n'.length;
+    }
+  }
+
+  for (let index = startIndex; index < content.length; index++) {
     const element = content[index];
     if (element == '\n') {
       continue;

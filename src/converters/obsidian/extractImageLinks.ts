@@ -73,7 +73,13 @@ function extractImageLink(content: string, startPositon: number): [string, strin
     }
     if (lastFoundImageSignifier === '(' && char === ')') {
       if (url.startsWith('http://') || url.startsWith('https://')) {
-        return [altText, url, index + 1, '![' + altText + '](' + url + ')'];
+        return [
+          altText,
+          //could add titles to the url, which we dont convert
+          url.split(' ')[0],
+          index + 1,
+          '![' + altText + '](' + url + ')',
+        ];
       } else {
         return index + 1;
       }
@@ -130,7 +136,8 @@ function tryToExtractLinkedImageLink(
         if (endUrl.startsWith('http://') || endUrl.startsWith('https://')) {
           return [
             embeddedImage[0],
-            endUrl,
+            //could add titles to the url, which we dont convert
+            endUrl.split(' ')[0],
             index + 1,
             '[![' + embeddedImage[0] + '](' + embeddedImage[1] + ')](' + endUrl + ')',
           ];

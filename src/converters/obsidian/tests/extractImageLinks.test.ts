@@ -18,12 +18,21 @@ test('extractImageLinks test', () => {
     '![this is a link with a linebreak](https://\ntest)',
     '![this is a link with a linebreak](https://test\n)',
     //could support this in the future, but couldnt re-use the general URL extraction function then
-    '[![this is a linked image without an URL in the embedded image](/cool/vault/path.jpg)](https://url)',
+    '[![this is a linked image without an URL in the embedded](/cool/vault/path.jpg)](https://url)',
   ];
   noLinks.forEach((content) => expect(extractImageLinks(content)).toStrictEqual([]));
 
   expect(extractImageLinks('![test](http://test)')).toStrictEqual([
     ['test', 'http://test', '![test](http://test)'.length, '![test](http://test)'],
+  ]);
+
+  expect(extractImageLinks('![test](http://test "unsupported title!")')).toStrictEqual([
+    [
+      'test',
+      'http://test',
+      '![test](http://test "unsupported title!")'.length,
+      '![test](http://test "unsupported title!")',
+    ],
   ]);
 
   expect(extractImageLinks('some text ![test](http://test)')).toStrictEqual([

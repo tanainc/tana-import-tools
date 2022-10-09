@@ -29,7 +29,7 @@ export function handleVault(
   for (let index = 0; index < dirents.length; index++) {
     const dirent = dirents[index];
     const res = resolve(dir, dirent.name);
-    if (dirent.isDirectory()) {
+    if (dirent.isDirectory() && !res.endsWith('.github') && !res.endsWith('.obsidian')) {
       handleVault(res, handleDirStart, handleDirEnd, handleFile, getChildrenPosition(index, dirents));
     } else if (res.endsWith('.md')) {
       handleFile(res, getChildrenPosition(index, dirents));

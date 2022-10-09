@@ -25,7 +25,7 @@ export function convertMarkdownNode(
   //TODO: convert to different node types, remove markdown formatting etc.
   tanaNode.name = tanaNode.name.replace('collapsed:: true', '').replace(/^#+ /, '').trim();
   // links with alias
-  tanaNode.name = tanaNode.name.replace(/\[\[([^|]+)\|([^\]]+)\]\]/g, '[$1]([[$2]])');
+  // tanaNode.name = tanaNode.name.replace(/\[\[([^|]+)\|([^\]]+)\]\]/g, '[$1]([[$2]])');
   // tags, convert to links for now
   tanaNode.name = tanaNode.name.replace(/(?:\s|^)(#([^[]]+?))(?:(?=\s)|$)/g, ' #[[$2]]');
 
@@ -57,7 +57,7 @@ function handleImages(tanaNode: TanaIntermediateNode, today: number, vaultContex
     const image = imageData[0];
     tanaNode.type = 'image';
     tanaNode.mediaUrl = image[1].trim();
-    tanaNode.name = tanaNode.name.replace('![' + image[0] + '](' + image[1] + ')', image[0].trim());
+    tanaNode.name = tanaNode.name.replace(image[3], image[0].trim());
     return;
   }
 
@@ -65,18 +65,20 @@ function handleImages(tanaNode: TanaIntermediateNode, today: number, vaultContex
   const childImageNodes: TanaIntermediateNode[] = [];
 
   imageData.forEach((image) => {
+    const altText = image[0];
+    const url = image[1];
     //filter out duplicate image uses
-    if (childImageNodes.every((node) => image[0].trim() !== node.name || image[1].trim() !== node.mediaUrl)) {
-      const oldLink = '![' + image[0] + '](' + image[1] + ')';
+    if (childImageNodes.every((node) => altText.trim() !== node.name || url.trim() !== node.mediaUrl)) {
+      const oldLink = image[3];
       const uid = vaultContext.randomUid();
       tanaNode.name = tanaNode.name.replaceAll(oldLink, '[[' + uid + ']]');
       childImageNodes.push({
         uid,
-        name: image[0].trim(), //alt text
+        name: altText.trim(), //alt text
         createdAt: today,
         editedAt: today,
         type: 'image' as NodeType,
-        mediaUrl: image[1].trim(),
+        mediaUrl: url.trim(),
       });
     }
   });

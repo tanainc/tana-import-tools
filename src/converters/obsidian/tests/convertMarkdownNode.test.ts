@@ -1,5 +1,4 @@
 import { expect, test } from '@jest/globals';
-import { readFileSync } from 'fs';
 import { extractMarkdownNodes, HierarchyType, countEmptySpace, nextNewLine } from '../extractMarkdownNodes';
 
 test('headings', () => {
@@ -168,41 +167,6 @@ https://some.url/
       content: '4. etc. ',
       level: 0,
       type: HierarchyType.OUTLINE,
-    },
-  ]);
-  expect(
-    extractMarkdownNodes(readFileSync('./src/converters/obsidian/tests/fixtures/vault/test.md', 'utf-8')),
-  ).toStrictEqual([
-    { type: HierarchyType.PARAGRAPH, level: 0, content: 'Starting without [[heading]].' },
-    { type: HierarchyType.HEADING, level: 1, content: 'Heading here' },
-    { type: HierarchyType.PARAGRAPH, level: 0, content: '[[Some]]' },
-    { type: HierarchyType.PARAGRAPH, level: 0, content: 'Stuff but with\na newline.' },
-    { type: HierarchyType.HEADING, level: 2, content: 'Heading 2' },
-    { type: HierarchyType.OUTLINE, level: 0, content: 'Invalid Heading [[test2#Heading 2#Heading here]]' },
-    { type: HierarchyType.OUTLINE, level: 4, content: 'Block with [[Link]] [[Link2]] ^BLOCK_UID' },
-    { type: HierarchyType.OUTLINE, level: 2, content: 'Fun' },
-    { type: HierarchyType.HEADING, level: 4, content: 'Out of Level' },
-    {
-      type: HierarchyType.PARAGRAPH,
-      level: 0,
-      content: '![single image](https://mdg.imgix.net/assets/images/tux.png?auto=format&fit=clip&q=40&w=100)',
-    },
-    {
-      type: HierarchyType.PARAGRAPH,
-      level: 0,
-      content: '![single image](https://mdg.imgix.net/assets/images/tux.png?auto=format&fit=clip&q=40&w=100) some text',
-    },
-    {
-      type: HierarchyType.PARAGRAPH,
-      level: 0,
-      content:
-        '![multiple images](https://mdg.imgix.net/assets/images/tux.png?auto=format&fit=clip&q=40&w=100) ![multiple images 2](https://mdg.imgix.net/assets/images/tux.png?auto=format&fit=clip&q=40&w=100)',
-    },
-    {
-      type: HierarchyType.PARAGRAPH,
-      level: 0,
-      content:
-        '![same image](https://mdg.imgix.net/assets/images/tux.png?auto=format&fit=clip&q=40&w=100) ![same image](https://mdg.imgix.net/assets/images/tux.png?auto=format&fit=clip&q=40&w=100)',
     },
   ]);
 });

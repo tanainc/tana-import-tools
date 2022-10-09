@@ -226,6 +226,14 @@
                               "mediaUrl": "https://mdg.imgix.net/assets/images/tux.png?auto=format&fit=clip&q=40&w=100"
                             }
                           ]
+                        },
+                        {
+                          "uid": "41",
+                          "name": "ancient public baths",
+                          "createdAt": 1,
+                          "editedAt": 1,
+                          "type": "image",
+                          "mediaUrl": "http://dankoboldt.com/wp-content/uploads/2020/07/ancient-public-baths.jpg"
                         }
                       ]
                     }
@@ -238,7 +246,7 @@
       ]
     },
     {
-      "uid": "41",
+      "uid": "42",
       "name": "Missing Nodes for vault",
       "createdAt": 1,
       "editedAt": 1,
@@ -254,5 +262,5 @@
       ]
     }
   ],
-  "summary": { "leafNodes": 40, "topLevelNodes": 1, "totalNodes": 41, "calendarNodes": 0, "fields": 0, "brokenRefs": 0 }
+  "summary": { "leafNodes": 41, "topLevelNodes": 1, "totalNodes": 42, "calendarNodes": 0, "fields": 0, "brokenRefs": 0 }
 }

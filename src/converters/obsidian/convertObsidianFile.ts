@@ -12,8 +12,19 @@ export function convertObsidianFile(
   today: number = Date.now(),
   headingTracker?: HeadingTracker,
 ) {
-  let obsidianNodes = extractMarkdownNodes(fileContent);
+  let startIndex = 0;
+
+  if (fileContent.startsWith('---\n')) {
+    const frontMatterEndIndex = fileContent.indexOf('\n---\n');
+    if (frontMatterEndIndex !== -1) {
+      startIndex = frontMatterEndIndex + '\n---\n'.length;
+    }
+  }
+
+  let obsidianNodes = extractMarkdownNodes(fileContent, startIndex);
   let displayName = fileName;
+
+  //LogSeq specific
   const name = obsidianNodes[0] && obsidianNodes[0].content.match(/^title::(.+)$/);
   if (name) {
     displayName = name[1];

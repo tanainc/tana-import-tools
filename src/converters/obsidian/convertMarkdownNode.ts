@@ -19,6 +19,7 @@ export function convertMarkdownNode(
     type: 'node' as NodeType,
   };
 
+  //LogSeq specific
   tanaNode.name = tanaNode.name.replace('collapsed:: true', '').replace(/^#+ /, '').trim();
 
   // tags, convert to links for now

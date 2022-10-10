@@ -4,6 +4,10 @@ import { extractImageLinks } from './extractImageLinks';
 import { MarkdownNode } from './extractMarkdownNodes';
 import { UidRequestType, VaultContext } from './VaultContext';
 
+// eslint is just wrong here
+// eslint-disable-next-line no-useless-escape
+const tagRegex = /(?:\s|^)(#([^\[\]]+?))(?:(?=\s)|$)/g;
+
 export function convertMarkdownNode(
   fileName: string,
   obsidianNode: MarkdownNode,
@@ -22,8 +26,20 @@ export function convertMarkdownNode(
   //LogSeq specific
   tanaNode.name = tanaNode.name.replace('collapsed:: true', '').replace(/^#+ /, '').trim();
 
-  // tags, convert to links for now
-  tanaNode.name = tanaNode.name.replace(/(?:\s|^)(#([^[]]+?))(?:(?=\s)|$)/g, ' #[[$2]]');
+  // tags are kept inline but added as separate supertags too
+  // in obsidian tags are really tags so should be kept that way, but might be used inline, so shouldnt be remove
+  const tags = tanaNode.name.match(tagRegex);
+  if (tags) {
+    const supertags = new Set(tags.map((tag) => vaultContext.superTagUid(tag.trim().slice(1))));
+
+    //we can remove the last tag without losing meaning because it will show up as a super tag anyways
+    const lastTag = tags[tags.length - 1];
+    if (tanaNode.name.endsWith(lastTag)) {
+      tanaNode.name = tanaNode.name.slice(0, -lastTag.length);
+    }
+
+    tanaNode.supertags = Array.from(supertags);
+  }
 
   const foundUids = getBracketLinks(tanaNode.name, true).map((bracketLink) => {
     //handling aliases

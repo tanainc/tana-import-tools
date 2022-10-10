@@ -63,11 +63,11 @@
                       "children": [
                         {
                           "uid": "14",
-                          "name": "Valid Heading [[37]]",
+                          "name": "Valid Heading [[39]]",
                           "createdAt": 1,
                           "editedAt": 1,
                           "type": "node",
-                          "refs": ["37"],
+                          "refs": ["39"],
                           "children": [
                             {
                               "uid": "16",
@@ -157,24 +157,32 @@
                       "children": [
                         {
                           "uid": "24",
-                          "name": "Block with [alias]([[17]]) [[17]] [[18]]",
+                          "name": "Block with #inlinetag2 [alias]([[17]]) [[17]] [[18]]",
                           "createdAt": 1,
                           "editedAt": 1,
                           "type": "node",
+                          "supertags": ["36", "37"],
                           "refs": ["17", "18"]
                         },
-                        { "uid": "36", "name": "Fun", "createdAt": 1, "editedAt": 1, "type": "node" }
+                        {
+                          "uid": "38",
+                          "name": "#inlinetag2 Fun",
+                          "createdAt": 1,
+                          "editedAt": 1,
+                          "type": "node",
+                          "supertags": ["36"]
+                        }
                       ]
                     },
                     {
-                      "uid": "37",
+                      "uid": "39",
                       "name": "Out of Level",
                       "createdAt": 1,
                       "editedAt": 1,
                       "type": "node",
                       "children": [
                         {
-                          "uid": "38",
+                          "uid": "40",
                           "name": "single image",
                           "createdAt": 1,
                           "editedAt": 1,
@@ -182,7 +190,7 @@
                           "mediaUrl": "https://mdg.imgix.net/assets/images/tux.png?auto=format&fit=clip&q=40&w=100"
                         },
                         {
-                          "uid": "39",
+                          "uid": "41",
                           "name": "single image some text",
                           "createdAt": 1,
                           "editedAt": 1,
@@ -190,14 +198,14 @@
                           "mediaUrl": "https://mdg.imgix.net/assets/images/tux.png?auto=format&fit=clip&q=40&w=100"
                         },
                         {
-                          "uid": "40",
-                          "name": "[[41]] [[42]]",
+                          "uid": "42",
+                          "name": "[[43]] [[44]]",
                           "createdAt": 1,
                           "editedAt": 1,
                           "type": "node",
                           "children": [
                             {
-                              "uid": "41",
+                              "uid": "43",
                               "name": "multiple images",
                               "createdAt": 1,
                               "editedAt": 1,
@@ -205,7 +213,7 @@
                               "mediaUrl": "https://mdg.imgix.net/assets/images/tux.png?auto=format&fit=clip&q=40&w=100"
                             },
                             {
-                              "uid": "42",
+                              "uid": "44",
                               "name": "multiple images 2",
                               "createdAt": 1,
                               "editedAt": 1,
@@ -215,14 +223,14 @@
                           ]
                         },
                         {
-                          "uid": "43",
-                          "name": "[[44]] [[44]]",
+                          "uid": "45",
+                          "name": "[[46]] [[46]]",
                           "createdAt": 1,
                           "editedAt": 1,
                           "type": "node",
                           "children": [
                             {
-                              "uid": "44",
+                              "uid": "46",
                               "name": "same image",
                               "createdAt": 1,
                               "editedAt": 1,
@@ -232,7 +240,7 @@
                           ]
                         },
                         {
-                          "uid": "45",
+                          "uid": "47",
                           "name": "ancient public baths",
                           "createdAt": 1,
                           "editedAt": 1,
@@ -250,7 +258,7 @@
       ]
     },
     {
-      "uid": "46",
+      "uid": "48",
       "name": "Missing Nodes for vault",
       "createdAt": 1,
       "editedAt": 1,
@@ -268,7 +276,9 @@
   ],
   "supertags": [
     { "name": "supertag1", "uid": "4" },
-    { "name": "supertag2", "uid": "5" }
+    { "name": "supertag2", "uid": "5" },
+    { "name": "inlinetag2", "uid": "36" },
+    { "name": "inlinetag1", "uid": "37" }
   ],
   "summary": { "leafNodes": 43, "topLevelNodes": 1, "totalNodes": 44, "calendarNodes": 0, "fields": 0, "brokenRefs": 0 }
 }

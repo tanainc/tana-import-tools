@@ -14,8 +14,8 @@ a newline.
 ## Heading 2
 
 - Invalid Heading [[test2#Heading 2#Heading here]]
-    - Block with [[Link|alias]] [[Link]] [[Link2]] ^BLOCK_UID
-  - Fun
+    - Block with #inlinetag2 [[Link|alias]] [[Link]] [[Link2]] #inlinetag1 ^BLOCK_UID
+  - #inlinetag2 Fun #inlinetag2 
 
 #### Out of Level
 

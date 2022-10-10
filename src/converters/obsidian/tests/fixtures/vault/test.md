@@ -1,5 +1,7 @@
 ---
+field0: zero
 tags: [supertag1, supertag2]
+field1: [value1, value2]
 ---
 Starting without [[heading]].
 # Heading here

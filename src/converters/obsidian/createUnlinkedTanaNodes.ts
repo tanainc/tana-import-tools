@@ -23,7 +23,6 @@ export function createUnlinkedTanaNodes(
 
   const rootNodeName = 'Missing Nodes for ' + importName;
   const rootNode: TanaIntermediateNode = {
-    //type here does not matter anymore
     uid: vaultContext.randomUid(),
     name: rootNodeName,
     createdAt: today,

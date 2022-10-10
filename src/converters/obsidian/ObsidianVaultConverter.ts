@@ -1,4 +1,4 @@
-import { appendFileSync, readFileSync, unlinkSync } from 'fs';
+import { appendFileSync, unlinkSync } from 'fs';
 import path from 'path';
 import { createUnlinkedTanaNodes } from './createUnlinkedTanaNodes';
 import { HeadingTracker } from './filterHeadingLinks';
@@ -48,7 +48,18 @@ export async function ObsidianVaultConverter(
     appendFileSync(targetPath, ', ' + JSON.stringify(collectedUnlinkedNodes, null, 2));
   }
 
-  appendFileSync(targetPath, '\n  ],\n  "summary": \n' + JSON.stringify(vaultContext.summary, null, 2) + '\n}');
+  //close vault-node children
+  appendFileSync(targetPath, '\n  ]');
+
+  const superTags = vaultContext.createSuperTagObjects();
+  if (superTags.length > 0) {
+    appendFileSync(targetPath, ',\n  "supertags": \n' + JSON.stringify(superTags, null, 2));
+  }
+
+  appendFileSync(targetPath, ',\n  "summary": \n' + JSON.stringify(vaultContext.summary, null, 2));
+
+  //close target object
+  appendFileSync(targetPath, '\n}');
 
   return vaultContext.summary;
 }

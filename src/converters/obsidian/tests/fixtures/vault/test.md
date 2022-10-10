@@ -1,3 +1,6 @@
+---
+tags: [supertag1, supertag2]
+---
 Starting without [[heading]].
 # Heading here
 

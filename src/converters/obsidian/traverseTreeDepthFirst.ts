@@ -36,7 +36,10 @@ export function traverseTreeDepthFirst<Node extends { children?: Node[]; content
       return node;
     }
     if (node.children) {
-      return traverseTreeDepthFirst(node.children, pathLeft);
+      const res = traverseTreeDepthFirst(node.children, pathLeft);
+      if (res) {
+        return res;
+      }
     }
   }
   return null;

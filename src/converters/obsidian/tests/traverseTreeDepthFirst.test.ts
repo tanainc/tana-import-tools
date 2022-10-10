@@ -48,6 +48,46 @@ test('traverseTreeBreadthFirst test', () => {
   };
   expect(traverseTreeDepthFirst([tree], ['1', '3'])).toBe(targetNode);
 
+  //target in second subtree works
+  targetNode = {
+    uid: '4',
+    content: '4',
+  };
+  tree = {
+    uid: '1',
+    content: '1',
+    children: [
+      {
+        uid: 'NOT_THIS',
+        content: '2',
+        children: [
+          {
+            uid: 'NOT_3',
+            content: '3',
+            children: [
+              {
+                uid: 'NOT_4',
+                content: 'NOT_4',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        uid: '2',
+        content: '2',
+        children: [
+          {
+            uid: '3',
+            content: '3',
+            children: [targetNode],
+          },
+        ],
+      },
+    ],
+  };
+  expect(traverseTreeDepthFirst([tree], ['1', '3', '4'])).toBe(targetNode);
+
   //parallel node with same partial part but in different subtree works
   targetNode = {
     uid: '4',

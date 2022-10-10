@@ -1,5 +1,5 @@
 import { HeadingUidData } from './VaultContext';
-import { traverseTreeBreadthFirst } from './traverseTreeBreadthFirst';
+import { traverseTreeDepthFirst } from './traverseTreeDepthFirst';
 import { createTree } from './createTree';
 
 //children are sorted like in file, important to detect valid heading links
@@ -33,7 +33,7 @@ export function filterHeadingLinks(
       const headingTree = dummyTargetRoot.children ?? [];
 
       for (const data of headingUidData) {
-        const matchingHeadingNode = traverseTreeBreadthFirst(headingTree, data.link);
+        const matchingHeadingNode = traverseTreeDepthFirst(headingTree, data.link);
         if (matchingHeadingNode) {
           validHeadingLinks.push({ old: data.uid, new: matchingHeadingNode.uid });
         } else {

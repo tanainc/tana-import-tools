@@ -39,13 +39,17 @@ export function convertMarkdownNode(
     return [bracketLink, foundUid, result];
   });
 
-  if (foundUids.length > 0 && !tanaNode.refs) {
-    tanaNode.refs = [];
-  }
-
-  for (const [link, foundUid, result] of foundUids) {
-    tanaNode.refs?.push(foundUid);
-    tanaNode.name = tanaNode.name.replaceAll('[[' + link + ']]', result);
+  if (foundUids.length > 0) {
+    //using Set to filter out links that appear multiple times
+    const refSet = new Set<string>();
+    if (!tanaNode.refs) {
+      tanaNode.refs = [];
+    }
+    for (const [link, foundUid, result] of foundUids) {
+      refSet.add(foundUid);
+      tanaNode.name = tanaNode.name.replaceAll('[[' + link + ']]', result);
+    }
+    tanaNode.refs.push(...Array.from(refSet.values()));
   }
 
   handleImages(tanaNode, today, vaultContext);

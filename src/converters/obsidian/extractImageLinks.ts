@@ -36,7 +36,13 @@ function extractImageLink(content: string, startPositon: number): [string, strin
     if (char === '\n') {
       return index + 1;
     }
-    if (!lastFoundImageSignifier && char === '[') {
+    if (
+      !lastFoundImageSignifier &&
+      char === '[' &&
+      //here we skip obvious false positives - e.g. "[[" links, which had tanked the performance earlier
+      content[index + 1] !== undefined &&
+      content[index + 1] === '!'
+    ) {
       const res = tryToExtractLinkedImageLink(content, index);
       if (res !== null) {
         return res;
@@ -98,9 +104,6 @@ function tryToExtractLinkedImageLink(
   startPositon: number,
 ): [string, string, number, string] | number | null {
   //in Markdown this is called a linked image (so an image with a URL that you can click on)
-  if (content[startPositon + 1] === undefined || content[startPositon + 1] !== '!') {
-    return null;
-  }
   //a linked image has a normal image link embedded
   const embeddedImage = extractImageLink(content, startPositon + 1);
   if (Array.isArray(embeddedImage)) {

@@ -40,12 +40,31 @@ export function extractMarkdownNodes(content: string, startPosition = 0): Markdo
 }
 
 function isOutlinerNodeStart(content: string, pos: number) {
+  let isOutlinerStart = true;
+
   const char = content[pos];
   const secondChar = content[pos + 1];
   if ((char === '*' || char === '-') && secondChar === ' ') {
-    return true;
+    isOutlinerStart = true;
+  } else {
+    isOutlinerStart = !isNaN(parseInt(char)) && secondChar === '.' && content[pos + 2] === ' ';
   }
-  return !isNaN(parseInt(char)) && secondChar === '.' && content[pos + 2] === ' ';
+
+  //outliner nodes always have \n( *) in front of them or are at the start of the file
+  //so need to backtrack empty space to verify
+  if (pos > 0 && content[pos - 1] !== '\n') {
+    let curPos = pos - 1;
+    let curChar = content[curPos];
+    while (curChar === ' ') {
+      curPos--;
+      curChar = content[curPos];
+    }
+    if (!(curChar === '\n' || curChar === undefined)) {
+      isOutlinerStart = false;
+    }
+  }
+
+  return isOutlinerStart;
 }
 
 function getHierarchy(curChar: string, content: string, curPosition: number): Hierarchy {

@@ -71,6 +71,37 @@ https://mek.fyi/posts/why-books-work-and-could-work-better
       type: HierarchyType.PARAGRAPH,
     },
   ]);
+
+  //can deal with *-s not being outliner nodes
+  expect(
+    extractMarkdownNodes(`---
+On first glance, the expected result seems wrong to me. Looking at the \`paragraph-run-style-emphasis-flip.docx\` test document's XML markup and rendering in Microsoft Word (v15.29), I would expect a **nested** emphasis, not a **"breaking out"** of the outer emphasis:`),
+  ).toStrictEqual([
+    {
+      content: `---
+On first glance, the expected result seems wrong to me. Looking at the \`paragraph-run-style-emphasis-flip.docx\` test document's XML markup and rendering in Microsoft Word (v15.29), I would expect a **nested** emphasis, not a **"breaking out"** of the outer emphasis:`,
+      level: 0,
+      type: HierarchyType.PARAGRAPH,
+    },
+  ]);
+
+  //tables are extracted as PARAGRAPH
+  expect(
+    extractMarkdownNodes(`
+| Foo | Bar |
+| --- | --- |
+| foo | bar |
+| foo | bar |`),
+  ).toStrictEqual([
+    {
+      content: `| Foo | Bar |
+| --- | --- |
+| foo | bar |
+| foo | bar |`,
+      level: 0,
+      type: HierarchyType.PARAGRAPH,
+    },
+  ]);
 });
 
 test('outliner nodes', () => {

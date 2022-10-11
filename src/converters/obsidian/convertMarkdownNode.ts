@@ -1,7 +1,7 @@
 import { NodeType, TanaIntermediateNode } from '../../types/types';
 import { getBracketLinks } from '../../utils/utils';
 import { extractImageLinks } from './extractImageLinks';
-import { MarkdownNode } from './extractMarkdownNodes';
+import { HierarchyType, MarkdownNode } from './extractMarkdownNodes';
 import { UidRequestType, VaultContext } from './VaultContext';
 
 // eslint is just wrong here
@@ -22,6 +22,15 @@ export function convertMarkdownNode(
     editedAt: today,
     type: 'node' as NodeType,
   };
+
+  if (obsidianNode.type === HierarchyType.OUTLINE) {
+    if (content.startsWith('[ ] ')) {
+      handleTodo(tanaNode);
+    }
+    if (content.startsWith('[x] ') || content.startsWith('[X] ')) {
+      handleDone(tanaNode);
+    }
+  }
 
   //LogSeq specific
   tanaNode.name = tanaNode.name.replace('collapsed:: true', '').replace(/^#+ /, '').trim();
@@ -109,4 +118,14 @@ function handleImages(tanaNode: TanaIntermediateNode, today: number, vaultContex
   });
 
   tanaNode.children = [...(tanaNode.children ?? []), ...childImageNodes];
+}
+
+function handleTodo(tanaNode: TanaIntermediateNode) {
+  tanaNode.name = tanaNode.name.slice('[ ] '.length);
+  tanaNode.todoState = 'todo';
+}
+
+function handleDone(tanaNode: TanaIntermediateNode) {
+  tanaNode.name = tanaNode.name.slice('[x] '.length);
+  tanaNode.todoState = 'done';
 }

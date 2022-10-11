@@ -12,7 +12,7 @@ a newline.
 ## Heading 2
 
 - Valid Heading [[test#Heading 2#Out of Level]]
-    - Node with [[Link]] [[Link2]]
+    - [x] Node with [[Link]] [[Link2]]
   - Fun with missing block ref [[test#^MISSING]] [[missing#^MISSING]]
 
 #### Out of Level

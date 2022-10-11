@@ -62,7 +62,14 @@
                           "type": "node",
                           "refs": ["13", "14"]
                         },
-                        { "uid": "15", "name": "Fun", "createdAt": 1, "editedAt": 1, "type": "node" }
+                        {
+                          "uid": "15",
+                          "name": "Fun",
+                          "createdAt": 1,
+                          "editedAt": 1,
+                          "type": "node",
+                          "todoState": "todo"
+                        }
                       ]
                     },
                     { "uid": "16", "name": "Out of Level", "createdAt": 1, "editedAt": 1, "type": "node" }
@@ -139,7 +146,8 @@
                               "createdAt": 1,
                               "editedAt": 1,
                               "type": "node",
-                              "refs": ["13", "14"]
+                              "refs": ["13", "14"],
+                              "todoState": "done"
                             },
                             {
                               "uid": "31",

@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import { RoamConverter } from './converters/roam/index';
 import { TanaIntermediateFile } from './types/types';
 import { WorkflowyConverter } from './converters/workflowy';
+import { NotionConverter } from './converters/notion';
 
 const fileType = process.argv[2];
 const file = process.argv[3];
@@ -18,7 +19,7 @@ if (!file) {
   exit(0);
 }
 
-const supportedTypes = ['roam', 'workflowy'];
+const supportedTypes = ['roam', 'workflowy', 'notion'];
 if (!supportedTypes.includes(fileType)) {
   console.log(`File type: ${fileType} is not supported`);
   exit(0);
@@ -42,6 +43,9 @@ switch (fileType) {
     break;
   case 'workflowy':
     tanaIntermediteFile = new WorkflowyConverter().convert(contents);
+    break;
+  case 'notion':
+    tanaIntermediteFile = new NotionConverter().convert(contents);
     break;
   default:
     console.log(`File type ${fileType} is not supported`);

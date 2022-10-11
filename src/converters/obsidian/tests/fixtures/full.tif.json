@@ -9,98 +9,218 @@
       "type": "node",
       "children": [
         {
-          "uid": "1",
+          "uid": "10-04-2022",
+          "name": "10-04-2022",
+          "createdAt": 1,
+          "editedAt": 1,
+          "type": "date",
+          "children": [
+            {
+              "uid": "2",
+              "name": "Starting without [[3]].",
+              "createdAt": 1,
+              "editedAt": 1,
+              "type": "node",
+              "refs": [
+                "3"
+              ]
+            },
+            {
+              "uid": "4",
+              "name": "Heading here",
+              "createdAt": 1,
+              "editedAt": 1,
+              "type": "node",
+              "children": [
+                {
+                  "uid": "5",
+                  "name": "[[6]]",
+                  "createdAt": 1,
+                  "editedAt": 1,
+                  "type": "node",
+                  "refs": [
+                    "6"
+                  ]
+                },
+                {
+                  "uid": "7",
+                  "name": "Stuff but with\na newline.",
+                  "createdAt": 1,
+                  "editedAt": 1,
+                  "type": "node"
+                },
+                {
+                  "uid": "8",
+                  "name": "Heading 2",
+                  "createdAt": 1,
+                  "editedAt": 1,
+                  "type": "node",
+                  "children": [
+                    {
+                      "uid": "9",
+                      "name": "Some",
+                      "createdAt": 1,
+                      "editedAt": 1,
+                      "type": "node",
+                      "children": [
+                        {
+                          "uid": "10",
+                          "name": "Node with [[11]] [[12]]",
+                          "createdAt": 1,
+                          "editedAt": 1,
+                          "type": "node",
+                          "refs": [
+                            "11",
+                            "12"
+                          ]
+                        },
+                        {
+                          "uid": "13",
+                          "name": "Fun",
+                          "createdAt": 1,
+                          "editedAt": 1,
+                          "type": "node"
+                        }
+                      ]
+                    },
+                    {
+                      "uid": "14",
+                      "name": "Out of Level",
+                      "createdAt": 1,
+                      "editedAt": 1,
+                      "type": "node"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uid": "15",
           "name": "folder",
           "createdAt": 1,
           "editedAt": 1,
           "type": "node",
           "children": [
             {
-              "uid": "2",
+              "uid": "16",
               "name": "folder",
               "createdAt": 1,
               "editedAt": 1,
               "type": "node",
-              "children": [{ "uid": "3", "name": "test4", "createdAt": 1, "editedAt": 1, "type": "node" }]
+              "children": [
+                {
+                  "uid": "17",
+                  "name": "test4",
+                  "createdAt": 1,
+                  "editedAt": 1,
+                  "type": "node"
+                }
+              ]
             },
             {
-              "uid": "6",
+              "uid": "20",
               "name": "test2",
               "createdAt": 1,
               "editedAt": 1,
               "type": "node",
-              "supertags": ["4", "5"],
+              "supertags": [
+                "18",
+                "19"
+              ],
               "children": [
                 {
-                  "uid": "7",
-                  "name": "Starting without [[8]] 2.",
+                  "uid": "21",
+                  "name": "Starting without [[3]] 2.",
                   "createdAt": 1,
                   "editedAt": 1,
                   "type": "node",
-                  "refs": ["8"]
+                  "refs": [
+                    "3"
+                  ]
                 },
                 {
-                  "uid": "9",
+                  "uid": "22",
                   "name": "Heading here",
                   "createdAt": 1,
                   "editedAt": 1,
                   "type": "node",
                   "children": [
-                    { "uid": "10", "name": "[[11]]", "createdAt": 1, "editedAt": 1, "type": "node", "refs": ["11"] },
                     {
-                      "uid": "12",
+                      "uid": "23",
+                      "name": "[[6]]",
+                      "createdAt": 1,
+                      "editedAt": 1,
+                      "type": "node",
+                      "refs": [
+                        "6"
+                      ]
+                    },
+                    {
+                      "uid": "24",
                       "name": "Stuff but with\na newline.",
                       "createdAt": 1,
                       "editedAt": 1,
                       "type": "node"
                     },
                     {
-                      "uid": "13",
+                      "uid": "25",
                       "name": "Heading 2",
                       "createdAt": 1,
                       "editedAt": 1,
                       "type": "node",
                       "children": [
                         {
-                          "uid": "14",
-                          "name": "Valid Heading [[39]]",
+                          "uid": "26",
+                          "name": "Valid Heading [[49]]",
                           "createdAt": 1,
                           "editedAt": 1,
                           "type": "node",
-                          "refs": ["39"],
+                          "refs": [
+                            "49"
+                          ],
                           "children": [
                             {
-                              "uid": "16",
-                              "name": "Node with [[17]] [[18]]",
+                              "uid": "28",
+                              "name": "Node with [[11]] [[12]]",
                               "createdAt": 1,
                               "editedAt": 1,
                               "type": "node",
-                              "refs": ["17", "18"]
+                              "refs": [
+                                "11",
+                                "12"
+                              ]
                             },
                             {
-                              "uid": "19",
-                              "name": "Fun with missing block ref [[20]] [[21]]",
+                              "uid": "29",
+                              "name": "Fun with missing block ref [[30]] [[31]]",
                               "createdAt": 1,
                               "editedAt": 1,
                               "type": "node",
-                              "refs": ["20", "21"]
+                              "refs": [
+                                "30",
+                                "31"
+                              ]
                             }
                           ]
                         },
                         {
-                          "uid": "22",
+                          "uid": "32",
                           "name": "Out of Level",
                           "createdAt": 1,
                           "editedAt": 1,
                           "type": "node",
                           "children": [
                             {
-                              "uid": "23",
-                              "name": "Referencing a block [[24]]",
+                              "uid": "33",
+                              "name": "Referencing a block [[34]]",
                               "createdAt": 1,
                               "editedAt": 1,
                               "type": "node",
-                              "refs": ["24"]
+                              "refs": [
+                                "34"
+                              ]
                             }
                           ]
                         }
@@ -110,79 +230,127 @@
                 }
               ]
             },
-            { "uid": "25", "name": "test3", "createdAt": 1, "editedAt": 1, "type": "node" }
+            {
+              "uid": "35",
+              "name": "test3",
+              "createdAt": 1,
+              "editedAt": 1,
+              "type": "node"
+            }
           ]
         },
         {
-          "uid": "28",
+          "uid": "38",
           "name": "test",
           "createdAt": 1,
           "editedAt": 1,
           "type": "node",
-          "supertags": ["4", "5"],
+          "supertags": [
+            "18",
+            "19"
+          ],
           "children": [
-            { "uid": "26", "name": "zero", "type": "field", "createdAt": 1, "editedAt": 1 },
-            { "uid": "27", "name": "value1, value2", "type": "field", "createdAt": 1, "editedAt": 1 },
             {
-              "uid": "29",
-              "name": "Starting without [[8]].",
+              "uid": "36",
+              "name": "zero",
+              "type": "field",
+              "createdAt": 1,
+              "editedAt": 1
+            },
+            {
+              "uid": "37",
+              "name": "value1, value2",
+              "type": "field",
+              "createdAt": 1,
+              "editedAt": 1
+            },
+            {
+              "uid": "39",
+              "name": "Starting without [[3]].",
               "createdAt": 1,
               "editedAt": 1,
               "type": "node",
-              "refs": ["8"]
+              "refs": [
+                "3"
+              ]
             },
             {
-              "uid": "30",
+              "uid": "40",
               "name": "Heading here",
               "createdAt": 1,
               "editedAt": 1,
               "type": "node",
               "children": [
-                { "uid": "31", "name": "[[11]]", "createdAt": 1, "editedAt": 1, "type": "node", "refs": ["11"] },
-                { "uid": "32", "name": "Stuff but with\na newline.", "createdAt": 1, "editedAt": 1, "type": "node" },
                 {
-                  "uid": "33",
+                  "uid": "41",
+                  "name": "[[6]]",
+                  "createdAt": 1,
+                  "editedAt": 1,
+                  "type": "node",
+                  "refs": [
+                    "6"
+                  ]
+                },
+                {
+                  "uid": "42",
+                  "name": "Stuff but with\na newline.",
+                  "createdAt": 1,
+                  "editedAt": 1,
+                  "type": "node"
+                },
+                {
+                  "uid": "43",
                   "name": "Heading 2",
                   "createdAt": 1,
                   "editedAt": 1,
                   "type": "node",
                   "children": [
                     {
-                      "uid": "34",
-                      "name": "Invalid Heading [[35]]",
+                      "uid": "44",
+                      "name": "Invalid Heading [[45]]",
                       "createdAt": 1,
                       "editedAt": 1,
                       "type": "node",
-                      "refs": ["35"],
+                      "refs": [
+                        "45"
+                      ],
                       "children": [
                         {
-                          "uid": "24",
-                          "name": "Block with #inlinetag2 [alias]([[17]]) [[17]] [[18]]",
+                          "uid": "34",
+                          "name": "Block with #inlinetag2 [alias]([[11]]) [[11]] [[12]]",
                           "createdAt": 1,
                           "editedAt": 1,
                           "type": "node",
-                          "supertags": ["36", "37"],
-                          "refs": ["17", "18"]
+                          "supertags": [
+                            "46",
+                            "47"
+                          ],
+                          "refs": [
+                            "11",
+                            "12"
+                          ]
                         },
                         {
-                          "uid": "38",
+                          "uid": "48",
                           "name": "#inlinetag2 Fun",
                           "createdAt": 1,
                           "editedAt": 1,
                           "type": "node",
-                          "supertags": ["36"]
+                          "supertags": [
+                            "46"
+                          ]
                         }
                       ]
                     },
                     {
-                      "uid": "39",
+                      "uid": "49",
                       "name": "Out of Level",
                       "createdAt": 1,
                       "editedAt": 1,
                       "type": "node",
                       "children": [
                         {
-                          "uid": "40",
+                          "uid": "50",
                           "name": "single image",
                           "createdAt": 1,
                           "editedAt": 1,
@@ -190,7 +358,7 @@
                           "mediaUrl": "https://mdg.imgix.net/assets/images/tux.png?auto=format&fit=clip&q=40&w=100"
                         },
                         {
-                          "uid": "41",
+                          "uid": "51",
                           "name": "single image some text",
                           "createdAt": 1,
                           "editedAt": 1,
@@ -198,14 +366,14 @@
                           "mediaUrl": "https://mdg.imgix.net/assets/images/tux.png?auto=format&fit=clip&q=40&w=100"
                         },
                         {
-                          "uid": "42",
-                          "name": "[[43]] [[44]]",
+                          "uid": "52",
+                          "name": "[[53]] [[54]]",
                           "createdAt": 1,
                           "editedAt": 1,
                           "type": "node",
                           "children": [
                             {
-                              "uid": "43",
+                              "uid": "53",
                               "name": "multiple images",
                               "createdAt": 1,
                               "editedAt": 1,
@@ -213,7 +381,7 @@
                               "mediaUrl": "https://mdg.imgix.net/assets/images/tux.png?auto=format&fit=clip&q=40&w=100"
                             },
                             {
-                              "uid": "44",
+                              "uid": "54",
                               "name": "multiple images 2",
                               "createdAt": 1,
                               "editedAt": 1,
@@ -223,14 +391,14 @@
                           ]
                         },
                         {
-                          "uid": "45",
-                          "name": "[[46]] [[46]]",
+                          "uid": "55",
+                          "name": "[[56]] [[56]]",
                           "createdAt": 1,
                           "editedAt": 1,
                           "type": "node",
                           "children": [
                             {
-                              "uid": "46",
+                              "uid": "56",
                               "name": "same image",
                               "createdAt": 1,
                               "editedAt": 1,
@@ -240,7 +408,7 @@
                           ]
                         },
                         {
-                          "uid": "47",
+                          "uid": "57",
                           "name": "ancient public baths",
                           "createdAt": 1,
                           "editedAt": 1,
@@ -258,27 +426,88 @@
       ]
     },
     {
-      "uid": "48",
+      "uid": "58",
       "name": "Missing Nodes for vault",
       "createdAt": 1,
       "editedAt": 1,
       "type": "node",
       "children": [
-        { "uid": "8", "name": "heading", "createdAt": 1, "editedAt": 1, "type": "node" },
-        { "uid": "35", "name": "Heading 2#Heading here", "createdAt": 1, "editedAt": 1, "type": "node" },
-        { "uid": "17", "name": "Link", "createdAt": 1, "editedAt": 1, "type": "node" },
-        { "uid": "18", "name": "Link2", "createdAt": 1, "editedAt": 1, "type": "node" },
-        { "uid": "21", "name": "missing#^MISSING", "createdAt": 1, "editedAt": 1, "type": "node" },
-        { "uid": "11", "name": "Some", "createdAt": 1, "editedAt": 1, "type": "node" },
-        { "uid": "20", "name": "test#^MISSING", "createdAt": 1, "editedAt": 1, "type": "node" }
+        {
+          "uid": "3",
+          "name": "heading",
+          "createdAt": 1,
+          "editedAt": 1,
+          "type": "node"
+        },
+        {
+          "uid": "45",
+          "name": "Heading 2#Heading here",
+          "createdAt": 1,
+          "editedAt": 1,
+          "type": "node"
+        },
+        {
+          "uid": "11",
+          "name": "Link",
+          "createdAt": 1,
+          "editedAt": 1,
+          "type": "node"
+        },
+        {
+          "uid": "12",
+          "name": "Link2",
+          "createdAt": 1,
+          "editedAt": 1,
+          "type": "node"
+        },
+        {
+          "uid": "31",
+          "name": "missing#^MISSING",
+          "createdAt": 1,
+          "editedAt": 1,
+          "type": "node"
+        },
+        {
+          "uid": "6",
+          "name": "Some",
+          "createdAt": 1,
+          "editedAt": 1,
+          "type": "node"
+        },
+        {
+          "uid": "30",
+          "name": "test#^MISSING",
+          "createdAt": 1,
+          "editedAt": 1,
+          "type": "node"
+        }
       ]
     }
   ],
   "supertags": [
-    { "name": "supertag1", "uid": "4" },
-    { "name": "supertag2", "uid": "5" },
-    { "name": "inlinetag2", "uid": "36" },
-    { "name": "inlinetag1", "uid": "37" }
+    {
+      "name": "supertag1",
+      "uid": "18"
+    },
+    {
+      "name": "supertag2",
+      "uid": "19"
+    },
+    {
+      "name": "inlinetag2",
+      "uid": "46"
+    },
+    {
+      "name": "inlinetag1",
+      "uid": "47"
+    }
   ],
-  "summary": { "leafNodes": 43, "topLevelNodes": 1, "totalNodes": 44, "calendarNodes": 0, "fields": 0, "brokenRefs": 0 }
+  "summary": {
+    "leafNodes": 53,
+    "topLevelNodes": 1,
+    "totalNodes": 54,
+    "calendarNodes": 0,
+    "fields": 0,
+    "brokenRefs": 0
+  }
 }

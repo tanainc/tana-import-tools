@@ -1,5 +1,6 @@
 import { appendFileSync, unlinkSync } from 'fs';
 import path from 'path';
+import fs from 'fs';
 import { createUnlinkedTanaNodes } from './createUnlinkedTanaNodes';
 import { HeadingTracker } from './filterHeadingLinks';
 import { postProcessTIFFIle } from './postProcessTIFFile';
@@ -10,16 +11,10 @@ import { VaultContext } from './VaultContext';
  * Converts the vault to the Tana format and incrementally saves it, otherwise it would be to memory intensive on big vaults.
  * Due to the incremental approach the output-file will be valid JSON but not be formatted perfectly.
  */
-export async function ObsidianVaultConverter(
-  vaultPath: string,
-  today: number = Date.now(),
-  vaultContext: VaultContext = new VaultContext(),
-) {
-  if (vaultPath.endsWith('/')) {
-    vaultPath = vaultPath.slice(0, -1);
-  }
+export async function ObsidianVaultConverter(vaultContext: VaultContext, today: number = Date.now()) {
+  loadDailyNotesConfig(vaultContext);
 
-  const targetPath = `${vaultPath}.tif.json`;
+  const targetPath = `${vaultContext.vaultPath}.tif.json`;
   try {
     unlinkSync(targetPath);
     // eslint-disable-next-line no-empty
@@ -29,7 +24,7 @@ export async function ObsidianVaultConverter(
   const headingTracker: HeadingTracker = new Map();
 
   handleVault(
-    vaultPath,
+    vaultContext.vaultPath,
     addParentNodeStart(targetPath, today, vaultContext),
     addParentNodeEnd(targetPath),
     addFileNode(targetPath, today, vaultContext, headingTracker),
@@ -43,7 +38,7 @@ export async function ObsidianVaultConverter(
   //because the unlinked summary nodes are just created by the converter and have no connection to the rest
   await postProcessTIFFIle(targetPath, vaultContext, headingTracker);
 
-  const collectedUnlinkedNodes = createUnlinkedTanaNodes(path.basename(vaultPath), today, vaultContext);
+  const collectedUnlinkedNodes = createUnlinkedTanaNodes(path.basename(vaultContext.vaultPath), today, vaultContext);
   if (collectedUnlinkedNodes) {
     appendFileSync(targetPath, ', ' + JSON.stringify(collectedUnlinkedNodes, null, 2));
   }
@@ -62,4 +57,15 @@ export async function ObsidianVaultConverter(
   appendFileSync(targetPath, '\n}');
 
   return vaultContext.summary;
+}
+
+function loadDailyNotesConfig(vaultContext: VaultContext) {
+  const dailyNotesConfigFile = path.join(vaultContext.vaultPath, '/.obsidian/daily-notes.json');
+
+  if (fs.existsSync(dailyNotesConfigFile)) {
+    //if file does not exists, daily note config was kept default
+    let rawjson = fs.readFileSync(dailyNotesConfigFile);
+    let dailyNoteConfig = JSON.parse(rawjson.toString());
+    vaultContext.dailyNoteFormat = dailyNoteConfig.format;
+  }
 }

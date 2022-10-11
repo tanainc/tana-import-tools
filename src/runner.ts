@@ -7,6 +7,7 @@ import { WorkflowyConverter } from './converters/workflowy';
 import { lstatSync } from 'fs';
 import path from 'path';
 import { ObsidianVaultConverter } from './converters/obsidian';
+import { VaultContext } from './converters/obsidian/VaultContext';
 
 const fileType = process.argv[2];
 const file = process.argv[3];
@@ -67,7 +68,7 @@ async function handleFolderConversion() {
   let summary;
   switch (fileType) {
     case 'obsidian':
-      summary = await ObsidianVaultConverter(file);
+      summary = await ObsidianVaultConverter(new VaultContext(file));
       break;
     default:
       console.log(`File type ${fileType} is not supported for folders`);

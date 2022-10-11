@@ -16,6 +16,7 @@ function frontMatterToFieldNode(data: FrontmatterData, today: number, context: V
     }));
   }
   context.addAttribute(data.key);
+  context.summary.fields++;
 
   return { uid: context.randomUid(), name: data.key, type: 'field', createdAt: today, editedAt: today, children };
 }

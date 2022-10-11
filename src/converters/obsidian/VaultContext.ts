@@ -92,7 +92,16 @@ export class VaultContext {
   invalidLinks: { uid: string; link: string }[] = [];
   superTagTracker = new Map<string, string>();
 
-  constructor(public idGenerator: () => string = randomGenerator) {}
+  dailyNoteFormat = 'YYYY-MM-DD'; //Default obsidian Daily note format
+
+  vaultPath: string;
+
+  constructor(vaultPath: string, public idGenerator: () => string = randomGenerator) {
+    if (vaultPath.endsWith('/')) {
+      vaultPath = vaultPath.slice(0, -1);
+    }
+    this.vaultPath = vaultPath;
+  }
 
   /**
    * Removes Obsidian-generated block-UIDs if they exists, returns the valid uid and the cleaned content.

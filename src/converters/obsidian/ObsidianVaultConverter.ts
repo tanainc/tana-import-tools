@@ -51,6 +51,10 @@ export async function ObsidianVaultConverter(vaultContext: VaultContext, today: 
     appendFileSync(targetPath, ',\n  "supertags": \n' + JSON.stringify(superTags, null, 2));
   }
 
+  if (vaultContext.attributes.length > 0) {
+    appendFileSync(targetPath, ',\n  "attributes": \n' + JSON.stringify(vaultContext.attributes, null, 2));
+  }
+
   appendFileSync(targetPath, ',\n  "summary": \n' + JSON.stringify(vaultContext.summary, null, 2));
 
   //close target object
@@ -66,6 +70,8 @@ function loadDailyNotesConfig(vaultContext: VaultContext) {
     //if file does not exists, daily note config was kept default
     const rawjson = fs.readFileSync(dailyNotesConfigFile);
     const dailyNoteConfig = JSON.parse(rawjson.toString());
-    vaultContext.dailyNoteFormat = dailyNoteConfig.format;
+    if (dailyNoteConfig.format) {
+      vaultContext.dailyNoteFormat = dailyNoteConfig.format;
+    }
   }
 }

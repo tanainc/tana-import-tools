@@ -1,4 +1,4 @@
-import { TanaIntermediateSummary, TanaIntermediateSupertag } from '../..';
+import { TanaIntermediateSummary, TanaIntermediateAttribute, TanaIntermediateSupertag } from '../../types/types';
 import { idgenerator as randomGenerator } from '../../utils/utils';
 
 export enum UidRequestType {
@@ -91,6 +91,7 @@ export class VaultContext {
   blockLinkTracker = new Map<string, Map<string, BlockUidData>>();
   invalidLinks: { uid: string; link: string }[] = [];
   superTagTracker = new Map<string, string>();
+  attributes: TanaIntermediateAttribute[] = [];
 
   dailyNoteFormat = 'YYYY-MM-DD'; //Default obsidian Daily note format
 
@@ -254,5 +255,14 @@ export class VaultContext {
 
   createSuperTagObjects(): TanaIntermediateSupertag[] {
     return Array.from(this.superTagTracker.entries()).map((entry) => ({ name: entry[0], uid: entry[1] }));
+  }
+
+  addAttribute(name: string) {
+    const foundAttr = this.attributes.filter((attr) => attr.name === name)[0];
+    if (foundAttr) {
+      foundAttr.count++;
+    } else {
+      this.attributes.push({ name, values: [], count: 1 });
+    }
   }
 }

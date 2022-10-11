@@ -2,12 +2,12 @@
 
 The vault converter works like this:
 
-* go through the vault folder recursively
-* create a node for each folder and append it partially to the target file (we leave the children array open)
-* convert each file to a node and append it to the target file (see Markdown Nodes explanation)
-* close each folder-node as soon as its done
+- go through the vault folder recursively
+- create a node for each folder and append it partially to the target file (we leave the children array open)
+- convert each file to a node and append it to the target file (see Markdown Nodes explanation)
+- close each folder-node as soon as its done
 
-Vaults can be quite big, so this append-approach is much more performant. 
+Vaults can be quite big, so this append-approach is much more performant.
 We use the VaultContext to store all information that is needed across the whole vault, so that we don't need to go back to the created Tana nodes.
 
 # Concepts
@@ -26,15 +26,14 @@ The Markdown Nodes are lightly pre-processed to contain only relevant informatio
 
 ## Conversion to the Tana IF
 
-Markdown Nodes are converted to Tana IF Nodes, which are then used in the resulting JSON file. We use the hierarchy information in the Markdown Nodes to create the appropriate nesting. 
+Markdown Nodes are converted to Tana IF Nodes, which are then used in the resulting JSON file. We use the hierarchy information in the Markdown Nodes to create the appropriate nesting.
 
 Each Obsidian Link is replaced with a new UID, also each file and folder gets a UID. Via the VaultContext we make sure that the correct UID is used when we replace the Obsidian Links.
 
 ### Missing nodes
 
-Missing Links (no file exists for these) are collected and saved in a separate node under "Missing nodes for $YOUR_VAULT_NAME". We could of course not save these links but then we would need to take care how to not lose the Obsidian Link-name (because it was converted to a UID). 
+Missing Links (no file exists for these) are collected and saved in a separate node under "Missing nodes for $YOUR_VAULT_NAME". We could of course not save these links but then we would need to take care how to not lose the Obsidian Link-name (because it was converted to a UID).
 
 ## VaultContext
 
-We need some context information like the summary data that needs to be used across the whole converted vault. The place for this is the VaultContext. 
-
+We need some context information like the summary data that needs to be used across the whole converted vault. The place for this is the VaultContext.

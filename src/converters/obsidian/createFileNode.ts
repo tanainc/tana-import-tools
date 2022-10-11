@@ -4,7 +4,19 @@ import { UidRequestType, VaultContext } from './VaultContext';
 import moment from 'moment';
 
 function frontMatterToFieldNode(data: FrontmatterData, today: number, context: VaultContext): TanaIntermediateNode {
-  return { uid: context.randomUid(), name: data.values.join(', '), type: 'field', createdAt: today, editedAt: today };
+  let children: TanaIntermediateNode[] | undefined;
+
+  if (data.values && data.values.length > 0) {
+    children = data.values.map((value) => ({
+      uid: context.randomUid(),
+      name: value,
+      type: 'node',
+      createdAt: today,
+      editedAt: today,
+    }));
+  }
+
+  return { uid: context.randomUid(), name: data.key, type: 'field', createdAt: today, editedAt: today, children };
 }
 
 export function createFileNode(
@@ -46,7 +58,7 @@ export function createFileNode(
 }
 
 function dateStringToDateUID(displayName: string, dateFormat: string): string {
-  let date = moment(displayName, dateFormat, true);
+  const date = moment(displayName, dateFormat, true);
   if (date.isValid()) {
     return date.format('MM-DD-YYYY');
   }

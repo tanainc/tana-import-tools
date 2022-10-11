@@ -64,8 +64,8 @@ function loadDailyNotesConfig(vaultContext: VaultContext) {
 
   if (fs.existsSync(dailyNotesConfigFile)) {
     //if file does not exists, daily note config was kept default
-    let rawjson = fs.readFileSync(dailyNotesConfigFile);
-    let dailyNoteConfig = JSON.parse(rawjson.toString());
+    const rawjson = fs.readFileSync(dailyNotesConfigFile);
+    const dailyNoteConfig = JSON.parse(rawjson.toString());
     vaultContext.dailyNoteFormat = dailyNoteConfig.format;
   }
 }

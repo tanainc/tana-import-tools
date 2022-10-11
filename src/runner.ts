@@ -5,7 +5,6 @@ import { RoamConverter } from './converters/roam/index';
 import { TanaIntermediateFile } from './types/types';
 import { WorkflowyConverter } from './converters/workflowy';
 import { lstatSync } from 'fs';
-import path from 'path';
 import { ObsidianVaultConverter } from './converters/obsidian';
 import { VaultContext } from './converters/obsidian/VaultContext';
 

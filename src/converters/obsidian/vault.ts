@@ -17,6 +17,14 @@ function getChildrenPosition(index: number, dirents: Dirent[]) {
   return ChildrenPosition.NOT_LAST;
 }
 
+function readFilteredDir(dir: string) {
+  return readdirSync(dir, { withFileTypes: true }).filter(
+    (dirent) =>
+      (dirent.isDirectory() && !dirent.name.endsWith('.github') && !dirent.name.endsWith('.obsidian')) ||
+      (!dirent.isDirectory() && dirent.name.endsWith('.md')),
+  );
+}
+
 export function handleVault(
   dir: string,
   handleDirStart: ReturnType<typeof addParentNodeStart>,
@@ -25,13 +33,13 @@ export function handleVault(
   childrenPosition: ChildrenPosition = ChildrenPosition.LAST,
 ) {
   handleDirStart(dir);
-  const dirents = readdirSync(dir, { withFileTypes: true });
+  const dirents = readFilteredDir(dir);
   for (let index = 0; index < dirents.length; index++) {
     const dirent = dirents[index];
     const res = resolve(dir, dirent.name);
-    if (dirent.isDirectory() && !res.endsWith('.github') && !res.endsWith('.obsidian')) {
+    if (dirent.isDirectory()) {
       handleVault(res, handleDirStart, handleDirEnd, handleFile, getChildrenPosition(index, dirents));
-    } else if (res.endsWith('.md')) {
+    } else {
       handleFile(res, getChildrenPosition(index, dirents));
     }
   }

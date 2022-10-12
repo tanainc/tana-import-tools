@@ -23,7 +23,7 @@ export function convertMarkdownNode(
     type: 'node' as NodeType,
   };
 
-  if (obsidianNode.type === HierarchyType.OUTLINE) {
+  if (obsidianNode.type === HierarchyType.BULLET) {
     if (content.startsWith('[ ] ')) {
       handleTodo(tanaNode);
     }

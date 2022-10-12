@@ -1,5 +1,6 @@
 import { expect, test } from '@jest/globals';
-import { extractMarkdownNodes, HierarchyType, countEmptySpace, nextNewLine } from '../extractMarkdownNodes';
+import { countEmptySpace } from '../emptySpace';
+import { extractMarkdownNodes, HierarchyType, nextNewLine } from '../extractMarkdownNodes';
 
 test('headings', () => {
   expect(extractMarkdownNodes('## Heading')).toStrictEqual([
@@ -72,7 +73,7 @@ https://mek.fyi/posts/why-books-work-and-could-work-better
     },
   ]);
 
-  //can deal with *-s not being outliner nodes
+  //can deal with *-s not being bullet nodes
   expect(
     extractMarkdownNodes(`---
 On first glance, the expected result seems wrong to me. Looking at the \`paragraph-run-style-emphasis-flip.docx\` test document's XML markup and rendering in Microsoft Word (v15.29), I would expect a **nested** emphasis, not a **"breaking out"** of the outer emphasis:`),
@@ -104,12 +105,12 @@ On first glance, the expected result seems wrong to me. Looking at the \`paragra
   ]);
 });
 
-test('outliner nodes', () => {
-  expect(extractMarkdownNodes('- Node')).toStrictEqual([{ content: 'Node', level: 0, type: HierarchyType.OUTLINE }]);
+test('bullet nodes', () => {
+  expect(extractMarkdownNodes('- Node')).toStrictEqual([{ content: 'Node', level: 0, type: HierarchyType.BULLET }]);
   //tab
-  expect(extractMarkdownNodes(' - Node')).toStrictEqual([{ content: 'Node', level: 1, type: HierarchyType.OUTLINE }]);
+  expect(extractMarkdownNodes(' - Node')).toStrictEqual([{ content: 'Node', level: 1, type: HierarchyType.BULLET }]);
   //space
-  expect(extractMarkdownNodes(' - Node')).toStrictEqual([{ content: 'Node', level: 1, type: HierarchyType.OUTLINE }]);
+  expect(extractMarkdownNodes(' - Node')).toStrictEqual([{ content: 'Node', level: 1, type: HierarchyType.BULLET }]);
   expect(
     extractMarkdownNodes(`* Text
   * Foo
@@ -118,17 +119,17 @@ test('outliner nodes', () => {
     {
       content: 'Text',
       level: 0,
-      type: HierarchyType.OUTLINE,
+      type: HierarchyType.BULLET,
     },
     {
       content: 'Foo',
       level: 2,
-      type: HierarchyType.OUTLINE,
+      type: HierarchyType.BULLET,
     },
     {
       content: 'Bar',
       level: 2,
-      type: HierarchyType.OUTLINE,
+      type: HierarchyType.BULLET,
     },
   ]);
   expect(
@@ -141,17 +142,17 @@ test('outliner nodes', () => {
     {
       content: 'Some',
       level: 0,
-      type: HierarchyType.OUTLINE,
+      type: HierarchyType.BULLET,
     },
     {
       content: 'Node',
       level: 4,
-      type: HierarchyType.OUTLINE,
+      type: HierarchyType.BULLET,
     },
     {
       content: 'Fun',
       level: 2,
-      type: HierarchyType.OUTLINE,
+      type: HierarchyType.BULLET,
     },
   ]);
   expect(
@@ -166,7 +167,7 @@ test('outliner nodes', () => {
   As long as the empty space is equivalent.
   How many you like.`,
       level: 0,
-      type: HierarchyType.OUTLINE,
+      type: HierarchyType.BULLET,
     },
   ]);
 });
@@ -185,22 +186,22 @@ https://some.url/
     {
       content: '1. Much more foo.',
       level: 0,
-      type: HierarchyType.OUTLINE,
+      type: HierarchyType.BULLET,
     },
     {
       content: '2. Take modern bar. ',
       level: 0,
-      type: HierarchyType.OUTLINE,
+      type: HierarchyType.BULLET,
     },
     {
       content: '3. Baz.',
       level: 0,
-      type: HierarchyType.OUTLINE,
+      type: HierarchyType.BULLET,
     },
     {
       content: '4. etc. ',
       level: 0,
-      type: HierarchyType.OUTLINE,
+      type: HierarchyType.BULLET,
     },
   ]);
 });

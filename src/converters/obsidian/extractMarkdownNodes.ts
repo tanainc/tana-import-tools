@@ -1,16 +1,16 @@
-import { isEmptySpace } from './emptySpace';
+import { countEmptySpace, isEmptySpace } from './emptySpace';
 
 export enum HierarchyType {
   ROOT = 'Root',
   HEADING = 'Heading',
-  OUTLINE = 'Outliner Node',
+  BULLET = 'Bullet Node',
   PARAGRAPH = 'Paragraph',
 }
 
 export interface Hierarchy {
   type: HierarchyType;
   //lower = higher in the hierarchy
-  //for outliner nodes also used as a measure of empty space
+  //for bullet nodes also used as a measure of empty space
   //for heading nodes this is the number of #'s
   level: number;
 }
@@ -41,19 +41,19 @@ export function extractMarkdownNodes(content: string, startPosition = 0): Markdo
   return nodeDescs;
 }
 
-function isOutlinerNodeStart(content: string, pos: number) {
-  let isOutlinerStart = true;
+function isBulletNodeStart(content: string, pos: number) {
+  let isBulletStart = true;
 
   const char = content[pos];
   const secondChar = content[pos + 1];
-  //only real empty string is valid for outline
+  //only real empty string is valid for bullet
   if ((char === '*' || char === '-') && secondChar === ' ') {
-    isOutlinerStart = true;
+    isBulletStart = true;
   } else {
-    isOutlinerStart = !isNaN(parseInt(char)) && secondChar === '.' && content[pos + 2] === ' ';
+    isBulletStart = !isNaN(parseInt(char)) && secondChar === '.' && content[pos + 2] === ' ';
   }
 
-  //outliner nodes always have \n( *) in front of them or are at the start of the file
+  //bullet nodes always have \n( *) in front of them or are at the start of the file
   //including tabs
   //so need to backtrack empty space to verify
   if (pos > 0 && content[pos - 1] !== '\n') {
@@ -64,11 +64,11 @@ function isOutlinerNodeStart(content: string, pos: number) {
       curChar = content[curPos];
     }
     if (!(curChar === '\n' || curChar === undefined)) {
-      isOutlinerStart = false;
+      isBulletStart = false;
     }
   }
 
-  return isOutlinerStart;
+  return isBulletStart;
 }
 
 function getHierarchy(curChar: string, content: string, curPosition: number): Hierarchy {
@@ -90,8 +90,8 @@ function getHierarchy(curChar: string, content: string, curPosition: number): Hi
 
   //for nodes we need a precise level === empty space, so we can detect multi line node content
   const emptySpaces = countEmptySpace(content, curPosition);
-  if (isOutlinerNodeStart(content, curPosition + emptySpaces)) {
-    return { type: HierarchyType.OUTLINE, level: Math.max(emptySpaces) };
+  if (isBulletNodeStart(content, curPosition + emptySpaces)) {
+    return { type: HierarchyType.BULLET, level: Math.max(emptySpaces) };
   }
 
   return { type: HierarchyType.PARAGRAPH, level: 0 };
@@ -114,7 +114,7 @@ function isBlockQuoteStart(content: string, pos: number) {
 }
 
 function isHierarchyStart(content: string, pos: number) {
-  return isHeadingStart(content, pos) || isOutlinerNodeStart(content, pos) || isBlockQuoteStart(content, pos);
+  return isHeadingStart(content, pos) || isBulletNodeStart(content, pos) || isBlockQuoteStart(content, pos);
 }
 
 /**
@@ -126,12 +126,12 @@ function findEndPosition(content: string, curPosition: number, hierarchy: Hierar
 
   if (char === undefined || hierarchy.type === HierarchyType.HEADING) {
     endPosition = endPosition - 1;
-  } else if (hierarchy.type === HierarchyType.OUTLINE) {
+  } else if (hierarchy.type === HierarchyType.BULLET) {
     // eslint-disable-next-line no-constant-condition
     while (true) {
       //new lines that start with the number of empty spaces of the level+1 are considered part of the node
       const emptySpaces = countEmptySpace(content, endPosition + 1);
-      if (emptySpaces == hierarchy.level + 2 && !isOutlinerNodeStart(content, endPosition + 1 + emptySpaces)) {
+      if (emptySpaces == hierarchy.level + 2 && !isBulletNodeStart(content, endPosition + 1 + emptySpaces)) {
         endPosition = nextNewLine(content, endPosition + 1);
         char = content[endPosition];
       } else {
@@ -168,14 +168,6 @@ function findEndPosition(content: string, curPosition: number, hierarchy: Hierar
   return endPosition;
 }
 
-export function countEmptySpace(content: string, curPosition: number, count = 0): number {
-  //we count tab as one empty space
-  if (!isEmptySpace(content[curPosition])) {
-    return count;
-  }
-  return countEmptySpace(content, curPosition + 1, count + 1);
-}
-
 export function nextNewLine(content: string, curPosition: number, count = 0): number {
   //end of file is also counted as newline for simplicity
   if (content[curPosition + count] === undefined || content[curPosition + count] === '\n') {
@@ -185,10 +177,10 @@ export function nextNewLine(content: string, curPosition: number, count = 0): nu
 }
 
 /**
- * We remove the parts of the markdown nodes that just signify their type or have no semantic meaning, e.g. "- " for outline nodes.
+ * We remove the parts of the markdown nodes that just signify their type or have no semantic meaning, e.g. "- " for bullet nodes.
  */
 export function postProcessMarkdownNodes(content: string, hierarchy: Hierarchy) {
-  if (hierarchy.type === HierarchyType.OUTLINE) {
+  if (hierarchy.type === HierarchyType.BULLET) {
     //remove empty prefix
     const processed = content.trimStart();
     if (!isNaN(parseInt(processed[0]))) {

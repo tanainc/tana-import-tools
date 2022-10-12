@@ -1,7 +1,7 @@
 import { NodeType, TanaIntermediateNode } from '../../types/types';
 import { getBracketLinks } from '../../utils/utils';
 import { extractImageLinks } from './extractImageLinks';
-import { HierarchyType, MarkdownNode } from './extractMarkdownNodes';
+import { HierarchyType, MarkdownNode } from './markdown/extractMarkdownNodes';
 import { UidRequestType, VaultContext } from './VaultContext';
 
 // eslint is just wrong here

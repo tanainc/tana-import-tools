@@ -1,7 +1,7 @@
 import { convertMarkdownNode } from './convertMarkdownNode';
 import { createFileNode } from './createFileNode';
 import { createTree } from './createTree';
-import { HierarchyType, MarkdownNode, extractMarkdownNodes } from './extractMarkdownNodes';
+import { HierarchyType, MarkdownNode, extractMarkdownNodes } from './markdown/extractMarkdownNodes';
 import { HeadingTracker } from './filterHeadingLinks';
 import { FrontmatterData, parseFrontmatter } from './parseFrontmatter';
 import { VaultContext } from './VaultContext';

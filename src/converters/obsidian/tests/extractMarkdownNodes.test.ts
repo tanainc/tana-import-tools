@@ -1,8 +1,12 @@
 import { expect, test } from '@jest/globals';
-import { countEmptySpace } from '../emptySpace';
-import { extractMarkdownNodes, HierarchyType, nextNewLine } from '../extractMarkdownNodes';
+import { countEmptySpace } from '../markdown/emptySpace';
+import { extractMarkdownNodes, HierarchyType } from '../markdown/extractMarkdownNodes';
+import { nextNewLine } from '../markdown/newline';
 
 test('headings', () => {
+  expect(extractMarkdownNodes('# Heading')).toStrictEqual([
+    { content: 'Heading', level: 1, type: HierarchyType.HEADING },
+  ]);
   expect(extractMarkdownNodes('## Heading')).toStrictEqual([
     { content: 'Heading', level: 2, type: HierarchyType.HEADING },
   ]);

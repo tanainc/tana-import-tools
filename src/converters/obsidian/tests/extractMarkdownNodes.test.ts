@@ -106,6 +106,9 @@ On first glance, the expected result seems wrong to me. Looking at the \`paragra
 
 test('outliner nodes', () => {
   expect(extractMarkdownNodes('- Node')).toStrictEqual([{ content: 'Node', level: 0, type: HierarchyType.OUTLINE }]);
+  //tab
+  expect(extractMarkdownNodes(' - Node')).toStrictEqual([{ content: 'Node', level: 1, type: HierarchyType.OUTLINE }]);
+  //space
   expect(extractMarkdownNodes(' - Node')).toStrictEqual([{ content: 'Node', level: 1, type: HierarchyType.OUTLINE }]);
   expect(
     extractMarkdownNodes(`* Text

@@ -1,3 +1,5 @@
+import { isEmptySpace } from './emptySpace';
+
 export enum HierarchyType {
   ROOT = 'Root',
   HEADING = 'Heading',
@@ -44,6 +46,7 @@ function isOutlinerNodeStart(content: string, pos: number) {
 
   const char = content[pos];
   const secondChar = content[pos + 1];
+  //only real empty string is valid for outline
   if ((char === '*' || char === '-') && secondChar === ' ') {
     isOutlinerStart = true;
   } else {
@@ -51,11 +54,12 @@ function isOutlinerNodeStart(content: string, pos: number) {
   }
 
   //outliner nodes always have \n( *) in front of them or are at the start of the file
+  //including tabs
   //so need to backtrack empty space to verify
   if (pos > 0 && content[pos - 1] !== '\n') {
     let curPos = pos - 1;
     let curChar = content[curPos];
-    while (curChar === ' ') {
+    while (isEmptySpace(curChar)) {
       curPos--;
       curChar = content[curPos];
     }
@@ -75,6 +79,7 @@ function getHierarchy(curChar: string, content: string, curPosition: number): Hi
       pos++;
       char = content[pos];
     }
+    //only real empty string is valid for heading
     if (char === ' ') {
       return { type: HierarchyType.HEADING, level: pos - curPosition };
     } else {
@@ -165,7 +170,7 @@ function findEndPosition(content: string, curPosition: number, hierarchy: Hierar
 
 export function countEmptySpace(content: string, curPosition: number, count = 0): number {
   //we count tab as one empty space
-  if (content[curPosition] !== ' ' && content[curPosition] !== '\t') {
+  if (isEmptySpace(content[curPosition])) {
     return count;
   }
   return countEmptySpace(content, curPosition + 1, count + 1);

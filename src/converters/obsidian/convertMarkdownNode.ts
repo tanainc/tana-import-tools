@@ -50,19 +50,21 @@ export function convertMarkdownNode(
     tanaNode.supertags = Array.from(supertags);
   }
 
-  const foundUids = getBracketLinks(tanaNode.name, true).map((bracketLink) => {
-    //handling aliases
-    const aliasArr = bracketLink.split('|');
-    const link = aliasArr[0];
-    const alias = aliasArr[1];
-    const foundUid = vaultContext.uidRequest(link, UidRequestType.CONTENT);
-    const result =
-      alias !== undefined && alias.trim() !== ''
-        ? '[' + alias.trim() + ']([[' + foundUid + ']])'
-        : '[[' + foundUid + ']]';
+  const foundUids = getBracketLinks(tanaNode.name, true)
+    .filter((bracketLink) => bracketLink.trim() !== '')
+    .map((bracketLink) => {
+      //handling aliases
+      const aliasArr = bracketLink.split('|');
+      const link = aliasArr[0];
+      const alias = aliasArr[1];
+      const foundUid = vaultContext.uidRequest(link, UidRequestType.CONTENT);
+      const result =
+        alias !== undefined && alias.trim() !== ''
+          ? '[' + alias.trim() + ']([[' + foundUid + ']])'
+          : '[[' + foundUid + ']]';
 
-    return [bracketLink, foundUid, result];
-  });
+      return [bracketLink, foundUid, result];
+    });
 
   if (foundUids.length > 0) {
     //using Set to filter out links that appear multiple times

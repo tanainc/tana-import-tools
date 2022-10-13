@@ -2,8 +2,8 @@ export function deterministicGenerator() {
   let uid = 0;
 
   return () => {
-    const uidStr = uid.toString();
+    const UIDstr = uid.toString();
     uid++;
-    return uidStr;
+    return UIDstr;
   };
 }

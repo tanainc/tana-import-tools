@@ -1,13 +1,22 @@
-import { NodeType, TanaIntermediateNode } from '../../types/types';
-import { VaultContext } from './VaultContext';
+import { NodeType, TanaIntermediateNode } from '../../../types/types';
+import { filterInvalidBlockLinks } from './blocks';
+import { filterInvalidContentLinks, untrackedUidRequest } from './uids';
+import { VaultContext } from '../context';
+
+export function getAllInvalidLinks(context: VaultContext) {
+  return [
+    ...context.invalidLinks,
+    ...filterInvalidContentLinks(context.defaultLinkTracker),
+    ...filterInvalidBlockLinks(context.blockLinkTracker),
+  ];
+}
 
 export function createUnlinkedTanaNodes(
   importName: string,
   today: number,
-  vaultContext: VaultContext,
+  context: VaultContext,
 ): TanaIntermediateNode | null {
-  const unlinkedNodes = vaultContext
-    .getAllInvalidContentLinks()
+  const unlinkedNodes = getAllInvalidLinks(context)
     .sort((a, b) => a.link.localeCompare(b.link))
     .map((node) => ({
       uid: node.uid,
@@ -23,7 +32,7 @@ export function createUnlinkedTanaNodes(
 
   const rootNodeName = 'Missing Nodes for ' + importName;
   const rootNode: TanaIntermediateNode = {
-    uid: vaultContext.randomUid(),
+    uid: untrackedUidRequest(context),
     name: rootNodeName,
     createdAt: today,
     editedAt: today,

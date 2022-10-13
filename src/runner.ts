@@ -6,7 +6,7 @@ import { TanaIntermediateFile } from './types/types';
 import { WorkflowyConverter } from './converters/workflowy';
 import { lstatSync } from 'fs';
 import { ObsidianVaultConverter } from './converters/obsidian';
-import { VaultContext } from './converters/obsidian/VaultContext';
+import { createVaultContext } from './converters/obsidian/context';
 
 const fileType = process.argv[2];
 const file = process.argv[3];
@@ -67,7 +67,7 @@ async function handleFolderConversion() {
   let summary;
   switch (fileType) {
     case 'obsidian':
-      summary = await ObsidianVaultConverter(new VaultContext(file));
+      summary = await ObsidianVaultConverter(createVaultContext(file));
       break;
     default:
       console.log(`File type ${fileType} is not supported for folders`);

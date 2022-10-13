@@ -1,8 +1,8 @@
 import { appendFileSync, Dirent, readdirSync, readFileSync } from 'fs';
 import path, { resolve } from 'path';
-import { convertObsidianFile } from './convertObsidianFile';
-import { HeadingTracker } from './filterHeadingLinks';
-import { VaultContext } from './VaultContext';
+import { convertObsidianFile } from './obsidianFileConversion';
+import { VaultContext } from '../context';
+import { untrackedUidRequest } from './uids';
 
 enum ChildrenPosition {
   NOT_LAST = 'NOT_LAST',
@@ -46,10 +46,10 @@ export function handleVault(
   handleDirEnd(childrenPosition);
 }
 
-export function addParentNodeStart(targetPath: string, today: number, vaultContext: VaultContext) {
+export function addParentNodeStart(targetPath: string, today: number, context: VaultContext) {
   return (dir: string) => {
     const name = path.basename(dir);
-    const uid = vaultContext.randomUid();
+    const uid = untrackedUidRequest(context);
     appendFileSync(
       targetPath,
       `{
@@ -77,19 +77,13 @@ export function addParentNodeEnd(targetPath: string) {
   };
 }
 
-export function addFileNode(
-  targetPath: string,
-  today: number,
-  vaultContext: VaultContext,
-  headingTracker: HeadingTracker,
-) {
+export function addFileNode(targetPath: string, today: number, context: VaultContext) {
   return (file: string, childrenPosition: ChildrenPosition) => {
     const fileNode = convertObsidianFile(
       path.basename(file).replace('.md', ''),
       readFileSync(file, 'utf-8'),
-      vaultContext,
+      context,
       today,
-      headingTracker,
     );
     appendFileSync(targetPath, JSON.stringify(fileNode, null, 2));
     if (childrenPosition !== ChildrenPosition.LAST) {

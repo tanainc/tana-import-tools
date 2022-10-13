@@ -1,5 +1,5 @@
 import { expect, test } from '@jest/globals';
-import { extractImageLinks } from '../extractImageLinks';
+import { extractImageLinks } from '../markdown/imageLinks';
 
 //TODO: write some test utils to check permutations easier
 

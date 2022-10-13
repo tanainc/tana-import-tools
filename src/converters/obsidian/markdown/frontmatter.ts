@@ -4,6 +4,22 @@ export type FrontmatterData = {
 };
 
 /**
+ * @returns [frontMatterData, position after end of frontmatter relevant chars]
+ */
+export function extractFrontmatter(content: string): [FrontmatterData[], number] | null {
+  if (content.startsWith('---\n')) {
+    const frontMatterEndIndex = content.indexOf('\n---\n');
+    if (frontMatterEndIndex !== -1) {
+      return [
+        parseFrontmatter(content.slice('---\n'.length, frontMatterEndIndex)),
+        frontMatterEndIndex + '\n---\n'.length,
+      ];
+    }
+  }
+  return null;
+}
+
+/**
  *
  * @param frontmatter without the starting "---" or ending "---"
  */

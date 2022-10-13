@@ -223,7 +223,7 @@ export class RoamConverter implements IConverter {
     const nodeForImport: TanaIntermediateNode = {
       uid: n.uid,
       name: n.name,
-      // we only care about uids for now,
+      // we only care about UIDs for now,
       createdAt: n.createdAt,
       editedAt: n.editedAt,
       type: n.type || 'node',

@@ -1,5 +1,5 @@
 import { expect, test } from '@jest/globals';
-import { filterHeadingLinks, HeadingLinks, HeadingTracker } from '../filterHeadingLinks';
+import { HeadingDummyUidTracker, HeadingTracker, matchHeadingLinks } from '../tanaconversion/headingLinks';
 
 test('filterHeadingLinks test', () => {
   const headingTracker: HeadingTracker = new Map();
@@ -16,7 +16,7 @@ test('filterHeadingLinks test', () => {
     { uid: '1', level: 1, content: '1' },
   ]);
   headingTracker.set('fileName3', []); //empty is handled fine
-  const headingLinks: HeadingLinks = new Map();
+  const headingLinks: HeadingDummyUidTracker = new Map();
   headingLinks.set('fileName', [
     { uid: 'OLD_2', link: ['1', '2'] },
     { uid: 'OLD_3', link: ['1', '2', '3'] },
@@ -27,7 +27,7 @@ test('filterHeadingLinks test', () => {
     { uid: 'INVALID_LEVELS', link: ['1', '2', '1_2'] },
   ]);
 
-  const [valid, invalid] = filterHeadingLinks(headingLinks, headingTracker);
+  const [valid, invalid] = matchHeadingLinks(headingLinks, headingTracker);
   expect(valid).toStrictEqual([
     { old: 'OLD_2', new: '2' },
     { old: 'OLD_3', new: '3' }, //same target heading leads to same UID

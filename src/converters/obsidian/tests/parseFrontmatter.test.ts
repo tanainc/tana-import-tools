@@ -1,5 +1,5 @@
 import { expect, test } from '@jest/globals';
-import { parseFrontmatter } from '../parseFrontmatter';
+import { parseFrontmatter } from '../markdown/frontmatter';
 
 test('parseFrontmatter test', () => {
   expect(parseFrontmatter('')).toStrictEqual([]);

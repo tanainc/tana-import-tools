@@ -1,6 +1,6 @@
 import { expect, test } from '@jest/globals';
 import { countEmptySpace } from '../markdown/emptySpace';
-import { extractMarkdownNodes, HierarchyType } from '../markdown/extractMarkdownNodes';
+import { extractMarkdownNodes, HierarchyType } from '../markdown/markdownNodes';
 import { nextNewLine } from '../markdown/newline';
 
 test('headings', () => {
@@ -193,7 +193,7 @@ https://some.url/
       type: HierarchyType.BULLET,
     },
     {
-      content: '2. Take modern bar. ',
+      content: '2. Take modern bar.',
       level: 0,
       type: HierarchyType.BULLET,
     },
@@ -203,7 +203,7 @@ https://some.url/
       type: HierarchyType.BULLET,
     },
     {
-      content: '4. etc. ',
+      content: '4. etc.',
       level: 0,
       type: HierarchyType.BULLET,
     },

@@ -23,15 +23,13 @@ export function extractImageLinks(content: string) {
   return imageData;
 }
 
-//TODO: improve performance, this halfed the conversion speed of Eleanors vault
-
-function extractImageLink(content: string, startPositon: number): [string, string, number, string] | number | null {
+function extractImageLink(content: string, startPosition: number): [string, string, number, string] | number | null {
   let lastFoundImageSignifier;
   let altText = '';
   let url = '';
 
   //I will atone for my sins, but you are not making me try to do this with RegEx
-  for (let index = startPositon; index < content.length; index++) {
+  for (let index = startPosition; index < content.length; index++) {
     const char = content[index];
     if (char === '\n') {
       return index + 1;
@@ -91,18 +89,17 @@ function extractImageLink(content: string, startPositon: number): [string, strin
 
 /**
  * If we detect the possible start of a linked image "[", we try to extract it.
- *
  */
 function tryToExtractLinkedImageLink(
   content: string,
-  startPositon: number,
+  startPosition: number,
 ): [string, string, number, string] | number | null {
   //in Markdown this is called a linked image (so an image with a URL that you can click on)
   //a linked image has a normal image link embedded
-  const embeddedImage = extractImageLink(content, startPositon + 1);
+  const embeddedImage = extractImageLink(content, startPosition + 1);
   if (Array.isArray(embeddedImage)) {
     const endPosition = embeddedImage[2];
-    const expectedEndPositon = startPositon + 1 + embeddedImage[3].length;
+    const expectedEndPositon = startPosition + 1 + embeddedImage[3].length;
     if (endPosition !== expectedEndPositon) {
       //in this case we found another image, but not an embedded one
       //dont need to do work twice, so can use this

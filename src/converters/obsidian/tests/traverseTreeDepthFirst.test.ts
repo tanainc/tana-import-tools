@@ -1,6 +1,6 @@
 import { expect, test } from '@jest/globals';
-import { HeadingNode } from '../filterHeadingLinks';
-import { traverseTreeDepthFirst } from '../traverseTreeDepthFirst';
+import { HeadingNode } from '../postprocessing/matchHeadingLinks';
+import { traverseTreeDepthFirst } from '../utils/traverseTreeDepthFirst';
 
 test('traverseTreeBreadthFirst test', () => {
   //sinlge heading works

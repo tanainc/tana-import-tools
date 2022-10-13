@@ -71,7 +71,7 @@ export type TanaIntermediateNode = {
   // children
   children?: TanaIntermediateNode[];
 
-  // reference uids
+  // reference UIDs
   refs?: string[];
 
   // created at timestamp

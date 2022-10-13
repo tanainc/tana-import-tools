@@ -8,6 +8,7 @@ function readObsidianConfig(vaultPath: string, configName: string): Record<strin
 const supportedLinkFormates = ['shortest', 'absolute'];
 const defaultLinkFormate = 'shortest';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function readLinkFormat(vaultPath: string) {
   const foundReadStyle = readObsidianConfig(vaultPath, 'app').newLinkFormat ?? defaultLinkFormate;
   if (!supportedLinkFormates.includes(foundReadStyle)) {

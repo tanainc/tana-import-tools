@@ -1,5 +1,5 @@
 import { expect, test } from '@jest/globals';
-import { HeadingNode } from '../postprocessing/matchHeadingLinks';
+import { HeadingNode } from '../tanaconversion/headingLinks';
 import { traverseTreeDepthFirst } from '../utils/traverseTreeDepthFirst';
 
 test('traverseTreeBreadthFirst test', () => {

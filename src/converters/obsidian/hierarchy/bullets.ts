@@ -1,7 +1,7 @@
-import { countEmptySpace, findFirstEmptySpacePosBackwards } from './emptySpace';
+import { countEmptySpace, findFirstEmptySpacePosBackwards } from '../markdown/emptySpace';
 import { HierarchyType } from './markdownNodes';
 import { Hierarchy } from './markdownNodes';
-import { isNewLine, nextNewLine } from './newline';
+import { isNewLine, nextNewLine } from '../markdown/newline';
 
 function isNumberedBullet(content: string, pos: number) {
   const char = content[pos];

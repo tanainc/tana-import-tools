@@ -134,11 +134,11 @@
                       "children": [
                         {
                           "uid": "28",
-                          "name": "Valid Heading [[54]]",
+                          "name": "Valid Heading [[56]]",
                           "createdAt": 1,
                           "editedAt": 1,
                           "type": "node",
-                          "refs": ["54"],
+                          "refs": ["56"],
                           "children": [
                             {
                               "uid": "30",
@@ -146,8 +146,8 @@
                               "createdAt": 1,
                               "editedAt": 1,
                               "type": "node",
-                              "refs": ["13", "14"],
-                              "todoState": "done"
+                              "todoState": "done",
+                              "refs": ["13", "14"]
                             },
                             {
                               "uid": "31",
@@ -236,13 +236,14 @@
                   "editedAt": 1,
                   "type": "node",
                   "children": [
+                    { "uid": "49", "name": "```", "createdAt": 1, "editedAt": 1, "type": "node" },
                     {
-                      "uid": "49",
-                      "name": "Invalid Heading [[50]]",
+                      "uid": "50",
+                      "name": "Invalid Heading [[51]]",
                       "createdAt": 1,
                       "editedAt": 1,
                       "type": "node",
-                      "refs": ["50"],
+                      "refs": ["51"],
                       "children": [
                         {
                           "uid": "36",
@@ -250,28 +251,37 @@
                           "createdAt": 1,
                           "editedAt": 1,
                           "type": "node",
-                          "supertags": ["51", "52"],
+                          "supertags": ["52", "53"],
                           "refs": ["13", "14"]
                         },
                         {
-                          "uid": "53",
+                          "uid": "54",
                           "name": "#inlinetag2 Fun",
                           "createdAt": 1,
                           "editedAt": 1,
                           "type": "node",
-                          "supertags": ["51"]
+                          "supertags": ["52"]
                         }
                       ]
                     },
                     {
-                      "uid": "54",
+                      "uid": "55",
+                      "name": "(defn meta-data-finished? [process]\n  (let [{meta-data :meta-data, :or {}}  process\n        {a :a, b :b, c :c} meta-data] ; any one could be missing!\n        (not-any? nil? [a b c])))",
+                      "createdAt": 1,
+                      "editedAt": 1,
+                      "codeLanguage": "Clojure",
+                      "type": "codeblock"
+                    },
+                    {
+                      "uid": "56",
                       "name": "Out of Level",
                       "createdAt": 1,
                       "editedAt": 1,
                       "type": "node",
                       "children": [
+                        { "uid": "57", "name": "code here", "createdAt": 1, "editedAt": 1, "type": "codeblock" },
                         {
-                          "uid": "55",
+                          "uid": "58",
                           "name": "single image",
                           "createdAt": 1,
                           "editedAt": 1,
@@ -279,7 +289,7 @@
                           "mediaUrl": "https://mdg.imgix.net/assets/images/tux.png?auto=format&fit=clip&q=40&w=100"
                         },
                         {
-                          "uid": "56",
+                          "uid": "59",
                           "name": "single image some text",
                           "createdAt": 1,
                           "editedAt": 1,
@@ -287,14 +297,14 @@
                           "mediaUrl": "https://mdg.imgix.net/assets/images/tux.png?auto=format&fit=clip&q=40&w=100"
                         },
                         {
-                          "uid": "57",
-                          "name": "[[58]] [[59]]",
+                          "uid": "60",
+                          "name": "[[61]] [[62]]",
                           "createdAt": 1,
                           "editedAt": 1,
                           "type": "node",
                           "children": [
                             {
-                              "uid": "58",
+                              "uid": "61",
                               "name": "multiple images",
                               "createdAt": 1,
                               "editedAt": 1,
@@ -302,7 +312,7 @@
                               "mediaUrl": "https://mdg.imgix.net/assets/images/tux.png?auto=format&fit=clip&q=40&w=100"
                             },
                             {
-                              "uid": "59",
+                              "uid": "62",
                               "name": "multiple images 2",
                               "createdAt": 1,
                               "editedAt": 1,
@@ -312,14 +322,14 @@
                           ]
                         },
                         {
-                          "uid": "60",
-                          "name": "[[61]] [[61]]",
+                          "uid": "63",
+                          "name": "[[64]] [[64]]",
                           "createdAt": 1,
                           "editedAt": 1,
                           "type": "node",
                           "children": [
                             {
-                              "uid": "61",
+                              "uid": "64",
                               "name": "same image",
                               "createdAt": 1,
                               "editedAt": 1,
@@ -329,7 +339,7 @@
                           ]
                         },
                         {
-                          "uid": "62",
+                          "uid": "65",
                           "name": "ancient public baths",
                           "createdAt": 1,
                           "editedAt": 1,
@@ -347,14 +357,14 @@
       ]
     },
     {
-      "uid": "63",
+      "uid": "66",
       "name": "Missing Nodes for vault",
       "createdAt": 1,
       "editedAt": 1,
       "type": "node",
       "children": [
         { "uid": "5", "name": "heading", "createdAt": 1, "editedAt": 1, "type": "node" },
-        { "uid": "50", "name": "Heading 2#Heading here", "createdAt": 1, "editedAt": 1, "type": "node" },
+        { "uid": "51", "name": "Heading 2#Heading here", "createdAt": 1, "editedAt": 1, "type": "node" },
         { "uid": "13", "name": "Link", "createdAt": 1, "editedAt": 1, "type": "node" },
         { "uid": "14", "name": "Link2", "createdAt": 1, "editedAt": 1, "type": "node" },
         { "uid": "33", "name": "missing#^MISSING", "createdAt": 1, "editedAt": 1, "type": "node" },
@@ -366,12 +376,12 @@
   "supertags": [
     { "name": "supertag1", "uid": "20" },
     { "name": "supertag2", "uid": "21" },
-    { "name": "inlinetag2", "uid": "51" },
-    { "name": "inlinetag1", "uid": "52" }
+    { "name": "inlinetag2", "uid": "52" },
+    { "name": "inlinetag1", "uid": "53" }
   ],
   "attributes": [
     { "name": "field0", "values": [], "count": 2 },
     { "name": "field1", "values": [], "count": 1 }
   ],
-  "summary": { "leafNodes": 58, "topLevelNodes": 1, "totalNodes": 59, "calendarNodes": 0, "fields": 3, "brokenRefs": 0 }
+  "summary": { "leafNodes": 61, "topLevelNodes": 1, "totalNodes": 62, "calendarNodes": 1, "fields": 3, "brokenRefs": 0 }
 }

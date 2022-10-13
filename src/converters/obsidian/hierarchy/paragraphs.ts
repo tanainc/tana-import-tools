@@ -2,14 +2,15 @@ import { detectBulletHierarchy } from './bullets';
 import { HierarchyType } from './markdownNodes';
 import { detectHeadingHierarchy } from './headings';
 import { Hierarchy } from './markdownNodes';
-import { lastPositionIsNewline, nextNewLine } from './newline';
+import { lastPositionIsNewline, nextNewLine } from '../markdown/newline';
+import { detectCodeBlockHierarchy } from './codeblocks';
 
 export function findParagraphSliceStartPosition(curPosition: number) {
   //we don't trim the start
   return curPosition;
 }
 
-export function findParagraphSliceEndPosition(content: string, curPosition: number): number {
+export function findParagraphSliceEndPosition(content: string, curPosition: number): [number] | [number, Hierarchy] {
   let endPosition = nextNewLine(content, curPosition);
   let char = content[endPosition];
   let lastChar = char;
@@ -19,16 +20,16 @@ export function findParagraphSliceEndPosition(content: string, curPosition: numb
   // eslint-disable-next-line no-constant-condition
   while (true) {
     if (char === undefined) {
-      return endPosition;
+      return [endPosition];
     } else if (char === '\n' && lastChar === '\n') {
-      return endPosition - 1;
+      return [endPosition - 1];
     } else {
-      //we could use this hierarchy because we already detected it, however this would overcomplicate the whole process
-      const hierachy = newTypeOfHierarchyStarts(content, endPosition);
-      if (hierachy) {
-        return endPosition - 1;
+      const hierarchy = newTypeOfHierarchyStarts(content, endPosition);
+      if (hierarchy) {
+        return [endPosition - 1, hierarchy];
       }
     }
+    //TODO: jump to newline?
     lastChar = char;
     endPosition++;
     char = content[endPosition];
@@ -45,17 +46,21 @@ function detectBlockQuoteHierarchy(content: string, pos: number): Hierarchy | nu
 }
 
 function newTypeOfHierarchyStarts(content: string, pos: number): Hierarchy | null {
-  let hierachy: Hierarchy | null = detectHeadingHierarchy(content, pos);
-  if (hierachy) {
-    return hierachy;
+  let hierarchy: Hierarchy | null = detectHeadingHierarchy(content, pos);
+  if (hierarchy) {
+    return hierarchy;
   }
-  hierachy = detectBulletHierarchy(content, pos);
-  if (hierachy) {
-    return hierachy;
+  hierarchy = detectBulletHierarchy(content, pos);
+  if (hierarchy) {
+    return hierarchy;
   }
-  hierachy = detectBlockQuoteHierarchy(content, pos);
-  if (hierachy) {
-    return hierachy;
+  hierarchy = detectBlockQuoteHierarchy(content, pos);
+  if (hierarchy) {
+    return hierarchy;
+  }
+  hierarchy = detectCodeBlockHierarchy(content, pos);
+  if (hierarchy) {
+    return hierarchy;
   }
 
   return null;

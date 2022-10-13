@@ -1,4 +1,5 @@
 import { detectBulletHierarchy, findBulletSliceEndPosition, findBulletSliceStartPosition } from './bullets';
+import { detectCodeBlockHierarchy, findCodeBlockSliceEndPosition, findCodeBlockSliceStartPosition } from './codeblocks';
 import { detectHeadingHierarchy, findHeadingSliceEndPosition, findHeadingSliceStartPosition } from './headings';
 import { findParagraphSliceEndPosition, findParagraphSliceStartPosition } from './paragraphs';
 
@@ -8,6 +9,7 @@ export enum HierarchyType {
   HEADING = 'Heading',
   BULLET = 'Bullet Node',
   PARAGRAPH = 'Paragraph',
+  CODEBLOCK = 'Code Block',
 }
 
 export interface MarkdownNode {
@@ -16,7 +18,9 @@ export interface MarkdownNode {
   //lower = higher in the hierarchy
   //for bullet nodes also used as a measure of empty space
   //for heading nodes this is the number of #'s
+  //for code blocks this is the length of the block in chars
   level: number;
+  codeLanguage?: string;
 }
 
 export type Hierarchy = Omit<MarkdownNode, 'content'>;
@@ -30,8 +34,20 @@ export function extractMarkdownNodes(content: string, startPosition = 0): Markdo
       continue;
     }
 
-    const [node, slicePosition] = extractMarkdownNode(content, index);
-    nodeDescs.push(node);
+    let [node, slicePosition, nextHierarchy] = extractMarkdownNode(content, index);
+    if (node.content.trim() !== '') {
+      nodeDescs.push(node);
+    }
+    //sometimes a nextHierarchy is already detected, so we need to take that into account for speeds sake
+    while (nextHierarchy) {
+      while (content[slicePosition] === '\n') {
+        slicePosition++;
+      }
+      [node, slicePosition, nextHierarchy] = extractMarkdownNode(content, slicePosition);
+      if (node.content.trim() !== '') {
+        nodeDescs.push(node);
+      }
+    }
 
     //-1 because we dont want to assume that the char at the slice position is irrelevant
     index = slicePosition - 1;
@@ -40,12 +56,15 @@ export function extractMarkdownNodes(content: string, startPosition = 0): Markdo
   return nodeDescs;
 }
 /**
- * @returns [MarkdownNode, slicePosition]
+ * @returns [MarkdownNode, slicePosition, possibly nextHierarchy]
  */
-function extractMarkdownNode(content: string, curPosition: number): [MarkdownNode, number] {
+function extractMarkdownNode(
+  content: string,
+  curPosition: number,
+): [MarkdownNode, number, undefined] | [MarkdownNode, number, Hierarchy] {
   const hierarchy: Hierarchy = detectNextHierarchy(content, curPosition);
   const startPos = findSliceStartPosition(content, curPosition, hierarchy);
-  const slicePos = findSliceEndPosition(content, curPosition, hierarchy);
+  const [slicePos, nextHierarchy] = findSliceEndPosition(content, curPosition, hierarchy);
 
   return [
     {
@@ -54,6 +73,7 @@ function extractMarkdownNode(content: string, curPosition: number): [MarkdownNod
       content: content.slice(startPos, slicePos).trimEnd(),
     },
     slicePos,
+    nextHierarchy,
   ];
 }
 
@@ -61,13 +81,17 @@ function extractMarkdownNode(content: string, curPosition: number): [MarkdownNod
  * If we know that a hierarchy ends, here we can detect the next one.
  */
 export function detectNextHierarchy(content: string, curPosition: number): Hierarchy {
-  let hierachy = detectHeadingHierarchy(content, curPosition);
-  if (hierachy) {
-    return hierachy;
+  let hierarchy = detectHeadingHierarchy(content, curPosition);
+  if (hierarchy) {
+    return hierarchy;
   } else {
-    hierachy = detectBulletHierarchy(content, curPosition);
-    if (hierachy) {
-      return hierachy;
+    hierarchy = detectBulletHierarchy(content, curPosition);
+    if (hierarchy) {
+      return hierarchy;
+    }
+    hierarchy = detectCodeBlockHierarchy(content, curPosition);
+    if (hierarchy) {
+      return hierarchy;
     }
   }
   return { type: HierarchyType.PARAGRAPH, level: 0 };
@@ -85,6 +109,8 @@ function findSliceStartPosition(content: string, curPosition: number, hierarchy:
       return findBulletSliceStartPosition(content, curPosition, hierarchy);
     case HierarchyType.PARAGRAPH:
       return findParagraphSliceStartPosition(curPosition);
+    case HierarchyType.CODEBLOCK:
+      return findCodeBlockSliceStartPosition(curPosition);
     default:
       throw 'Unsupported HierarchyType detected: ' + hierarchy;
   }
@@ -93,14 +119,20 @@ function findSliceStartPosition(content: string, curPosition: number, hierarchy:
 /**
  * Finds the position where to end slicing the current hierarchy. Does not apply trimming, so that we can skip the search to this position.
  */
-function findSliceEndPosition(content: string, curPosition: number, hierarchy: Hierarchy): number {
+function findSliceEndPosition(
+  content: string,
+  curPosition: number,
+  hierarchy: Hierarchy,
+): [number] | [number, Hierarchy] {
   switch (hierarchy.type) {
     case HierarchyType.HEADING:
-      return findHeadingSliceEndPosition(content, curPosition, hierarchy);
+      return [findHeadingSliceEndPosition(content, curPosition, hierarchy)];
     case HierarchyType.BULLET:
-      return findBulletSliceEndPosition(content, curPosition, hierarchy);
+      return [findBulletSliceEndPosition(content, curPosition, hierarchy)];
     case HierarchyType.PARAGRAPH:
       return findParagraphSliceEndPosition(content, curPosition);
+    case HierarchyType.CODEBLOCK:
+      return [findCodeBlockSliceEndPosition(curPosition, hierarchy)];
     default:
       throw 'Unsupported HierarchyType detected: ' + hierarchy;
   }
@@ -118,6 +150,11 @@ export function isMarkdownNodeChild(potentialParent: MarkdownNode, potentialChil
 
   //PARAGRAPH can only be child of HEADING and can not be a parent
   if (potentialParent.type === HierarchyType.PARAGRAPH || potentialChild.type === HierarchyType.PARAGRAPH) {
+    return false;
+  }
+
+  //CODEBLOCK can only be child of HEADING and can not be a parent
+  if (potentialParent.type === HierarchyType.CODEBLOCK || potentialChild.type === HierarchyType.CODEBLOCK) {
     return false;
   }
 

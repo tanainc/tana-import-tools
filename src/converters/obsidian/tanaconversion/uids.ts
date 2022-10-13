@@ -1,7 +1,7 @@
 import { VaultContext } from '../context';
-import { extractBlockId } from '../markdown/blockIds';
+import { removeBlockId } from '../markdown/blockIds';
 import { cleanUpLink, detectLinkType, LinkType } from '../markdown/internalLinks';
-import { blockLinkUidRequest, BlockUidRequestType } from './blocks';
+import { blockLinkUidRequest, BlockUidRequestType } from './blockLinks';
 import { headingLinkUidRequest } from './headingLinks';
 import { incrementSummary } from './summary';
 
@@ -66,7 +66,7 @@ export function untrackedUidRequest(context: VaultContext) {
  * @returns [uid, cleanedContent]
  */
 export function contentUidRequest(fileName: string, content: string, context: VaultContext) {
-  const [cleanedContent, id] = extractBlockId(content);
+  const [cleanedContent, id] = removeBlockId(content);
   if (id) {
     return [blockLinkUidRequest([fileName, id], BlockUidRequestType.BLOCK, context), cleanedContent];
   } else {

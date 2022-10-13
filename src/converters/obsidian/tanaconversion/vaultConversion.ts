@@ -1,6 +1,6 @@
 import { appendFileSync, Dirent, readdirSync, readFileSync } from 'fs';
 import path, { resolve } from 'path';
-import { convertObsidianFile } from './obsidianFileConversion';
+import { convertObsidianFile } from './fileConversion';
 import { VaultContext } from '../context';
 import { untrackedUidRequest } from './uids';
 

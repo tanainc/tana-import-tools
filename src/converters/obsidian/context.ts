@@ -1,6 +1,6 @@
 import { TanaIntermediateSummary, TanaIntermediateAttribute } from '../../types/types';
 import { idgenerator as randomGenerator } from '../../utils/utils';
-import { BlockLinkTracker } from './tanaconversion/blocks';
+import { BlockLinkTracker } from './tanaconversion/blockLinks';
 import { HeadingDummyUidTracker, HeadingTracker } from './tanaconversion/headingLinks';
 import { SuperTagTracker } from './tanaconversion/supertags';
 import { IdGenerator, UidTracker } from './tanaconversion/uids';

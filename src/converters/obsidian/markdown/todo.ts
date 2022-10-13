@@ -1,4 +1,4 @@
-import { Hierarchy, HierarchyType } from './markdownNodes';
+import { Hierarchy, HierarchyType } from '../hierarchy/markdownNodes';
 
 function detectTodoType(content: string) {
   if (content.startsWith('[ ] ')) {
@@ -11,8 +11,8 @@ function detectTodoType(content: string) {
   return undefined;
 }
 
-export function removeTodo(content: string, hierachy: Hierarchy): [string, 'todo' | 'done'] | null {
-  if (hierachy.type === HierarchyType.BULLET) {
+export function removeTodo(content: string, hierarchy: Hierarchy): [string, 'todo' | 'done'] | null {
+  if (hierarchy.type === HierarchyType.BULLET) {
     const type = detectTodoType(content);
     if (type) {
       return [content.slice('[ ] '.length), type];

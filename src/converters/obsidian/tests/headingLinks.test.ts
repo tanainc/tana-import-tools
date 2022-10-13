@@ -1,7 +1,7 @@
 import { expect, test } from '@jest/globals';
 import { HeadingDummyUidTracker, HeadingTracker, matchHeadingLinks } from '../tanaconversion/headingLinks';
 
-test('filterHeadingLinks test', () => {
+test('headingLinks test', () => {
   const headingTracker: HeadingTracker = new Map();
   headingTracker.set('fileName', [
     { uid: '1', level: 1, content: '1' },

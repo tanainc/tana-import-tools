@@ -1,6 +1,6 @@
 import { expect, test } from '@jest/globals';
 import { countEmptySpace } from '../markdown/emptySpace';
-import { extractMarkdownNodes, HierarchyType } from '../markdown/markdownNodes';
+import { extractMarkdownNodes, HierarchyType } from '../hierarchy/markdownNodes';
 import { nextNewLine } from '../markdown/newline';
 
 test('headings', () => {
@@ -28,17 +28,17 @@ test('paragraphs', () => {
   expect(extractMarkdownNodes('Starting without heading.\n\n')).toStrictEqual([
     { content: 'Starting without heading.', level: 0, type: HierarchyType.PARAGRAPH },
   ]);
-  expect(extractMarkdownNodes('Directly followed by hierachy.\n# Heading')).toStrictEqual([
-    { content: 'Directly followed by hierachy.', level: 0, type: HierarchyType.PARAGRAPH },
+  expect(extractMarkdownNodes('Directly followed by hierarchy.\n# Heading')).toStrictEqual([
+    { content: 'Directly followed by hierarchy.', level: 0, type: HierarchyType.PARAGRAPH },
     { content: 'Heading', level: 1, type: HierarchyType.HEADING },
   ]);
-  expect(extractMarkdownNodes('# Heading\nPrefixed by hierachy.')).toStrictEqual([
+  expect(extractMarkdownNodes('# Heading\nPrefixed by hierarchy.')).toStrictEqual([
     { content: 'Heading', level: 1, type: HierarchyType.HEADING },
-    { content: 'Prefixed by hierachy.', level: 0, type: HierarchyType.PARAGRAPH },
+    { content: 'Prefixed by hierarchy.', level: 0, type: HierarchyType.PARAGRAPH },
   ]);
-  expect(extractMarkdownNodes('# Heading\n\nPrefixed by hierachy.')).toStrictEqual([
+  expect(extractMarkdownNodes('# Heading\n\nPrefixed by hierarchy.')).toStrictEqual([
     { content: 'Heading', level: 1, type: HierarchyType.HEADING },
-    { content: 'Prefixed by hierachy.', level: 0, type: HierarchyType.PARAGRAPH },
+    { content: 'Prefixed by hierarchy.', level: 0, type: HierarchyType.PARAGRAPH },
   ]);
   expect(extractMarkdownNodes('Stuff but with\na newline.\n\n')).toStrictEqual([
     { content: 'Stuff but with\na newline.', level: 0, type: HierarchyType.PARAGRAPH },

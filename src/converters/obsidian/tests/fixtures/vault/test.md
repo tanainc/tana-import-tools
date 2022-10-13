@@ -12,12 +12,22 @@ Stuff but with
 a newline.
 
 ## Heading 2
-
+```
 - Invalid Heading [[test2#Heading 2#Heading here]]
     -  Block with #inlinetag2 [[Link|alias]] [[Link]] [[Link2]] #inlinetag1 ^BLOCK_UID
   - #inlinetag2 Fun #inlinetag2 
+```Clojure  
+(defn meta-data-finished? [process]
+  (let [{meta-data :meta-data, :or {}}  process
+        {a :a, b :b, c :c} meta-data] ; any one could be missing!
+        (not-any? nil? [a b c])))
+```
 
 #### Out of Level
+```
+code here
+```
+
 
 ![single image](https://mdg.imgix.net/assets/images/tux.png?auto=format&fit=clip&q=40&w=100)
 

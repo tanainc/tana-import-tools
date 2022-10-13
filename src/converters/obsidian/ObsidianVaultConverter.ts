@@ -2,7 +2,7 @@ import { appendFileSync, unlinkSync } from 'fs';
 import path from 'path';
 import fs from 'fs';
 import { createUnlinkedTanaNodes } from './tanaconversion/invalidLinks';
-import { addFileNode, addParentNodeEnd, addParentNodeStart, handleVault } from './tanaconversion/vault';
+import { addFileNode, addParentNodeEnd, addParentNodeStart, handleVault } from './tanaconversion/vaultConversion';
 import { VaultContext } from './context';
 import { createSuperTagObjects } from './tanaconversion/supertags';
 import { shiftFromLeafToTop } from './tanaconversion/summary';

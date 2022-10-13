@@ -1,7 +1,6 @@
-import { countEmptySpace } from './emptySpace';
-import { HierarchyType } from './markdownNodes';
-import { Hierarchy } from './markdownNodes';
-import { lastPositionIsNewline, nextNewLine } from './newline';
+import { countEmptySpace } from '../markdown/emptySpace';
+import { lastPositionIsNewline, nextNewLine } from '../markdown/newline';
+import { Hierarchy, HierarchyType } from './markdownNodes';
 
 export function detectHeadingHierarchy(content: string, pos: number): null | Hierarchy {
   if (!lastPositionIsNewline(content, pos)) {

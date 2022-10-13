@@ -1,12 +1,25 @@
 import { NodeType, TanaIntermediateNode } from '../../../types/types';
 import { getBracketLinks } from '../../../utils/utils';
-import { MarkdownNode } from '../markdown/markdownNodes';
+import { HierarchyType, MarkdownNode } from '../hierarchy/markdownNodes';
 import { VaultContext } from '../context';
 import { superTagUidRequests } from './supertags';
-import { contentUidRequest, uidRequest, UidRequestType } from './uids';
+import { contentUidRequest, uidRequest, UidRequestType, untrackedUidRequest } from './uids';
 import { removeTodo } from '../markdown/todo';
 import { detectTags } from '../markdown/tags';
 import { handleImages } from './imageNodes';
+import { postProcessCodeBlock } from '../hierarchy/codeblocks';
+
+function convertCodeBlock(obsidianNode: MarkdownNode, today: number, context: VaultContext) {
+  const tanaNode: TanaIntermediateNode = {
+    uid: untrackedUidRequest(context),
+    name: postProcessCodeBlock(obsidianNode),
+    createdAt: today,
+    editedAt: today,
+    codeLanguage: obsidianNode.codeLanguage,
+    type: 'codeblock' as NodeType,
+  };
+  return tanaNode;
+}
 
 export function convertMarkdownNode(
   fileName: string,
@@ -14,6 +27,10 @@ export function convertMarkdownNode(
   today: number,
   context: VaultContext,
 ): TanaIntermediateNode {
+  if (obsidianNode.type === HierarchyType.CODEBLOCK) {
+    return convertCodeBlock(obsidianNode, today, context);
+  }
+
   const [uid, content] = contentUidRequest(fileName, obsidianNode.content, context);
   const tanaNode: TanaIntermediateNode = {
     uid,

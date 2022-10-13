@@ -1,5 +1,5 @@
 import { NodeType, TanaIntermediateNode } from '../../../types/types';
-import { filterInvalidBlockLinks } from './blocks';
+import { filterInvalidBlockLinks } from './blockLinks';
 import { filterInvalidContentLinks, untrackedUidRequest } from './uids';
 import { VaultContext } from '../context';
 

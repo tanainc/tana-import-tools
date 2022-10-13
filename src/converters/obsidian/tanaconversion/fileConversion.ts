@@ -1,6 +1,6 @@
-import { convertMarkdownNode } from './markdownNodeConversion';
+import { convertMarkdownNode } from './nodeConversion';
 import { createTree } from '../utils/createTree';
-import { HierarchyType, MarkdownNode, extractMarkdownNodes, isMarkdownNodeChild } from '../markdown/markdownNodes';
+import { HierarchyType, MarkdownNode, extractMarkdownNodes, isMarkdownNodeChild } from '../hierarchy/markdownNodes';
 import { extractFrontmatter, FrontmatterData } from '../markdown/frontmatter';
 import { VaultContext } from '../context';
 import moment from 'moment';

@@ -1,4 +1,4 @@
-export function extractBlockId(content: string): [string, string | undefined] {
+export function removeBlockId(content: string): [string, string | undefined] {
   let id;
 
   const cleanedContent = content

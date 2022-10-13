@@ -3,7 +3,7 @@ import { extractImageLinks } from '../markdown/imageLinks';
 
 //TODO: write some test utils to check permutations easier
 
-test('extractImageLinks test', () => {
+test('imageLinks test', () => {
   const noLinks = [
     '',
     ' ',

@@ -2,6 +2,7 @@
 
 import { expect, test } from '@jest/globals';
 import { expectField } from '../../../testUtils/testUtils';
+import { TanaIntermediateNode } from '../../../types/types';
 import { importNotionFile } from './testUtils';
 test('Smoke test import preview ', async () => {
   const [file] = importNotionFile('singleNode.csv');
@@ -104,4 +105,23 @@ test('fields', () => {
   expectField('Entry', 'Entry', ['#001'], fn);
   expectField('Gen', 'Gen', ['1'], fn);
   expectField('Name', 'Name', ['Bulbasaur'], fn);
+});
+
+test('Reports Broken link in preview', async () => {
+  const [file, _f, fn] = importNotionFile('nodeRef.csv');
+
+  expect(file.summary).toEqual({
+    brokenRefs: 0,
+    calendarNodes: 0,
+    fields: 6,
+    leafNodes: 8,
+    topLevelNodes: 2,
+    totalNodes: 10,
+  });
+
+  const node = fn('Ivysaur');
+  const link = fn('Link');
+  const refs = (link?.children as TanaIntermediateNode[])[0].refs;
+
+  expect(refs).toEqual([node?.uid]);
 });

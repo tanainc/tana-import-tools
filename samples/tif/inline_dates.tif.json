@@ -1,0 +1,14 @@
+{
+  "version": "TanaIntermediateFile V0.1",
+  "nodes": [
+    {
+      "name": "See [[date:03-31-2022]]",
+      "type": "node"
+    },
+    {
+      "uid": "02-09-2022",
+      "name": "02-09-2022",
+      "type": "date"
+    }
+  ]
+}

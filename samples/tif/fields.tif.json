@@ -1,0 +1,34 @@
+{
+  "version": "TanaIntermediateFile V0.1",
+  "attributes": [
+    {
+      "name": "Owner",
+      "count": 1
+    }
+  ],
+
+  "nodes": [
+    {
+      "uid": "jackId",
+      "name": "Jack",
+      "type": "node"
+    },
+    {
+      "name": "Holder",
+      "type": "node",
+      "children": [
+        {
+          "name": "Owner",
+          "children": [
+            {
+              "name": "[[jackId]]",
+              "refs": ["jackId"],
+              "type": "node"
+            }
+          ],
+          "type": "field"
+        }
+      ]
+    }
+  ]
+}

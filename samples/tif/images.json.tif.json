@@ -1,0 +1,57 @@
+{
+  "version": "TanaIntermediateFile V0.1",
+
+  "nodes": [
+    {
+      "uid": "container",
+      "name": "Photo demo",
+      "children": [
+        {
+          "name": "some image",
+          "type": "image",
+          "mediaUrl": "https://tana.inc/photo/1"
+        },
+        {
+          "name": "some other image",
+          "type": "image",
+          "mediaUrl": "https://tana.inc/photo/2"
+        },
+        {
+          "name": "[[firstImageId]] [[secondImageId]]",
+          "children": [
+            {
+              "uid": "firstImageId",
+              "name": "some image",
+              "type": "image",
+              "mediaUrl": "https://tana.inc/photo/3"
+            },
+            {
+              "uid": "secondImageId",
+              "name": "some other image",
+              "type": "image",
+              "mediaUrl": "https://tana.inc/photo/4"
+            }
+          ],
+
+          "refs": ["firstImageId", "secondImageId"],
+          "type": "node"
+        }
+      ],
+      "type": "node"
+    },
+    {
+      "name": "[[myImageId]] with text following",
+      "children": [
+        {
+          "uid": "myImageId",
+          "name": "image",
+
+          "type": "image",
+          "mediaUrl": "https://tana.inc/photo/1"
+        }
+      ],
+      "refs": ["myImageId"],
+      "type": "node"
+    }
+  ]
+}

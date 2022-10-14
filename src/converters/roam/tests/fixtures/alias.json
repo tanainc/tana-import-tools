@@ -3,124 +3,93 @@
     "refs": [{ "uid": "9Kc68QbDR" }],
     "string": "this is the [test page]([[tests]])",
     "uid": "pJ6scSv6R",
-    "edit-time": 1654375472356,
     ":block/refs": [{ ":block/uid": "9Kc68QbDR" }]
   },
   {
     "uid": "9Kc68QbDR",
-    "create-time": 1654374658770,
-    "edit-time": 1654374658772,
     "title": "tests"
   },
   {
     "uid": "plainLinkWithAlias",
-    "create-time": 1654374658770,
-    "edit-time": 1654374658772,
     "title": "Plain link: [someSite](https://www.vg.no)"
   },
 
   {
     "string": "REFME",
-    "uid": "3G_j8mOW5",
-    "create-time": 1655846390434,
-    "edit-time": 1655846396990
+    "uid": "3G_j8mOW5"
   },
   {
     "string": "See this note [*](((3G_j8mOW5)))",
-    "create-time": 1655846351531,
     ":block/refs": [{ ":block/uid": "3G_j8mOW5" }],
     "refs": [{ "uid": "3G_j8mOW5" }],
-    "uid": "seeThisNote",
-    "edit-time": 1655846643264
+    "uid": "seeThisNote"
   },
   {
     "string": "Point to [[Complex ((3G_j8mOW5)) and [[Jack Black]]]]",
-    "create-time": 1655846373185,
+
     ":block/refs": [{ ":block/uid": "jackBlack" }, { ":block/uid": "complexWithRefs" }],
     "refs": [{ "uid": "jackBlack" }, { "uid": "complexWithRefs" }],
-    "uid": "pointToToComplex",
-    "edit-time": 1655846635766
+    "uid": "pointToToComplex"
   },
   {
-    "edit-time": 1655846430358,
     "refs": [{ "uid": "jackBlack" }],
     "uid": "complexWithRefs",
     ":block/refs": [{ ":block/uid": "jackBlack" }],
-    "title": "Complex ((3G_j8mOW5)) and [[Jack Black]]",
-    "create-time": 1655846430357
+    "title": "Complex ((3G_j8mOW5)) and [[Jack Black]]"
   },
   {
-    "edit-time": 1655846430358,
     "uid": "jackBlack",
-    "title": "Jack Black",
-    "create-time": 1655846430357
+    "title": "Jack Black"
   },
 
   {
     "string": "a",
-    "uid": "y7Tvpja6V",
-    "create-time": 1644310435794,
-    "edit-time": 1644310437251
+    "uid": "y7Tvpja6V"
   },
   {
     "string": "[*](((y7Tvpja6V)))",
-    "create-time": 1644310437238,
     ":block/refs": [{ ":block/uid": "y7Tvpja6V" }],
     "refs": [{ "uid": "y7Tvpja6V" }],
-    "uid": "mOmgcpT2V",
-    "edit-time": 1644310453852
+    "uid": "mOmgcpT2V"
   },
   {
-    "edit-time": 1655846430358,
     "uid": "topical",
-    "title": "topic",
-    "create-time": 1655846430357
+    "title": "topic"
   },
   {
     "string": "See #topic",
-    "create-time": 1644310437238,
+
     ":block/refs": [{ ":block/uid": "topical" }],
     "refs": [{ "uid": "topical" }],
-    "uid": "hashTopical",
-    "edit-time": 1644310453852
+    "uid": "hashTopical"
   },
   {
     "string": "Some Node",
-    "create-time": 1644310437238,
     ":block/refs": [{ ":block/uid": "topical" }],
-    "uid": "someNode",
-    "edit-time": 1644310453852
+    "uid": "someNode"
   },
   {
     "string": "we can have many aliases [*]([[Some Node]]) [*]([[Some Node]]) [*]([[Broken Node]]) [*]([[Broken Node]]) in the same [block]([[July 15th, 2022]])",
-    "create-time": 1644310437238,
+
     ":block/refs": [{ ":block/uid": "topical" }],
     "refs": [{ "uid": "someNode" }],
-    "uid": "manyAliases",
-    "edit-time": 1644310453852
+    "uid": "manyAliases"
   },
   {
     "string": "block ref alias [*](((someNode))) [*](((someNode))) [*](((someBrokenId))) [*](((someBrokenId)))",
-    "create-time": 1644310437238,
     ":block/refs": [{ ":block/uid": "topical" }],
     "refs": [{ "uid": "someNode" }],
-    "uid": "blockRefAlias",
-    "edit-time": 1644310453852
+    "uid": "blockRefAlias"
   },
 
   {
-    "create-time": 1648758787377,
     "title": "July 15th, 2022",
-    ":log/id": 1648758787376,
-    "uid": "07-15-2022",
-    "edit-time": 1648758787377
+    "uid": "07-15-2022"
   },
   {
     "string": "this is the [##]([[tests]])",
-    "create-time": 1644310437238,
     ":block/refs": [],
     "refs": [{ "uid": "9Kc68QbDR" }],
-    "uid": "doubleHashAlias",
-    "edit-time": 1644310453852
+    "uid": "doubleHashAlias"
   }
 ]

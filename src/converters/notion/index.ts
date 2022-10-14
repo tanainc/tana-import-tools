@@ -9,7 +9,8 @@ const isPageLink = (s: string) => {
 
 const parseFileContents = (fileContent: string): Record<string, string>[] => {
     // Looks like notion exporter inserts a Zero Width No-Break Space character at the start of the file.
-  return parse(fileContent.slice(1), {columns: true, skip_empty_lines: true, encoding: 'utf8', })
+  
+  return parse(fileContent.replace(/[\u200B-\u200D\uFEFF]/g, ''), {columns: true, skip_empty_lines: true, encoding: 'utf8', })
 }
 
 const createChildrenForRoot = (parsedContent: Record<string, string>): TanaIntermediateNode[] | undefined => {

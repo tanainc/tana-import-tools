@@ -5,9 +5,7 @@ import { RoamConverter } from './converters/roam/index';
 import { TanaIntermediateFile } from './types/types';
 import { WorkflowyConverter } from './converters/workflowy';
 import { lstatSync } from 'fs';
-import { ObsidianVaultConverter } from './converters/obsidian';
-import { createVaultContext } from './converters/obsidian/VaultContext';
-import { LocalFileSystemAdapter } from './converters/obsidian/LocalFileSystemAdapter';
+import { ObsidianVaultConverter, LocalFileSystemAdapter, createVaultContext } from './converters/obsidian';
 
 const fileType = process.argv[2];
 const file = process.argv[3];

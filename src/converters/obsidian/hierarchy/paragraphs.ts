@@ -38,6 +38,7 @@ export function findParagraphSliceEndPosition(content: string, curPosition: numb
 
 //special case, where we want an extra bullet for block quotes
 //TODO: same for code blocks + code block endings
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function detectBlockQuoteHierarchy(content: string, pos: number): Hierarchy | null {
   if (lastPositionIsNewline(content, pos) && content[pos] === '>' && content[pos + 1] === ' ') {
     return { type: HierarchyType.PARAGRAPH, level: 0 };
@@ -54,10 +55,11 @@ function newTypeOfHierarchyStarts(content: string, pos: number): Hierarchy | nul
   if (hierarchy) {
     return hierarchy;
   }
-  hierarchy = detectBlockQuoteHierarchy(content, pos);
-  if (hierarchy) {
-    return hierarchy;
-  }
+  //TODO: its not enough to just cut here, we actually need to cut the whole block quote just like the code block
+  // hierarchy = detectBlockQuoteHierarchy(content, pos);
+  // if (hierarchy) {
+  //   return hierarchy;
+  // }
   hierarchy = detectCodeBlockHierarchy(content, pos);
   if (hierarchy) {
     return hierarchy;

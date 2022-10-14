@@ -1,4 +1,4 @@
-import { basename } from '../CustomFileSystemAdapter';
+import { basename } from '../filesystem/CustomFileSystemAdapter';
 
 function isPath(searchStr: string) {
   return basename(searchStr) !== searchStr;

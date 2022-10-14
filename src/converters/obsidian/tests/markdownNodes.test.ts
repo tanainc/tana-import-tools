@@ -43,9 +43,10 @@ test('paragraphs', () => {
   expect(extractMarkdownNodes('Stuff but with\na newline.\n\n')).toStrictEqual([
     { content: 'Stuff but with\na newline.', level: 0, type: HierarchyType.PARAGRAPH },
   ]);
+  //TODO: will change again when we do something sensible with the block quotes
   expect(extractMarkdownNodes('Stuff but with\n> a blockquote.\n\n')).toStrictEqual([
-    { content: 'Stuff but with', level: 0, type: HierarchyType.PARAGRAPH },
-    { content: '> a blockquote.', level: 0, type: HierarchyType.PARAGRAPH },
+    { content: 'Stuff but with\n> a blockquote.', level: 0, type: HierarchyType.PARAGRAPH },
+    // { content: '> a blockquote.', level: 0, type: HierarchyType.PARAGRAPH },
   ]);
   expect(extractMarkdownNodes('---\nFoo `paragraph-run-style-emphasis-flip.docx` bar')).toStrictEqual([
     {

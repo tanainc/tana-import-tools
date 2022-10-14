@@ -94,19 +94,19 @@ export async function postProcessTIFFIle(filePath: string, context: VaultContext
   });
 
   const tempPath = filePath + '_TEMP';
-  context.fileSystemAdapter.initReadingFile(filePath);
+  context.fileSystemAdapter.initReadingResultFile(filePath);
   const regExes = validHeadingLinks.map((link) => ({
     old: new RegExp(link.old, 'g'),
     new: link.new,
   }));
-  for await (const line of context.fileSystemAdapter.lineIter()) {
+  for await (const line of context.fileSystemAdapter.chunkIter()) {
     let updatedLine = line;
     regExes.forEach((regEx) => {
       updatedLine = updatedLine.replace(regEx.old, regEx.new);
     });
-    context.fileSystemAdapter.appendToFile(tempPath, updatedLine);
+    context.fileSystemAdapter.appendToPostProcessingFile(tempPath, updatedLine);
   }
-  context.fileSystemAdapter.endReadingFile();
+  context.fileSystemAdapter.endPostProcessingFile();
   context.fileSystemAdapter.removeFile(filePath);
   context.fileSystemAdapter.renameFile(tempPath, filePath);
 }

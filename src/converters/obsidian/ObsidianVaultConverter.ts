@@ -3,23 +3,26 @@ import { addFileNode, addParentNodeEnd, addParentNodeStart, handleVault } from '
 import { shiftFromLeafToTop, VaultContext } from './VaultContext';
 import { createSuperTagObjects } from './tanafeatures/supertags';
 import { postProcessTIFFIle } from './links/headingLinks';
-import { basename } from './CustomFileSystemAdapter';
+import { basename } from './filesystem/CustomFileSystemAdapter';
 
 /**
  * Converts the vault to the Tana format and incrementally saves it, otherwise it would be to memory intensive on big vaults.
  * Due to the incremental approach the output-file will be valid JSON but not be formatted perfectly.
  */
 export async function ObsidianVaultConverter(context: VaultContext, today: number = Date.now()) {
-  loadDailyNotesConfig(context);
+  await context.fileSystemAdapter.initReadingVault();
+
+  await loadDailyNotesConfig(context);
 
   const targetPath = `${context.vaultPath}.tif.json`;
   try {
     context.fileSystemAdapter.removeFile(targetPath);
     // eslint-disable-next-line no-empty
   } catch (e) {}
+
   context.fileSystemAdapter.appendToFile(targetPath, '{\n  "version": "TanaIntermediateFile V0.1",\n  "nodes": [\n');
 
-  handleVault(
+  await handleVault(
     context,
     context.vaultPath,
     addParentNodeStart(targetPath, today, context),
@@ -63,12 +66,12 @@ export async function ObsidianVaultConverter(context: VaultContext, today: numbe
   return context.summary;
 }
 
-function loadDailyNotesConfig(context: VaultContext) {
+async function loadDailyNotesConfig(context: VaultContext) {
   const dailyNotesConfigFile = context.vaultPath + '/.obsidian/daily-notes.json';
 
   if (context.fileSystemAdapter.exists(dailyNotesConfigFile)) {
     //if file does not exists, daily note config was kept default
-    const rawjson = context.fileSystemAdapter.readFile(dailyNotesConfigFile);
+    const rawjson = await context.fileSystemAdapter.readFile(dailyNotesConfigFile);
     const dailyNoteConfig = JSON.parse(rawjson.toString());
     if (dailyNoteConfig.format) {
       context.dailyNoteFormat = dailyNoteConfig.format;

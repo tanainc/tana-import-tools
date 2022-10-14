@@ -1,7 +1,7 @@
 import { convertObsidianFile } from './fileConversion';
 import { VaultContext } from '../VaultContext';
 import { untrackedUidRequest } from '../links/genericLinks';
-import { basename, CustomFileSystemEntry, SEPARATOR } from '../CustomFileSystemAdapter';
+import { basename, CustomFileSystemEntry, SEPARATOR } from '../filesystem/CustomFileSystemAdapter';
 
 enum ChildrenPosition {
   NOT_LAST = 'NOT_LAST',
@@ -26,7 +26,7 @@ function readFilteredDir(context: VaultContext, dir: string) {
   });
 }
 
-export function handleVault(
+export async function handleVault(
   context: VaultContext,
   dir: string,
   handleDirStart: ReturnType<typeof addParentNodeStart>,
@@ -38,11 +38,11 @@ export function handleVault(
   const dirents = readFilteredDir(context, dir);
   for (let index = 0; index < dirents.length; index++) {
     const dirent = dirents[index];
-    const res = dir + SEPARATOR + dirent.getName();
+    const res = dirent.getName();
     if (dirent.isDirectory()) {
-      handleVault(context, res, handleDirStart, handleDirEnd, handleFile, getChildrenPosition(index, dirents));
+      await handleVault(context, res, handleDirStart, handleDirEnd, handleFile, getChildrenPosition(index, dirents));
     } else {
-      handleFile(res, getChildrenPosition(index, dirents));
+      await handleFile(res, getChildrenPosition(index, dirents));
     }
   }
   handleDirEnd(childrenPosition);
@@ -80,14 +80,14 @@ export function addParentNodeEnd(context: VaultContext, targetPath: string) {
 }
 
 export function addFileNode(targetPath: string, today: number, context: VaultContext) {
-  return (file: string, childrenPosition: ChildrenPosition) => {
+  return async (file: string, childrenPosition: ChildrenPosition) => {
     //remove the vault root path and the ".md" ending to get the absolute path
     const absoluteFilePath = file.slice(context.vaultPath.length + 1, -3);
 
     const fileNode = convertObsidianFile(
       basename(file).replace('.md', ''),
       absoluteFilePath,
-      context.fileSystemAdapter.readFile(file),
+      await context.fileSystemAdapter.readFile(file),
       context,
       today,
     );

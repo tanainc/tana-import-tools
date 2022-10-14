@@ -5,9 +5,12 @@ import { untrackedUidRequest } from '../links/genericLinks';
 import { createVaultContext } from '../VaultContext';
 import { deterministicGenerator } from './testUtils';
 import { requestUidForLink, requestUidForContentNode } from '../links/internalLinks';
+import { CustomFileSystemAdapter } from '../filesystem/CustomFileSystemAdapter';
+
+const dummyAdapter: CustomFileSystemAdapter = { resolve: (str: string) => str } as any;
 
 test('VaultContext uid test', () => {
-  const context = createVaultContext('', null as any, deterministicGenerator());
+  const context = createVaultContext('', dummyAdapter, deterministicGenerator());
   expect(requestUidForLink('link', context)).toBe('0');
   //no change on second call
   expect(requestUidForLink('link', context)).toBe('0');
@@ -37,7 +40,7 @@ test('VaultContext uid test', () => {
 
 test('VaultContext uid block link test', () => {
   //first reading the file, then encountering the block ref
-  const context = createVaultContext('', null as any, deterministicGenerator());
+  const context = createVaultContext('', dummyAdapter, deterministicGenerator());
   const [uid, content] = requestUidForContentNode('fileName', 'filePath', 'content ^uid', context);
   expect(uid).toBe('0');
   expect(content).toBe('content');
@@ -60,7 +63,7 @@ test('VaultContext uid block link test', () => {
 });
 
 test('VaultContext invalid nodes test', () => {
-  const context = createVaultContext('', null as any, deterministicGenerator());
+  const context = createVaultContext('', dummyAdapter, deterministicGenerator());
   //the block link has not been accessed from its source / has not been found - just used
   requestUidForLink('fileName#^uid', context);
   expect(getAllInvalidLinks(context)).toStrictEqual([{ uid: '0', link: 'fileName#^uid' }]);

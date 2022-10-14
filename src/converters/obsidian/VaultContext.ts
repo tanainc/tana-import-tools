@@ -1,4 +1,3 @@
-import { resolve } from 'path';
 import { TanaIntermediateSummary, TanaIntermediateAttribute } from '../../types/types';
 import { idgenerator as randomGenerator } from '../../utils/utils';
 import { FileDescMap } from './links/FileDescMap';
@@ -7,7 +6,7 @@ import { SuperTagTracker } from './tanafeatures/supertags';
 import { UidRequestType } from './links/internalLinks';
 import { IdGenerator } from './utils/IdGenerator';
 import { HeadingTracker, HeadingDummyUidTracker } from './links/headingLinks';
-import { CustomFileSystemAdapter, SEPARATOR } from './CustomFileSystemAdapter';
+import { CustomFileSystemAdapter, SEPARATOR } from './filesystem/CustomFileSystemAdapter';
 
 export type UidTracker = FileDescMap<UidData>;
 
@@ -53,7 +52,7 @@ export function createVaultContext(
   if (vaultPath.endsWith(SEPARATOR)) {
     vaultPath = vaultPath.slice(0, -1);
   }
-  vaultPath = resolve(vaultPath);
+  vaultPath = fileSystemAdapter.resolve(vaultPath);
 
   return {
     summary: {

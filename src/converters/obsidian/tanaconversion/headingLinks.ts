@@ -1,7 +1,6 @@
 import { createTree } from '../utils/createTree';
 import { traverseTreeDepthFirst } from '../utils/traverseTreeDepthFirst';
 import { VaultContext } from '../context';
-import { HeadingUidData } from './uids';
 import { createReadStream, appendFileSync, unlinkSync, renameSync } from 'fs';
 import { incrementSummary } from './summary';
 import * as readline from 'node:readline/promises';
@@ -10,6 +9,11 @@ import * as readline from 'node:readline/promises';
 export type HeadingNode = { uid: string; content: string; children?: HeadingNode[] };
 
 export type HeadingData = { uid: string; content: string; level: number };
+
+export interface HeadingUidData {
+  uid: string;
+  link: string[]; //without the fileName
+}
 
 export type HeadingTracker = Map<string, HeadingData[]>;
 

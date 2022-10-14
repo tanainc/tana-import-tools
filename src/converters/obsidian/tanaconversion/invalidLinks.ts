@@ -1,7 +1,21 @@
 import { NodeType, TanaIntermediateNode } from '../../../types/types';
 import { filterInvalidBlockLinks } from './blockLinks';
-import { filterInvalidContentLinks, untrackedUidRequest } from './uids';
+import { untrackedUidRequest } from './untrackedUidRequest';
 import { VaultContext } from '../context';
+import { UidTracker, UidRequestType } from './uids';
+
+export function filterInvalidContentLinks(tracker: UidTracker) {
+  const unlinkedNodes: { uid: string; link: string }[] = [];
+  for (const node of tracker.values()) {
+    //at the end every uidData that has been only accessed from content (so inside the markdown file)
+    //has no matching file node and is therefore unlinked
+    //otherwise during the creation of the file node, it would have accessed the same Uid
+    if (node.type === UidRequestType.CONTENT) {
+      unlinkedNodes.push({ uid: node.uid, link: node.obsidianLink });
+    }
+  }
+  return unlinkedNodes;
+}
 
 export function getAllInvalidLinks(context: VaultContext) {
   return [

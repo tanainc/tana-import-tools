@@ -7,11 +7,13 @@ import moment from 'moment';
 import { TanaIntermediateNode, NodeType } from '../../../types/types';
 import { frontMatterToFieldNode } from './fields';
 import { superTagUidRequests } from './supertags';
-import { uidRequest, UidRequestType } from './uids';
+import { UidRequestType } from './uids';
 import { HeadingData } from './headingLinks';
+import { incrementSummary } from './summary';
 
 export function convertObsidianFile(
   fileName: string, //without ending
+  filePath: string,
   fileContent: string,
   context: VaultContext,
   today: number = Date.now(),
@@ -35,7 +37,7 @@ export function convertObsidianFile(
 
   const headingData: HeadingData[] = [];
 
-  const fileNode = createFileNode(displayName, today, context, frontmatterData);
+  const fileNode = createFileNode(displayName, filePath, today, context, frontmatterData);
 
   createTree(
     fileNode,
@@ -57,12 +59,28 @@ export function convertObsidianFile(
   return fileNode;
 }
 
+function requestUidForFile(fileName: string, context: VaultContext) {
+  const obsidianLink = fileName.trim();
+  const uidData = context.defaultLinkTracker.get(obsidianLink);
+  if (!uidData) {
+    incrementSummary(context.summary);
+    const uid = context.idGenerator();
+    context.defaultLinkTracker.set(obsidianLink, { uid, obsidianLink, type: UidRequestType.FILE });
+    return uid;
+  }
+  uidData.type = UidRequestType.FILE;
+
+  return uidData.uid;
+}
+
 function createFileNode(
   displayName: string,
+  filePath: string,
   today: number,
   context: VaultContext,
   frontmatter: FrontmatterData[],
 ): TanaIntermediateNode {
+  console.log(filePath);
   let supertags: string[] | undefined;
   const fieldNodes: TanaIntermediateNode[] = [];
 
@@ -74,7 +92,7 @@ function createFileNode(
     }
   });
 
-  let nodeUid = uidRequest(displayName, UidRequestType.FILE, context);
+  let nodeUid = requestUidForFile(displayName, context);
   let nodeType: NodeType = 'node';
   const dateDisplayName = dateStringToDateUID(displayName, context.dailyNoteFormat);
 

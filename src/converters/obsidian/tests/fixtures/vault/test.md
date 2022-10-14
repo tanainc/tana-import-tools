@@ -14,7 +14,7 @@ a newline.
 ## Heading 2
 ```
 - Invalid Heading [[test2#Heading 2#Heading here]]
-    -  Block with #inlinetag2 [[Link|alias]] [[Link]] [[Link2]] #inlinetag1 ^BLOCK_UID
+    -  Block with #inlinetag2 [[Link|alias]] [[Link]] [[Link2]] #inlinetag1 ^BLOCK_UID 
   - #inlinetag2 Fun #inlinetag2 
 ```Clojure  
 (defn meta-data-finished? [process]

@@ -1,5 +1,5 @@
 import { VaultContext } from '../context';
-import { untrackedUidRequest } from './uids';
+import { untrackedUidRequest } from './untrackedUidRequest';
 
 /**
  * all block UIDs: <fileName, <blockObsidianUid, TanaUid>>
@@ -17,7 +17,7 @@ export interface BlockUidData {
   type: BlockUidRequestType;
 }
 
-export function blockLinkUidRequest(link: string[], requestType: BlockUidRequestType, context: VaultContext) {
+export function blockLinkUidRequestForUsing(link: string[], context: VaultContext) {
   const fileName = link[0];
   const blockUidMap = context.blockLinkTracker.get(fileName) ?? new Map<string, BlockUidData>();
   context.blockLinkTracker.set(fileName, blockUidMap);
@@ -27,14 +27,29 @@ export function blockLinkUidRequest(link: string[], requestType: BlockUidRequest
     blockUidData = {
       uid: untrackedUidRequest(context),
       obsidianLink: link.join('#'),
-      type: requestType,
+      type: BlockUidRequestType.LINK,
     };
   }
   blockUidMap.set(blockObsidianUid, blockUidData);
 
-  if (blockUidData.type === BlockUidRequestType.LINK) {
-    blockUidData.type = requestType;
+  return blockUidData.uid;
+}
+
+export function blockLinkUidRequestForDefining(link: string[], context: VaultContext) {
+  const fileName = link[0];
+  const blockUidMap = context.blockLinkTracker.get(fileName) ?? new Map<string, BlockUidData>();
+  context.blockLinkTracker.set(fileName, blockUidMap);
+  const blockObsidianUid = link[1];
+  let blockUidData = blockUidMap.get(blockObsidianUid);
+  if (!blockUidData) {
+    blockUidData = {
+      uid: untrackedUidRequest(context),
+      obsidianLink: link.join('#'),
+      type: BlockUidRequestType.BLOCK,
+    };
   }
+  blockUidData.type = BlockUidRequestType.BLOCK;
+  blockUidMap.set(blockObsidianUid, blockUidData);
 
   return blockUidData.uid;
 }

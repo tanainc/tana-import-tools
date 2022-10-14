@@ -2,7 +2,7 @@ import { appendFileSync, Dirent, readdirSync, readFileSync } from 'fs';
 import path, { resolve } from 'path';
 import { convertObsidianFile } from './fileConversion';
 import { VaultContext } from '../context';
-import { untrackedUidRequest } from './uids';
+import { untrackedUidRequest } from './untrackedUidRequest';
 
 enum ChildrenPosition {
   NOT_LAST = 'NOT_LAST',
@@ -79,8 +79,11 @@ export function addParentNodeEnd(targetPath: string) {
 
 export function addFileNode(targetPath: string, today: number, context: VaultContext) {
   return (file: string, childrenPosition: ChildrenPosition) => {
+    const absoluteFilePath = file.slice(file.indexOf(context.vaultPath));
+
     const fileNode = convertObsidianFile(
       path.basename(file).replace('.md', ''),
+      absoluteFilePath,
       readFileSync(file, 'utf-8'),
       context,
       today,

@@ -2,7 +2,7 @@ import { TanaIntermediateNode } from '../../../types/types';
 import { VaultContext } from '../context';
 import { FrontmatterData } from '../markdown/frontmatter';
 import { addAttribute } from './attributes';
-import { untrackedUidRequest } from './uids';
+import { untrackedUidRequest } from './untrackedUidRequest';
 
 export function frontMatterToFieldNode(
   data: FrontmatterData,

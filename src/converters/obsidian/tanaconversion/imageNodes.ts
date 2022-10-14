@@ -1,7 +1,7 @@
 import { TanaIntermediateNode, NodeType } from '../../../types/types';
 import { VaultContext } from '../context';
 import { extractImageLinks } from '../markdown/imageLinks';
-import { untrackedUidRequest } from './uids';
+import { untrackedUidRequest } from './untrackedUidRequest';
 
 export function handleImages(tanaNode: TanaIntermediateNode, today: number, context: VaultContext) {
   const imageData = extractImageLinks(tanaNode.name);

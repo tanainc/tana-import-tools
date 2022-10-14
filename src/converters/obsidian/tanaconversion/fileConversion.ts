@@ -46,7 +46,7 @@ export function convertObsidianFile(
     obsidianNodes,
     isMarkdownNodeChild,
     (markdownNode) => {
-      return convertMarkdownNode(fileName, markdownNode, today, context);
+      return convertMarkdownNode(fileName, filePath, markdownNode, today, context);
     },
     (tanaNode, markdownNode) => {
       if (markdownNode.type === HierarchyType.HEADING) {

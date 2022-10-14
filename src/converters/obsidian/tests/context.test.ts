@@ -37,7 +37,7 @@ test('VaultContext uid test', () => {
 test('VaultContext uid block link test', () => {
   //first reading the file, then encountering the block ref
   const context = createVaultContext('', deterministicGenerator());
-  const [uid, content] = requestUidForContentNode('fileName', 'content ^uid', context);
+  const [uid, content] = requestUidForContentNode('fileName', 'filePath', 'content ^uid', context);
   expect(uid).toBe('0');
   expect(content).toBe('content');
   const uid2 = requestUidForLink('fileName#^uid', context);
@@ -46,14 +46,14 @@ test('VaultContext uid block link test', () => {
   //first encountering the block ref, then reading the file
   const uid3 = requestUidForLink('fileName#^uid3', context);
   expect(uid3).toBe('1');
-  const [uid4, content2] = requestUidForContentNode('fileName', 'content ^uid3', context);
+  const [uid4, content2] = requestUidForContentNode('fileName', 'filePath', 'content ^uid3', context);
   expect(uid4).toBe('1');
   expect(content2).toBe('content');
 
   //different file
   const uid5 = requestUidForLink('fileName2#^uid3', context);
   expect(uid5).toBe('2');
-  const [uid6, content3] = requestUidForContentNode('fileName2', 'content ^uid3', context);
+  const [uid6, content3] = requestUidForContentNode('fileName2', 'filePath2', 'content ^uid3', context);
   expect(uid6).toBe('2');
   expect(content3).toBe('content');
 });

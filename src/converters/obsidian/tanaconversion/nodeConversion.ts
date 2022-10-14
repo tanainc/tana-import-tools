@@ -29,6 +29,7 @@ function convertCodeBlock(obsidianNode: MarkdownNode, today: number, context: Va
 
 export function convertMarkdownNode(
   fileName: string,
+  filePath: string,
   obsidianNode: MarkdownNode,
   today: number,
   context: VaultContext,
@@ -37,7 +38,7 @@ export function convertMarkdownNode(
     return convertCodeBlock(obsidianNode, today, context);
   }
 
-  const [uid, content] = requestUidForContentNode(fileName, obsidianNode.content, context);
+  const [uid, content] = requestUidForContentNode(fileName, filePath, obsidianNode.content, context);
   const tanaNode: TanaIntermediateNode = {
     uid,
     name: content,
@@ -158,11 +159,11 @@ function standardLinkUidRequest(obsidianLink: string, context: VaultContext) {
  * Removes Obsidian-generated block-UIDs if they exists, returns the valid uid and the cleaned content.
  * @returns [uid, cleanedContent]
  */
-export function requestUidForContentNode(fileName: string, content: string, context: VaultContext) {
+export function requestUidForContentNode(fileName: string, filePath: string, content: string, context: VaultContext) {
   const [cleanedContent, id] = removeBlockId(content);
   if (id) {
     //found the id, now define the UID
-    return [blockLinkUidRequestForDefining([fileName, id], context), cleanedContent];
+    return [blockLinkUidRequestForDefining([fileName, id], filePath, context), cleanedContent];
   } else {
     return [untrackedUidRequest(context), content];
   }

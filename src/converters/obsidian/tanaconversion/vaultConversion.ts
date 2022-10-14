@@ -79,7 +79,8 @@ export function addParentNodeEnd(targetPath: string) {
 
 export function addFileNode(targetPath: string, today: number, context: VaultContext) {
   return (file: string, childrenPosition: ChildrenPosition) => {
-    const absoluteFilePath = file.slice(file.indexOf(context.vaultPath));
+    //remove the vault root path and the ".md" ending to get the absolute path
+    const absoluteFilePath = file.slice(context.vaultPath.length + 1, -3);
 
     const fileNode = convertObsidianFile(
       path.basename(file).replace('.md', ''),

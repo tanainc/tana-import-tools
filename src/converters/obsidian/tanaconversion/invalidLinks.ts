@@ -1,8 +1,8 @@
 import { NodeType, TanaIntermediateNode } from '../../../types/types';
 import { filterInvalidBlockLinks } from './blockLinks';
 import { untrackedUidRequest } from './untrackedUidRequest';
-import { VaultContext } from '../context';
-import { UidTracker, UidRequestType } from './uids';
+import { UidTracker, VaultContext } from '../context';
+import { UidRequestType } from './uids';
 
 export function filterInvalidContentLinks(tracker: UidTracker) {
   const unlinkedNodes: { uid: string; link: string }[] = [];

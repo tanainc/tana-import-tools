@@ -6,29 +6,51 @@ export function isPath(searchStr: string) {
   return path.basename(searchStr) !== searchStr;
 }
 
-export function findAnyMatchingFile<Data>(fileName: string, filePath: string, tracker: Map<FileDesc, Data>) {
+export function fullRetrieveDataForFile<Data>(
+  fileName: string,
+  filePath: string,
+  tracker: Map<FileDesc, Data>,
+  defaultData: () => Data,
+) {
   const files = Array.from(tracker.keys());
-  const pathMatch = files.find((desc) => desc.path === filePath);
-  if (pathMatch) {
-    return pathMatch;
+  let match = files.find((desc) => desc.path === filePath);
+  if (!match) {
+    match = files.find((desc) => desc.name === fileName);
   }
-  const nameMatch = files.find((desc) => desc.name === fileName);
-  return nameMatch;
+  if (!match) {
+    match = { path: filePath, name: fileName };
+    tracker.set(match, defaultData());
+  }
+
+  //update
+  match.name = fileName;
+  match.path = filePath;
+
+  return tracker.get(match) as Data;
 }
 
-export function findMatchingFile<Data>(searchStr: string, tracker: Map<FileDesc, Data>, strIsPath: boolean) {
+export function partialRetrieveDataForFile<Data>(
+  searchStr: string,
+  tracker: Map<FileDesc, Data>,
+  defaultData: () => Data,
+) {
   const files = Array.from(tracker.keys());
-
-  if (strIsPath) {
-    return files.find((desc) => desc.path === searchStr);
+  const isPathBool = isPath(searchStr);
+  let match;
+  if (isPathBool) {
+    match = files.find((desc) => desc.path === searchStr);
   } else {
-    return files.find((desc) => desc.name === searchStr);
+    match = files.find((desc) => desc.name === searchStr);
   }
-}
 
-export function createFileDesc(searchStr: string, strIsPath: boolean): FileDesc {
-  if (strIsPath) {
-    return { path: searchStr };
+  if (!match) {
+    if (isPath(searchStr)) {
+      match = { path: searchStr };
+    } else {
+      match = { name: searchStr };
+    }
+    tracker.set(match, defaultData());
   }
-  return { name: searchStr };
+
+  return tracker.get(match) as Data;
 }

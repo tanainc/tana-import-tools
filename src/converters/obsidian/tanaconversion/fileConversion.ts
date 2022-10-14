@@ -10,6 +10,7 @@ import { superTagUidRequests } from './supertags';
 import { UidRequestType } from './uids';
 import { HeadingData } from './headingLinks';
 import { incrementSummary } from './summary';
+import { fullRetrieveDataForFile } from '../markdown/file';
 
 export function convertObsidianFile(
   fileName: string, //without ending
@@ -59,15 +60,13 @@ export function convertObsidianFile(
   return fileNode;
 }
 
-function requestUidForFile(fileName: string, context: VaultContext) {
+function requestUidForFile(fileName: string, filePath: string, context: VaultContext) {
   const obsidianLink = fileName.trim();
-  const uidData = context.defaultLinkTracker.get(obsidianLink);
-  if (!uidData) {
+  const uidData = fullRetrieveDataForFile(obsidianLink, filePath, context.defaultLinkTracker, () => {
     incrementSummary(context.summary);
     const uid = context.idGenerator();
-    context.defaultLinkTracker.set(obsidianLink, { uid, obsidianLink, type: UidRequestType.FILE });
-    return uid;
-  }
+    return { uid, obsidianLink, type: UidRequestType.CONTENT };
+  });
   uidData.type = UidRequestType.FILE;
 
   return uidData.uid;
@@ -80,7 +79,6 @@ function createFileNode(
   context: VaultContext,
   frontmatter: FrontmatterData[],
 ): TanaIntermediateNode {
-  console.log(filePath);
   let supertags: string[] | undefined;
   const fieldNodes: TanaIntermediateNode[] = [];
 
@@ -92,7 +90,7 @@ function createFileNode(
     }
   });
 
-  let nodeUid = requestUidForFile(displayName, context);
+  let nodeUid = requestUidForFile(displayName, filePath, context);
   let nodeType: NodeType = 'node';
   const dateDisplayName = dateStringToDateUID(displayName, context.dailyNoteFormat);
 

@@ -16,7 +16,7 @@ export function superTagUidRequests(
   return Array.from(new Set(tags.map((tag) => superTagUidRequest(tag, tracker, idGenerator, clean))));
 }
 
-export function superTagUidRequest(tag: string, tracker: SuperTagTracker, idGenerator: IdGenerator, clean?: boolean) {
+function superTagUidRequest(tag: string, tracker: SuperTagTracker, idGenerator: IdGenerator, clean?: boolean) {
   let cleanTag = tag;
   if (clean) {
     cleanTag = cleanUpTag(tag);

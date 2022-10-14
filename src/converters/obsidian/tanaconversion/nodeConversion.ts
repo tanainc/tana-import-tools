@@ -13,6 +13,7 @@ import { removeBlockId } from '../markdown/blockIds';
 import { blockLinkUidRequestForDefining, blockLinkUidRequestForUsing } from './blockLinks';
 import { headingLinkUidRequest } from './headingLinks';
 import { incrementSummary } from './summary';
+import { partialRetrieveDataForFile } from '../markdown/file';
 
 function convertCodeBlock(obsidianNode: MarkdownNode, today: number, context: VaultContext) {
   const tanaNode: TanaIntermediateNode = {
@@ -129,14 +130,6 @@ export function detectLinkType(link: string[]) {
   return LinkType.DEFAULT;
 }
 
-/**
- * We can not just take the obsidian link because we might already have created a node for that link
- * or a folder might have the same link as a file.
- *
- * This function should return the correct Uid.
- *
- * A side-effect is the collection of the summary.
- */
 export function requestUidForLink(obsidianLink: string, context: VaultContext) {
   const cleanLink = cleanUpLink(obsidianLink);
   const linkType = detectLinkType(cleanLink);
@@ -153,14 +146,11 @@ export function requestUidForLink(obsidianLink: string, context: VaultContext) {
 }
 
 function standardLinkUidRequest(obsidianLink: string, context: VaultContext) {
-  const uidData = context.defaultLinkTracker.get(obsidianLink);
-  if (!uidData) {
+  const uidData = partialRetrieveDataForFile(obsidianLink, context.defaultLinkTracker, () => {
     incrementSummary(context.summary);
     const uid = context.idGenerator();
-    context.defaultLinkTracker.set(obsidianLink, { uid, obsidianLink, type: UidRequestType.CONTENT });
-    return uid;
-  }
-
+    return { uid, obsidianLink, type: UidRequestType.CONTENT };
+  });
   return uidData.uid;
 }
 

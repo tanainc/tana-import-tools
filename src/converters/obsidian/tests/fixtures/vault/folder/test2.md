@@ -11,7 +11,7 @@ a newline.
 
 ## Heading 2
 
-- Valid Heading [[test#Heading 2#Out of Level]]
+- Valid Heading [[test#Heading 2#Out of Level]] with duplicate but valid ^BLOCK_UID
     - [x] Node with [[Link]] [[Link2]]
   - Fun with missing block ref [[test#^MISSING]] [[missing#^MISSING]]
 

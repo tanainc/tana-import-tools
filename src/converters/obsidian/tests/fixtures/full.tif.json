@@ -432,5 +432,5 @@
     { "name": "field0", "values": [], "count": 2 },
     { "name": "field1", "values": [], "count": 1 }
   ],
-  "summary": { "leafNodes": 65, "topLevelNodes": 1, "totalNodes": 66, "calendarNodes": 1, "fields": 3, "brokenRefs": 0 }
+  "summary": { "leafNodes": 64, "topLevelNodes": 2, "totalNodes": 66, "calendarNodes": 1, "fields": 3, "brokenRefs": 0 }
 }

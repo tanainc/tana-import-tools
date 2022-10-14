@@ -115,6 +115,12 @@ test('bullet nodes', () => {
   expect(extractMarkdownNodes(' - Node')).toStrictEqual([{ content: 'Node', level: 1, type: HierarchyType.BULLET }]);
   //space
   expect(extractMarkdownNodes(' - Node')).toStrictEqual([{ content: 'Node', level: 1, type: HierarchyType.BULLET }]);
+  expect(extractMarkdownNodes(' 1. Node')).toStrictEqual([
+    { content: '1. Node', level: 1, type: HierarchyType.BULLET },
+  ]);
+  expect(extractMarkdownNodes(' 1) Node')).toStrictEqual([
+    { content: '1) Node', level: 1, type: HierarchyType.BULLET },
+  ]);
   expect(
     extractMarkdownNodes(`* Text
   * Foo

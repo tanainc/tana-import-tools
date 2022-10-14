@@ -6,7 +6,7 @@ import { isNewLine, nextNewLine } from '../markdown/newline';
 function isNumberedBullet(content: string, pos: number) {
   const char = content[pos];
   const secondChar = content[pos + 1];
-  return !isNaN(parseInt(char)) && secondChar === '.' && content[pos + 2] === ' ';
+  return !isNaN(parseInt(char)) && (secondChar === '.' || secondChar === ')') && content[pos + 2] === ' ';
 }
 
 export function detectBulletHierarchy(content: string, currentPos: number): null | Hierarchy {

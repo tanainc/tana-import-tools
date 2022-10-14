@@ -1,7 +1,7 @@
 import { NodeType, TanaIntermediateNode } from '../../../types/types';
 import { filterInvalidBlockLinks } from './blockLinks';
 import { untrackedUidRequest } from './genericLinks';
-import { UidTracker, VaultContext } from '../VaultContext';
+import { shiftFromLeafToTop, UidTracker, VaultContext } from '../VaultContext';
 import { UidRequestType } from './internalLinks';
 
 export function filterInvalidContentLinks(tracker: UidTracker) {
@@ -44,8 +44,6 @@ export function createUnlinkedTanaNodes(
     return null;
   }
 
-  context.summary.topLevelNodes++;
-
   const rootNodeName = 'Missing Nodes for ' + importName;
   const rootNode: TanaIntermediateNode = {
     uid: untrackedUidRequest(context),
@@ -54,6 +52,7 @@ export function createUnlinkedTanaNodes(
     editedAt: today,
     type: 'node' as NodeType,
   };
+  shiftFromLeafToTop(context.summary);
 
   rootNode.children = unlinkedNodes;
 

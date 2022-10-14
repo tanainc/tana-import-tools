@@ -1,4 +1,4 @@
-import { expect, test } from '@jest/globals';
+import { expect, test } from 'vitest';
 import { readFileSync } from 'fs';
 import { WebObsidianVaultConverter } from '../WebObsidianVaultConverter';
 import { deterministicGenerator } from './testUtils';

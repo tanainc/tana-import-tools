@@ -1,4 +1,4 @@
-import { expect, test } from '@jest/globals';
+import { expect, test } from 'vitest';
 import { readFileSync, unlinkSync } from 'fs';
 import { LocalFileSystemAdapter } from '../filesystem/LocalFileSystemAdapter';
 import { ObsidianVaultConverter } from '../ObsidianVaultConverter';

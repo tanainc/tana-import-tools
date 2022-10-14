@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { expect, test } from '@jest/globals';
+import { expect, test } from 'vitest';
 import { getAllInvalidLinks } from '../links/invalidLinks';
 import { untrackedUidRequest } from '../links/genericLinks';
 import { createVaultContext } from '../VaultContext';

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-// import * as zip from '@zip.js/zip.js';
+import * as zip from '@zip.js/zip.js';
 import type { FS, ZipFileEntry, ZipEntry, ZipDirectoryEntry } from '@zip.js/zip.js';
 
 import { CustomFileSystemAdapter, SEPARATOR } from './CustomFileSystemAdapter';
@@ -12,9 +12,6 @@ export class WebFileSystemAdapter implements CustomFileSystemAdapter {
   constructor(private zipBlob: Blob) {}
 
   async initReadingVault() {
-    // hacky but I am not fixing configs in my free time :P
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const zip = require('@zip.js/zip.js/index.cjs');
     this.zipFS = new zip.fs.FS() as FS;
     await this.zipFS.importBlob(this.zipBlob);
   }

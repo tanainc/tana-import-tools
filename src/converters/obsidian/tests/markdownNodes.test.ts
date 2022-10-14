@@ -1,4 +1,4 @@
-import { expect, test } from '@jest/globals';
+import { expect, test } from 'vitest';
 import { countEmptySpace } from '../markdown/emptySpace';
 import { extractMarkdownNodes, HierarchyType } from '../hierarchy/markdownNodes';
 import { nextNewLine } from '../markdown/newline';

@@ -1,4 +1,4 @@
-import { expect, test } from '@jest/globals';
+import { expect, test } from 'vitest';
 import { HeadingNode } from '../links/headingLinks';
 import { traverseTreeDepthFirst } from '../utils/traverseTreeDepthFirst';
 

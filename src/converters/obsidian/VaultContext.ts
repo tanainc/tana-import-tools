@@ -7,6 +7,7 @@ import { SuperTagTracker } from './tanafeatures/supertags';
 import { UidRequestType } from './links/internalLinks';
 import { IdGenerator } from './utils/IdGenerator';
 import { HeadingTracker, HeadingDummyUidTracker } from './links/headingLinks';
+import { CustomFileSystemAdapter, SEPARATOR } from './CustomFileSystemAdapter';
 
 export type UidTracker = FileDescMap<UidData>;
 
@@ -31,6 +32,7 @@ export interface VaultContext {
   dailyNoteFormat: string;
   vaultPath: string;
   idGenerator: IdGenerator;
+  fileSystemAdapter: CustomFileSystemAdapter;
 }
 
 export function incrementSummary(summary: TanaIntermediateSummary) {
@@ -43,8 +45,12 @@ export function shiftFromLeafToTop(summary: TanaIntermediateSummary) {
   summary.topLevelNodes++;
 }
 
-export function createVaultContext(vaultPath: string, idGenerator: () => string = randomGenerator): VaultContext {
-  if (vaultPath.endsWith('/')) {
+export function createVaultContext(
+  vaultPath: string,
+  fileSystemAdapter: CustomFileSystemAdapter,
+  idGenerator: () => string = randomGenerator,
+): VaultContext {
+  if (vaultPath.endsWith(SEPARATOR)) {
     vaultPath = vaultPath.slice(0, -1);
   }
   vaultPath = resolve(vaultPath);
@@ -58,6 +64,7 @@ export function createVaultContext(vaultPath: string, idGenerator: () => string 
       fields: 0,
       brokenRefs: 0,
     },
+    fileSystemAdapter,
     idGenerator,
     vaultPath,
     defaultLinkTracker: new FileDescMap(),

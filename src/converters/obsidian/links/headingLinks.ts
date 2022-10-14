@@ -1,8 +1,6 @@
 import { createTree } from '../utils/createTree';
 import { traverseTreeDepthFirst } from '../utils/traverseTreeDepthFirst';
 import { incrementSummary, VaultContext } from '../VaultContext';
-import { createReadStream, appendFileSync, unlinkSync, renameSync } from 'fs';
-import * as readline from 'node:readline/promises';
 import { FileDescMap } from './FileDescMap';
 
 //children are sorted like in file, important to detect valid heading links
@@ -96,20 +94,19 @@ export async function postProcessTIFFIle(filePath: string, context: VaultContext
   });
 
   const tempPath = filePath + '_TEMP';
-  //the converter is build to append to the file, so we dont want to load the whole file into memory at the end, that would be counter to the whole idea
-  const readStream = createReadStream(filePath, 'utf-8');
-  const readlineInterface = readline.createInterface(readStream);
+  context.fileSystemAdapter.initReadingFile(filePath);
   const regExes = validHeadingLinks.map((link) => ({
     old: new RegExp(link.old, 'g'),
     new: link.new,
   }));
-  for await (const line of readlineInterface) {
+  for await (const line of context.fileSystemAdapter.lineIter()) {
     let updatedLine = line;
     regExes.forEach((regEx) => {
       updatedLine = updatedLine.replace(regEx.old, regEx.new);
     });
-    appendFileSync(tempPath, updatedLine);
+    context.fileSystemAdapter.appendToFile(tempPath, updatedLine);
   }
-  unlinkSync(filePath);
-  renameSync(tempPath, filePath);
+  context.fileSystemAdapter.endReadingFile();
+  context.fileSystemAdapter.removeFile(filePath);
+  context.fileSystemAdapter.renameFile(tempPath, filePath);
 }

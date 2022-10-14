@@ -7,6 +7,7 @@ import { WorkflowyConverter } from './converters/workflowy';
 import { lstatSync } from 'fs';
 import { ObsidianVaultConverter } from './converters/obsidian';
 import { createVaultContext } from './converters/obsidian/VaultContext';
+import { LocalFileSystemAdapter } from './converters/obsidian/LocalFileSystemAdapter';
 
 const fileType = process.argv[2];
 const file = process.argv[3];
@@ -67,7 +68,7 @@ async function handleFolderConversion() {
   let summary;
   switch (fileType) {
     case 'obsidian':
-      summary = await ObsidianVaultConverter(createVaultContext(file));
+      summary = await ObsidianVaultConverter(createVaultContext(file, new LocalFileSystemAdapter()));
       break;
     default:
       console.log(`File type ${fileType} is not supported for folders`);

@@ -1,7 +1,7 @@
-import path from 'path';
+import { basename } from '../CustomFileSystemAdapter';
 
 function isPath(searchStr: string) {
-  return path.basename(searchStr) !== searchStr;
+  return basename(searchStr) !== searchStr;
 }
 
 export class FileDescMap<Data> extends Map<FileDesc, Data> {

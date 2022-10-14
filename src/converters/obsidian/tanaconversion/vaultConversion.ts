@@ -1,15 +1,14 @@
-import { appendFileSync, Dirent, readdirSync, readFileSync } from 'fs';
-import path, { resolve } from 'path';
 import { convertObsidianFile } from './fileConversion';
 import { VaultContext } from '../VaultContext';
 import { untrackedUidRequest } from '../links/genericLinks';
+import { basename, CustomFileSystemEntry, SEPARATOR } from '../CustomFileSystemAdapter';
 
 enum ChildrenPosition {
   NOT_LAST = 'NOT_LAST',
   LAST = 'LAST',
 }
 
-function getChildrenPosition(index: number, dirents: Dirent[]) {
+function getChildrenPosition(index: number, dirents: CustomFileSystemEntry[]) {
   if (index === dirents.length - 1) {
     return ChildrenPosition.LAST;
   }
@@ -17,15 +16,18 @@ function getChildrenPosition(index: number, dirents: Dirent[]) {
   return ChildrenPosition.NOT_LAST;
 }
 
-function readFilteredDir(dir: string) {
-  return readdirSync(dir, { withFileTypes: true }).filter(
-    (dirent) =>
-      (dirent.isDirectory() && !dirent.name.endsWith('.github') && !dirent.name.endsWith('.obsidian')) ||
-      (!dirent.isDirectory() && dirent.name.endsWith('.md')),
-  );
+function readFilteredDir(context: VaultContext, dir: string) {
+  return context.fileSystemAdapter.readDirectory(dir).filter((dirent) => {
+    const name = dir + SEPARATOR + dirent.getName();
+    return (
+      (dirent.isDirectory() && !name.endsWith('.github') && !name.endsWith('.obsidian')) ||
+      (!dirent.isDirectory() && name.endsWith('.md'))
+    );
+  });
 }
 
 export function handleVault(
+  context: VaultContext,
   dir: string,
   handleDirStart: ReturnType<typeof addParentNodeStart>,
   handleDirEnd: ReturnType<typeof addParentNodeEnd>,
@@ -33,12 +35,12 @@ export function handleVault(
   childrenPosition: ChildrenPosition = ChildrenPosition.LAST,
 ) {
   handleDirStart(dir);
-  const dirents = readFilteredDir(dir);
+  const dirents = readFilteredDir(context, dir);
   for (let index = 0; index < dirents.length; index++) {
     const dirent = dirents[index];
-    const res = resolve(dir, dirent.name);
+    const res = dir + SEPARATOR + dirent.getName();
     if (dirent.isDirectory()) {
-      handleVault(res, handleDirStart, handleDirEnd, handleFile, getChildrenPosition(index, dirents));
+      handleVault(context, res, handleDirStart, handleDirEnd, handleFile, getChildrenPosition(index, dirents));
     } else {
       handleFile(res, getChildrenPosition(index, dirents));
     }
@@ -48,9 +50,9 @@ export function handleVault(
 
 export function addParentNodeStart(targetPath: string, today: number, context: VaultContext) {
   return (dir: string) => {
-    const name = path.basename(dir);
+    const name = basename(dir);
     const uid = untrackedUidRequest(context);
-    appendFileSync(
+    context.fileSystemAdapter.appendToFile(
       targetPath,
       `{
         "uid": "${uid}", 
@@ -64,15 +66,15 @@ export function addParentNodeStart(targetPath: string, today: number, context: V
   };
 }
 
-export function addParentNodeEnd(targetPath: string) {
+export function addParentNodeEnd(context: VaultContext, targetPath: string) {
   return (childrenPosition: ChildrenPosition) => {
-    appendFileSync(
+    context.fileSystemAdapter.appendToFile(
       targetPath,
       `]
     }`,
     );
     if (childrenPosition !== ChildrenPosition.LAST) {
-      appendFileSync(targetPath, ',');
+      context.fileSystemAdapter.appendToFile(targetPath, ',');
     }
   };
 }
@@ -83,15 +85,15 @@ export function addFileNode(targetPath: string, today: number, context: VaultCon
     const absoluteFilePath = file.slice(context.vaultPath.length + 1, -3);
 
     const fileNode = convertObsidianFile(
-      path.basename(file).replace('.md', ''),
+      basename(file).replace('.md', ''),
       absoluteFilePath,
-      readFileSync(file, 'utf-8'),
+      context.fileSystemAdapter.readFile(file),
       context,
       today,
     );
-    appendFileSync(targetPath, JSON.stringify(fileNode, null, 2));
+    context.fileSystemAdapter.appendToFile(targetPath, JSON.stringify(fileNode, null, 2));
     if (childrenPosition !== ChildrenPosition.LAST) {
-      appendFileSync(targetPath, ',');
+      context.fileSystemAdapter.appendToFile(targetPath, ',');
     }
   };
 }

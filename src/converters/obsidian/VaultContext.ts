@@ -1,14 +1,14 @@
 import { resolve } from 'path';
 import { TanaIntermediateSummary, TanaIntermediateAttribute } from '../../types/types';
 import { idgenerator as randomGenerator } from '../../utils/utils';
-import { FileDesc } from './markdown/file';
-import { BlockLinkTracker } from './tanaconversion/blockLinks';
-import { HeadingDummyUidTracker, HeadingTracker } from './tanaconversion/headingLinks';
-import { SuperTagTracker } from './tanaconversion/supertags';
-import { IdGenerator, UidRequestType } from './tanaconversion/uids';
+import { FileDescMap } from './links/FileDescMap';
+import { BlockLinkTracker } from './links/blockLinks';
+import { SuperTagTracker } from './tanafeatures/supertags';
+import { UidRequestType } from './links/internalLinks';
+import { IdGenerator } from './utils/IdGenerator';
+import { HeadingTracker, HeadingDummyUidTracker } from './links/headingLinks';
 
-//all normal ([[fileName]]), file or folder UIDs: <name, UidData>
-export type UidTracker = Map<FileDesc, UidData>;
+export type UidTracker = FileDescMap<UidData>;
 
 interface UidData {
   type: UidRequestType;
@@ -33,6 +33,16 @@ export interface VaultContext {
   idGenerator: IdGenerator;
 }
 
+export function incrementSummary(summary: TanaIntermediateSummary) {
+  summary.totalNodes++;
+  summary.leafNodes++;
+}
+
+export function shiftFromLeafToTop(summary: TanaIntermediateSummary) {
+  summary.leafNodes--;
+  summary.topLevelNodes++;
+}
+
 export function createVaultContext(vaultPath: string, idGenerator: () => string = randomGenerator): VaultContext {
   if (vaultPath.endsWith('/')) {
     vaultPath = vaultPath.slice(0, -1);
@@ -50,10 +60,10 @@ export function createVaultContext(vaultPath: string, idGenerator: () => string 
     },
     idGenerator,
     vaultPath,
-    defaultLinkTracker: new Map(),
-    headingTracker: new Map(),
+    defaultLinkTracker: new FileDescMap(),
+    headingTracker: new FileDescMap(),
     dummyHeadingLinkTracker: new Map(),
-    blockLinkTracker: new Map(),
+    blockLinkTracker: new FileDescMap(),
     invalidLinks: [],
     superTagTracker: new Map(),
     attributes: [],

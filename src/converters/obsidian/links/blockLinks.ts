@@ -1,8 +1,8 @@
-import { VaultContext } from '../context';
-import { FileDesc, fullRetrieveDataForFile, partialRetrieveDataForFile } from '../markdown/file';
-import { untrackedUidRequest } from './untrackedUidRequest';
+import { VaultContext } from '../VaultContext';
+import { FileDescMap } from './FileDescMap';
+import { untrackedUidRequest } from './genericLinks';
 
-export type BlockLinkTracker = Map<FileDesc, Map<string, BlockUidData>>;
+export type BlockLinkTracker = FileDescMap<Map<string, BlockUidData>>;
 
 export enum BlockUidRequestType {
   LINK, //the request came from using the block ref
@@ -18,7 +18,7 @@ export interface BlockUidData {
 export function blockLinkUidRequestForUsing(link: string[], context: VaultContext) {
   const fileName = link[0];
   const blockObsidianUid = link[1];
-  const blockUidMap = partialRetrieveDataForFile(fileName, context.blockLinkTracker, () => {
+  const blockUidMap = context.blockLinkTracker.partialRetrieveAndUpdate(fileName, () => {
     return new Map<string, BlockUidData>();
   });
   let blockUidData = blockUidMap.get(blockObsidianUid);
@@ -37,7 +37,7 @@ export function blockLinkUidRequestForUsing(link: string[], context: VaultContex
 export function blockLinkUidRequestForDefining(link: string[], filePath: string, context: VaultContext) {
   const fileName = link[0];
   const blockObsidianUid = link[1];
-  const blockUidMap = fullRetrieveDataForFile(fileName, filePath, context.blockLinkTracker, () => {
+  const blockUidMap = context.blockLinkTracker.fullRetrieveAndUpdate(fileName, filePath, () => {
     return new Map<string, BlockUidData>();
   });
   let blockUidData = blockUidMap.get(blockObsidianUid);

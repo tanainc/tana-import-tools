@@ -6,7 +6,7 @@ import { TanaIntermediateFile } from './types/types';
 import { WorkflowyConverter } from './converters/workflowy';
 import { lstatSync } from 'fs';
 import { ObsidianVaultConverter } from './converters/obsidian';
-import { createVaultContext } from './converters/obsidian/context';
+import { createVaultContext } from './converters/obsidian/VaultContext';
 
 const fileType = process.argv[2];
 const file = process.argv[3];

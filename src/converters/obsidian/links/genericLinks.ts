@@ -1,5 +1,4 @@
-import { VaultContext } from '../context';
-import { incrementSummary } from './summary';
+import { incrementSummary, VaultContext } from '../VaultContext';
 
 export function untrackedUidRequest(context: VaultContext) {
   incrementSummary(context.summary);

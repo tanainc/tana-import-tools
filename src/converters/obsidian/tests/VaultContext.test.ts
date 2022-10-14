@@ -1,9 +1,9 @@
 import { expect, test } from '@jest/globals';
-import { getAllInvalidLinks } from '../tanaconversion/invalidLinks';
-import { untrackedUidRequest } from '../tanaconversion/untrackedUidRequest';
-import { createVaultContext } from '../context';
+import { getAllInvalidLinks } from '../links/invalidLinks';
+import { untrackedUidRequest } from '../links/genericLinks';
+import { createVaultContext } from '../VaultContext';
 import { deterministicGenerator } from './testUtils';
-import { requestUidForContentNode, requestUidForLink } from '../tanaconversion/nodeConversion';
+import { requestUidForLink, requestUidForContentNode } from '../links/internalLinks';
 
 test('VaultContext uid test', () => {
   const context = createVaultContext('', deterministicGenerator());

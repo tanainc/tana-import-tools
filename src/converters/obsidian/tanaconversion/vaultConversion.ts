@@ -1,8 +1,8 @@
 import { appendFileSync, Dirent, readdirSync, readFileSync } from 'fs';
 import path, { resolve } from 'path';
 import { convertObsidianFile } from './fileConversion';
-import { VaultContext } from '../context';
-import { untrackedUidRequest } from './untrackedUidRequest';
+import { VaultContext } from '../VaultContext';
+import { untrackedUidRequest } from '../links/genericLinks';
 
 enum ChildrenPosition {
   NOT_LAST = 'NOT_LAST',

@@ -1,6 +1,6 @@
 import { TanaIntermediateSupertag } from '../../../types/types';
 import { cleanUpTag } from '../markdown/tags';
-import { IdGenerator } from './uids';
+import { IdGenerator } from '../utils/IdGenerator';
 
 export type SuperTagTracker = Map<string, string>;
 

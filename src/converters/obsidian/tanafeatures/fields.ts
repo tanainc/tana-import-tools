@@ -1,8 +1,7 @@
-import { TanaIntermediateNode } from '../../../types/types';
-import { VaultContext } from '../context';
+import { TanaIntermediateAttribute, TanaIntermediateNode } from '../../../types/types';
+import { VaultContext } from '../VaultContext';
 import { FrontmatterData } from '../markdown/frontmatter';
-import { addAttribute } from './attributes';
-import { untrackedUidRequest } from './untrackedUidRequest';
+import { untrackedUidRequest } from '../links/genericLinks';
 
 export function frontMatterToFieldNode(
   data: FrontmatterData,
@@ -31,4 +30,13 @@ export function frontMatterToFieldNode(
     editedAt: today,
     children,
   };
+}
+
+function addAttribute(name: string, attributes: TanaIntermediateAttribute[]) {
+  const foundAttr = attributes.filter((attr) => attr.name === name)[0];
+  if (foundAttr) {
+    foundAttr.count++;
+  } else {
+    attributes.push({ name, values: [], count: 1 });
+  }
 }

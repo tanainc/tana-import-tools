@@ -1,9 +1,9 @@
 import { createTree } from '../utils/createTree';
 import { traverseTreeDepthFirst } from '../utils/traverseTreeDepthFirst';
-import { VaultContext } from '../context';
+import { incrementSummary, VaultContext } from '../VaultContext';
 import { createReadStream, appendFileSync, unlinkSync, renameSync } from 'fs';
-import { incrementSummary } from './summary';
 import * as readline from 'node:readline/promises';
+import { FileDescMap } from './FileDescMap';
 
 //children are sorted like in file, important to detect valid heading links
 export type HeadingNode = { uid: string; content: string; children?: HeadingNode[] };
@@ -15,22 +15,26 @@ export interface HeadingUidData {
   link: string[]; //without the fileName
 }
 
-export type HeadingTracker = Map<string, HeadingData[]>;
-
-//all heading temp / dummy-UIDs: <fileName, HeadingUidData[]>
+export type HeadingTracker = FileDescMap<HeadingData[]>;
+/**
+ * <unchangedInlineLink, HeadingUidData[]>
+ */
 export type HeadingDummyUidTracker = Map<string, HeadingUidData[]>;
 
 /**
  * A heading link is [[fileName#heading...]]
+ *
+ * File name might be file path.
  */
-export function headingLinkUidRequest(link: string[], context: VaultContext) {
-  const fileName = link[0];
-  const fileHeadingData = context.dummyHeadingLinkTracker.get(fileName) ?? [];
-  context.dummyHeadingLinkTracker.set(fileName, fileHeadingData);
+export function headingLinkUidRequestForUsing(cleanLink: string[], context: VaultContext) {
+  const unchangedLink = cleanLink[0];
+  const fileHeadingData = context.dummyHeadingLinkTracker.get(unchangedLink) ?? [];
+  context.dummyHeadingLinkTracker.set(unchangedLink, fileHeadingData);
   //these "UIDs" are replaced and counted later
   //but for the tests it needs to be understood that the id generator is called more times than are valid ids in the end
-  const uid = context.idGenerator();
-  fileHeadingData.push({ uid, link: link.slice(1) });
+  const uid = '!' + context.idGenerator() + '!';
+  // const uid = context.idGenerator();
+  fileHeadingData.push({ uid, link: cleanLink.slice(1) });
   return uid;
 }
 
@@ -44,8 +48,9 @@ export function matchHeadingLinks(
 ): [{ old: string; new: string }[], HeadingUidData[]] {
   const missingHeadingLinks = [];
   const validHeadingLinks = [];
-  for (const [fileName, dummyHeadingUidData] of dummyHeadingLinks.entries()) {
-    const potentiallyMatchingNodes = tracker.get(fileName);
+  for (const [unchangedInlineLink, dummyHeadingUidData] of dummyHeadingLinks.entries()) {
+    const matchingFileDesc = tracker.findMatchingFile(unchangedInlineLink);
+    const potentiallyMatchingNodes = matchingFileDesc ? tracker.get(matchingFileDesc) : null;
     if (potentiallyMatchingNodes) {
       //we use a dummy because the tree function needs one root node
       const dummySourceRoot: HeadingData = { uid: 'DUMMY', content: '', level: -1 };

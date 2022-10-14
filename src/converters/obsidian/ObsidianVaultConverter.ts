@@ -1,12 +1,11 @@
 import { appendFileSync, unlinkSync } from 'fs';
 import path from 'path';
 import fs from 'fs';
-import { createUnlinkedTanaNodes } from './tanaconversion/invalidLinks';
+import { createUnlinkedTanaNodes } from './links/invalidLinks';
 import { addFileNode, addParentNodeEnd, addParentNodeStart, handleVault } from './tanaconversion/vaultConversion';
-import { VaultContext } from './context';
-import { createSuperTagObjects } from './tanaconversion/supertags';
-import { shiftFromLeafToTop } from './tanaconversion/summary';
-import { postProcessTIFFIle } from './tanaconversion/headingLinks';
+import { shiftFromLeafToTop, VaultContext } from './VaultContext';
+import { createSuperTagObjects } from './tanafeatures/supertags';
+import { postProcessTIFFIle } from './links/headingLinks';
 
 /**
  * Converts the vault to the Tana format and incrementally saves it, otherwise it would be to memory intensive on big vaults.

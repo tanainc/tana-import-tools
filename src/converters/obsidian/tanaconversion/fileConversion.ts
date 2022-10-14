@@ -2,15 +2,13 @@ import { convertMarkdownNode } from './nodeConversion';
 import { createTree } from '../utils/createTree';
 import { HierarchyType, MarkdownNode, extractMarkdownNodes, isMarkdownNodeChild } from '../hierarchy/markdownNodes';
 import { extractFrontmatter, FrontmatterData } from '../markdown/frontmatter';
-import { VaultContext } from '../context';
+import { VaultContext } from '../VaultContext';
 import moment from 'moment';
 import { TanaIntermediateNode, NodeType } from '../../../types/types';
-import { frontMatterToFieldNode } from './fields';
-import { superTagUidRequests } from './supertags';
-import { UidRequestType } from './uids';
-import { HeadingData } from './headingLinks';
-import { incrementSummary } from './summary';
-import { fullRetrieveDataForFile } from '../markdown/file';
+import { superTagUidRequests } from '../tanafeatures/supertags';
+import { requestUidForFile } from '../links/internalLinks';
+import { HeadingData } from '../links/headingLinks';
+import { frontMatterToFieldNode } from '../tanafeatures/fields';
 
 export function convertObsidianFile(
   fileName: string, //without ending
@@ -55,21 +53,9 @@ export function convertObsidianFile(
     },
   );
 
-  context.headingTracker.set(fileName, headingData);
+  context.headingTracker.set({ name: displayName, path: filePath }, headingData);
 
   return fileNode;
-}
-
-function requestUidForFile(fileName: string, filePath: string, context: VaultContext) {
-  const obsidianLink = fileName.trim();
-  const uidData = fullRetrieveDataForFile(obsidianLink, filePath, context.defaultLinkTracker, () => {
-    incrementSummary(context.summary);
-    const uid = context.idGenerator();
-    return { uid, obsidianLink, type: UidRequestType.CONTENT };
-  });
-  uidData.type = UidRequestType.FILE;
-
-  return uidData.uid;
 }
 
 function createFileNode(

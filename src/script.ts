@@ -4,7 +4,12 @@ const zipInput = document.getElementById('vault-zip') as HTMLInputElement;
 zipInput.addEventListener('change', async (event) => {
   const zipFile = ((event.target as HTMLInputElement).files as FileList)[0];
   const vaultName = zipFile.name.slice(0, zipFile.name.indexOf('.zip'));
+  const progress = document.createElement('b');
+  progress.innerHTML = 'In Progress... (imagine a fancy timer with 10-30 secs here)<br>';
+  document.body.appendChild(progress);
+
   const [summary, , adapter] = await WebObsidianVaultConverter(zipFile, vaultName, 1);
+  document.body.removeChild(progress);
 
   const success = document.createElement('b');
   success.innerHTML = 'Success!<br>';

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import { expect, test } from '@jest/globals';
-import { expectField, expectImage } from '../../../testUtils/testUtils';
+import { expectField } from '../../../testUtils/testUtils';
 import { importNotionFile } from './testUtils';
 test('Smoke test import preview ', async () => {
   const [file] = importNotionFile('singleNode.csv');

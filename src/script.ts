@@ -2,10 +2,12 @@ import { WebObsidianVaultConverter } from './converters/obsidian/WebObsidianVaul
 
 const zipInput = document.getElementById('vault-zip') as HTMLInputElement;
 zipInput.addEventListener('change', async (event) => {
+  let progress;
+
   try {
     const zipFile = ((event.target as HTMLInputElement).files as FileList)[0];
     const vaultName = zipFile.name.slice(0, zipFile.name.indexOf('.zip'));
-    const progress = document.createElement('b');
+    progress = document.createElement('b');
     progress.innerHTML = 'In Progress... (imagine a fancy timer with 10-30 secs here)<br>';
     document.body.appendChild(progress);
 
@@ -40,11 +42,30 @@ zipInput.addEventListener('change', async (event) => {
     });
     document.body.appendChild(downloadButton);
   } catch (error) {
-    document.body.appendChild(document.createElement('br'));
-    console.log(error);
-    const errorParagraph = document.createElement('b');
+    if (progress) {
+      document.body.removeChild(progress);
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    errorParagraph.innerText = 'An Error occured: \n\n' + (error as any).stack.toString();
+    const stackStr: string = (error as any).stack.toString();
+
+    document.body.appendChild(document.createElement('br'));
+    const errorParagraph = document.createElement('b');
+    errorParagraph.innerText = 'An Error occured.';
     document.body.appendChild(errorParagraph);
+    if (stackStr.toLowerCase().includes('readdirectory')) {
+      document.body.appendChild(document.createElement('br'));
+      document.body.appendChild(document.createElement('br'));
+      const additionalInfo = document.createElement('b');
+      additionalInfo.innerText =
+        'It probably has to do with a not properly zipped vault.\nPlease check the text at the top again.';
+      document.body.appendChild(additionalInfo);
+    }
+
+    document.body.appendChild(document.createElement('br'));
+    document.body.appendChild(document.createElement('br'));
+    const errorContent = document.createElement('b');
+    errorContent.innerText = 'Content of Error (please post in the Slack):\n\n' + stackStr;
+    document.body.appendChild(errorContent);
   }
 });

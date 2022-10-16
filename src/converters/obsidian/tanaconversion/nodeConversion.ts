@@ -1,5 +1,5 @@
 import { NodeType, TanaIntermediateNode } from '../../../types/types';
-import { getBracketLinks } from '../../../utils/utils';
+import { getBracketLinks, idgenerator } from '../../../utils/utils';
 import { HierarchyType, MarkdownNode } from '../hierarchy/markdownNodes';
 import { VaultContext } from '../VaultContext';
 import { superTagUidRequests } from '../tanafeatures/supertags';
@@ -22,6 +22,7 @@ function convertCodeBlock(obsidianNode: MarkdownNode, today: number, context: Va
   return tanaNode;
 }
 
+//30 sec
 export function convertMarkdownNode(
   fileName: string,
   filePath: string,
@@ -33,6 +34,7 @@ export function convertMarkdownNode(
     return convertCodeBlock(obsidianNode, today, context);
   }
 
+  //1 sec
   const [uid, content] = requestUidForContentNode(fileName, filePath, obsidianNode.content, context);
   const tanaNode: TanaIntermediateNode = {
     uid,

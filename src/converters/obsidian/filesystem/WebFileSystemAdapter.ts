@@ -46,8 +46,11 @@ export class WebFileSystemAdapter implements CustomFileSystemAdapter {
   //not necessary for browser
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   renameFile(_oldPath: string, _newPath: string) {}
+  //not necessary for browser
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  flushResultsFromInitialProcessing(_targetPath: string) {}
 
-  appendToFile(_targetPath: string, chunk: string) {
+  appendToResultFile(_targetPath: string, chunk: string) {
     this.chunks.push(chunk);
   }
 
@@ -59,7 +62,7 @@ export class WebFileSystemAdapter implements CustomFileSystemAdapter {
 
   //not necessary for browser
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  initReadingResultFile(_path: string) {}
+  initPostProcessingResultFile(_path: string) {}
 
   chunkIter() {
     const chunks = this.chunks;
@@ -83,8 +86,8 @@ export class WebFileSystemAdapter implements CustomFileSystemAdapter {
     return iterator as AsyncIterable<string>;
   }
 
-  endPostProcessingFile() {
-    (this.zipFS as FS).remove;
+  endPostProcessingFile(_targetPath: string) {
+    (this.zipFS as FS).remove((this.zipFS as FS).children[0]);
   }
 
   getResult() {

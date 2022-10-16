@@ -20,7 +20,10 @@ export async function ObsidianVaultConverter(context: VaultContext, today: numbe
     // eslint-disable-next-line no-empty
   } catch (e) {}
 
-  context.fileSystemAdapter.appendToFile(targetPath, '{\n  "version": "TanaIntermediateFile V0.1",\n  "nodes": [\n');
+  context.fileSystemAdapter.appendToResultFile(
+    targetPath,
+    '{\n  "version": "TanaIntermediateFile V0.1",\n  "nodes": [\n',
+  );
 
   await handleVault(
     context,
@@ -29,40 +32,48 @@ export async function ObsidianVaultConverter(context: VaultContext, today: numbe
     addParentNodeEnd(context, targetPath),
     addFileNode(targetPath, today, context),
   );
+  context.fileSystemAdapter.flushResultsFromInitialProcessing(targetPath);
 
   //the vault-node needs to be counted as a top level node
   shiftFromLeafToTop(context.summary);
 
   //post processing can be done before unlinked (it will add unlinked headings)
   //because the unlinked summary nodes are just created by the converter and have no connection to the rest
+  //20 secs
   await postProcessTIFFIle(targetPath, context);
 
   const collectedUnlinkedNodes = createUnlinkedTanaNodes(basename(context.vaultPath), today, context);
   if (collectedUnlinkedNodes) {
     //TODO: summary?
-    context.fileSystemAdapter.appendToFile(targetPath, ', ' + JSON.stringify(collectedUnlinkedNodes, null, 2));
+    context.fileSystemAdapter.appendToResultFile(targetPath, ', ' + JSON.stringify(collectedUnlinkedNodes, null, 2));
   }
 
   //close vault-node children
-  context.fileSystemAdapter.appendToFile(targetPath, '\n  ]');
+  context.fileSystemAdapter.appendToResultFile(targetPath, '\n  ]');
 
   const superTags = createSuperTagObjects(context.superTagTracker);
   if (superTags.length > 0) {
-    context.fileSystemAdapter.appendToFile(targetPath, ',\n  "supertags": \n' + JSON.stringify(superTags, null, 2));
+    context.fileSystemAdapter.appendToResultFile(
+      targetPath,
+      ',\n  "supertags": \n' + JSON.stringify(superTags, null, 2),
+    );
   }
 
   if (context.attributes.length > 0) {
-    context.fileSystemAdapter.appendToFile(
+    context.fileSystemAdapter.appendToResultFile(
       targetPath,
       ',\n  "attributes": \n' + JSON.stringify(context.attributes, null, 2),
     );
   }
 
-  context.fileSystemAdapter.appendToFile(targetPath, ',\n  "summary": \n' + JSON.stringify(context.summary, null, 2));
+  context.fileSystemAdapter.appendToResultFile(
+    targetPath,
+    ',\n  "summary": \n' + JSON.stringify(context.summary, null, 2),
+  );
 
   //close target object
-  context.fileSystemAdapter.appendToFile(targetPath, '\n}');
-
+  context.fileSystemAdapter.appendToResultFile(targetPath, '\n}');
+  context.fileSystemAdapter.flushResultsFromInitialProcessing(targetPath);
   return context.summary;
 }
 

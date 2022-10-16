@@ -53,6 +53,10 @@ export function convertObsidianFile(
     },
   );
 
+  //making GC a little easier
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  obsidianNodes = null as any;
+
   context.headingTracker.set({ name: displayName, path: filePath }, headingData);
 
   return fileNode;

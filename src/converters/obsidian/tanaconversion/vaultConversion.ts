@@ -52,7 +52,7 @@ export function addParentNodeStart(targetPath: string, today: number, context: V
   return (dir: string) => {
     const name = basename(dir);
     const uid = untrackedUidRequest(context);
-    context.fileSystemAdapter.appendToFile(
+    context.fileSystemAdapter.appendToResultFile(
       targetPath,
       `{
         "uid": "${uid}", 
@@ -68,13 +68,13 @@ export function addParentNodeStart(targetPath: string, today: number, context: V
 
 export function addParentNodeEnd(context: VaultContext, targetPath: string) {
   return (childrenPosition: ChildrenPosition) => {
-    context.fileSystemAdapter.appendToFile(
+    context.fileSystemAdapter.appendToResultFile(
       targetPath,
       `]
     }`,
     );
     if (childrenPosition !== ChildrenPosition.LAST) {
-      context.fileSystemAdapter.appendToFile(targetPath, ',');
+      context.fileSystemAdapter.appendToResultFile(targetPath, ',');
     }
   };
 }
@@ -91,9 +91,9 @@ export function addFileNode(targetPath: string, today: number, context: VaultCon
       context,
       today,
     );
-    context.fileSystemAdapter.appendToFile(targetPath, JSON.stringify(fileNode, null, 2));
+    context.fileSystemAdapter.appendToResultFile(targetPath, JSON.stringify(fileNode, null, 2));
     if (childrenPosition !== ChildrenPosition.LAST) {
-      context.fileSystemAdapter.appendToFile(targetPath, ',');
+      context.fileSystemAdapter.appendToResultFile(targetPath, ',');
     }
   };
 }

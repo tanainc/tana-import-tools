@@ -9,17 +9,18 @@ export interface CustomFileSystemAdapter {
 
   removeFile: (targetPath: string) => void;
   renameFile: (oldPath: string, newPath: string) => void;
-  appendToFile: (targetPath: string, chunk: string) => void;
-  appendToPostProcessingFile: (targetPath: string, chunk: string) => void;
+  appendToResultFile: (targetPath: string, chunk: string) => void;
+  flushResultsFromInitialProcessing: (targetPath: string) => void;
 
-  initReadingResultFile: (path: string) => void;
+  initPostProcessingResultFile: (resultFilePath: string) => void;
+  appendToPostProcessingFile: (targetPath: string, chunk: string) => void;
   /**
    * Return an iterable to read chunks from the already written file.
    *
    * Local the chunks are lines. Online the chunks are the same chunks that where written.
    */
   chunkIter: () => AsyncIterable<string>;
-  endPostProcessingFile: () => void;
+  endPostProcessingFile: (targetPath: string) => void;
 }
 
 export interface CustomFileSystemEntry {

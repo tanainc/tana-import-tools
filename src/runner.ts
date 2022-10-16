@@ -6,6 +6,7 @@ import { TanaIntermediateFile } from './types/types';
 import { WorkflowyConverter } from './converters/workflowy';
 import { lstatSync } from 'fs';
 import { ObsidianVaultConverter, LocalFileSystemAdapter, createVaultContext } from './converters/obsidian';
+import { LocalObsidianZipVaultConverter } from './converters/obsidian/LocalObsidianZipVaultConverter';
 
 const fileType = process.argv[2];
 const file = process.argv[3];
@@ -61,6 +62,20 @@ function handleSingleFileConversion() {
   saveFile(file, tanaIntermediteFile);
 }
 
+async function handleZipConversion() {
+  console.log(`\n\nReading zip: ${file} for import as: ${fileType}`);
+  let summary;
+  switch (fileType) {
+    case 'obsidian':
+      summary = await LocalObsidianZipVaultConverter(file);
+      break;
+    default:
+      console.log(`File type ${fileType} is not supported for zips`);
+      exit(0);
+  }
+  console.dir(summary);
+}
+
 async function handleFolderConversion() {
   console.log(`\n\nReading folder: ${file} for import as: ${fileType}`);
   let summary;
@@ -78,5 +93,9 @@ async function handleFolderConversion() {
 if (lstatSync(file).isDirectory()) {
   handleFolderConversion();
 } else {
-  handleSingleFileConversion();
+  if (file.endsWith('.zip')) {
+    handleZipConversion();
+  } else {
+    handleSingleFileConversion();
+  }
 }

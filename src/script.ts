@@ -1,4 +1,4 @@
-import { WebObsidianVaultConverter } from './converters/obsidian/LocalObsidianZipVaultConverter';
+import { WebObsidianVaultConverter } from './converters/obsidian/WebObsidianVaultConverter';
 
 const zipInput = document.getElementById('vault-zip') as HTMLInputElement;
 zipInput.addEventListener('change', async (event) => {

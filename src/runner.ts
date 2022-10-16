@@ -5,8 +5,12 @@ import { RoamConverter } from './converters/roam/index';
 import { TanaIntermediateFile } from './types/types';
 import { WorkflowyConverter } from './converters/workflowy';
 import { lstatSync } from 'fs';
-import { ObsidianVaultConverter, LocalFileSystemAdapter, createVaultContext } from './converters/obsidian';
-import { LocalObsidianZipVaultConverter } from './converters/obsidian/LocalObsidianZipVaultConverter';
+import {
+  ObsidianVaultConverter,
+  LocalFileSystemAdapter,
+  createVaultContext,
+  LocalObsidianZipVaultConverter,
+} from './converters/obsidian';
 
 const fileType = process.argv[2];
 const file = process.argv[3];
@@ -67,7 +71,7 @@ async function handleZipConversion() {
   let summary;
   switch (fileType) {
     case 'obsidian':
-      summary = await LocalObsidianZipVaultConverter(file);
+      summary = (await LocalObsidianZipVaultConverter(file))[0];
       break;
     default:
       console.log(`File type ${fileType} is not supported for zips`);

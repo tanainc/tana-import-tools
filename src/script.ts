@@ -42,6 +42,8 @@ zipInput.addEventListener('change', async (event) => {
     });
     document.body.appendChild(downloadButton);
   } catch (error) {
+    console.trace(error);
+
     if (progress) {
       document.body.removeChild(progress);
     }

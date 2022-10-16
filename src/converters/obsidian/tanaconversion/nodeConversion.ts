@@ -1,5 +1,5 @@
 import { NodeType, TanaIntermediateNode } from '../../../types/types';
-import { getBracketLinks, idgenerator } from '../../../utils/utils';
+import { getBracketLinks } from '../../../utils/utils';
 import { HierarchyType, MarkdownNode } from '../hierarchy/markdownNodes';
 import { VaultContext } from '../VaultContext';
 import { superTagUidRequests } from '../tanafeatures/supertags';

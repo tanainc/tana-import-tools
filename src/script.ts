@@ -11,7 +11,7 @@ zipInput.addEventListener('change', async (event) => {
     progress.innerHTML = 'In Progress... (imagine a fancy timer with 10-30 secs here)<br>';
     document.body.appendChild(progress);
 
-    const [summary, , adapter] = await WebObsidianVaultConverter(zipFile, vaultName, 1);
+    const [summary, , adapter] = await WebObsidianVaultConverter(zipFile, vaultName, Date.now());
     document.body.removeChild(progress);
 
     const success = document.createElement('b');

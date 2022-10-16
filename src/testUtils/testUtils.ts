@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import path from 'path';
 import { expect } from '@jest/globals';
 import { fail } from 'assert';
 import { TanaIntermediateNode, TanaIntermediateFile } from '../types/types';
@@ -14,7 +15,7 @@ export function importFileAndGetHelpers(
 ): [TanaIntermediateFile, IdLookupHelper, NameLookupHelper] {
   const content = fs.readFileSync(`${fileToLoad}`, 'utf8');
 
-  const file = importer.convert(content);
+  const file = importer.convert(content, { fileExtension: path.extname(fileToLoad) });
   if (!file) {
     throw new Error('File is empty');
   }

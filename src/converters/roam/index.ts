@@ -56,7 +56,7 @@ export class RoamConverter implements IConverter {
     brokenRefs: 0,
   };
 
-  convert(fileContent: string): TanaIntermediateFile | undefined {
+  convert(fileContent: string, _options = {}): TanaIntermediateFile | undefined {
     const rootLevelNodes: TanaIntermediateNode[] = [];
     try {
       const nodes: RoamNode[] = JSON.parse(fileContent);

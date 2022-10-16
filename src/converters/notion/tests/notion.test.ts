@@ -125,3 +125,9 @@ test('Reports Broken link in preview', async () => {
 
   expect(refs).toEqual([node?.uid]);
 });
+
+test('Parses markdown file', () => {
+  const [file] = importNotionFile('basic.md');
+
+  expect(file.summary).toEqual({});
+});

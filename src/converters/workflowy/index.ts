@@ -14,7 +14,7 @@ export class WorkflowyConverter {
     brokenRefs: 0,
   };
 
-  convert(fileContent: string): TanaIntermediateFile | undefined {
+  convert(fileContent: string, _options = {}): TanaIntermediateFile | undefined {
     let outline: TheOutline | undefined;
 
     opml.parse(fileContent, (err, theOutline) => {

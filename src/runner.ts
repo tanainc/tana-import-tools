@@ -1,5 +1,6 @@
 import { exit } from 'process';
 import * as fs from 'fs';
+import path from 'path';
 
 import { RoamConverter } from './converters/roam/index';
 import { TanaIntermediateFile } from './types/types';
@@ -45,7 +46,7 @@ switch (fileType) {
     tanaIntermediteFile = new WorkflowyConverter().convert(contents);
     break;
   case 'notion':
-    tanaIntermediteFile = new NotionConverter().convert(contents);
+    tanaIntermediteFile = new NotionConverter().convert(contents, { fileExtension: path.extname(file) });
     break;
   default:
     console.log(`File type ${fileType} is not supported`);

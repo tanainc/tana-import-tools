@@ -1,9 +1,9 @@
-export function nextNewLine(content: string, curPosition: number, count = 0): number {
-  const curChar = content[curPosition + count];
-  if (isNewLine(curChar)) {
-    return curPosition + count;
+export function nextNewLine(content: string, curPosition: number): number {
+  let count = 0;
+  while (!isNewLine(content[curPosition + count])) {
+    count++;
   }
-  return nextNewLine(content, curPosition, count + 1);
+  return curPosition + count;
 }
 
 export function lastPositionIsNewline(content: string, curPosition: number) {

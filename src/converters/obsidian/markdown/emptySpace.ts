@@ -1,13 +1,14 @@
 export function isEmptySpace(char: string) {
+  //we count tab as one empty space
   return char === ' ' || char === '\t';
 }
 
-export function countEmptySpace(content: string, curPosition: number, count = 0): number {
-  //we count tab as one empty space
-  if (!isEmptySpace(content[curPosition])) {
-    return count;
+export function countEmptySpace(content: string, curPosition: number): number {
+  let count = 0;
+  while (isEmptySpace(content[curPosition + count])) {
+    count++;
   }
-  return countEmptySpace(content, curPosition + 1, count + 1);
+  return count;
 }
 
 /**

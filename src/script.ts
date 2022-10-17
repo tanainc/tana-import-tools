@@ -3,6 +3,7 @@ import { WebObsidianVaultConverter } from './converters/obsidian/WebObsidianVaul
 const zipInput = document.getElementById('vault-zip') as HTMLInputElement;
 zipInput.addEventListener('change', async (event) => {
   let progress;
+  let seconds = 0;
 
   try {
     const zipFile = ((event.target as HTMLInputElement).files as FileList)[0];
@@ -10,12 +11,13 @@ zipInput.addEventListener('change', async (event) => {
     progress = document.createElement('b');
     progress.innerHTML = 'In Progress... (imagine a fancy timer with 10-30 secs here)<br>';
     document.body.appendChild(progress);
-
+    const cancel = setInterval(() => seconds++, 1000);
     const [summary, , adapter] = await WebObsidianVaultConverter(zipFile, vaultName, Date.now());
+    clearInterval(cancel);
     document.body.removeChild(progress);
 
     const success = document.createElement('b');
-    success.innerHTML = 'Success!<br>';
+    success.innerHTML = 'Success! And it only took ' + seconds + ' seconds.<br>';
     document.body.appendChild(success);
 
     const summaryHeading = document.createElement('h2');

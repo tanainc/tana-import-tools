@@ -1,5 +1,4 @@
 import { NodeType, TanaIntermediateNode } from '../../../types/types';
-import { getBracketLinks } from '../../../utils/utils';
 import { HierarchyType, MarkdownNode } from '../hierarchy/markdownNodes';
 import { VaultContext } from '../VaultContext';
 import { superTagUidRequests } from '../tanafeatures/supertags';
@@ -8,7 +7,9 @@ import { removeTodo } from '../markdown/todo';
 import { detectTags } from '../markdown/tags';
 import { handleImages } from '../tanafeatures/imageNodes';
 import { postProcessCodeBlock } from '../hierarchy/codeblocks';
-import { requestUidForContentNode, requestUidForLink } from '../links/internalLinks';
+import { requestUidForContentNode, requestUidsForAllLinks } from '../links/internalLinks';
+import { keyValToFieldNode } from '../tanafeatures/fields';
+import { isSoloDataViewAttribute } from '../hierarchy/dataviewattributes';
 
 function convertCodeBlock(obsidianNode: MarkdownNode, today: number, context: VaultContext) {
   const tanaNode: TanaIntermediateNode = {
@@ -22,7 +23,21 @@ function convertCodeBlock(obsidianNode: MarkdownNode, today: number, context: Va
   return tanaNode;
 }
 
-//30 sec
+function convertDataViewAttribute(
+  obsidianNode: MarkdownNode,
+  tanaNode: TanaIntermediateNode,
+  today: number,
+  context: VaultContext,
+) {
+  //we are checking again here, because the other detection only detects free-flowing attributes (so not in bullets)
+  if (obsidianNode.type === HierarchyType.DATAVIEWATTRIBUTE || isSoloDataViewAttribute(tanaNode.name)) {
+    const splitName = tanaNode.name.split('::');
+    return keyValToFieldNode(splitName[0], [splitName[1].trim()], today, context, tanaNode.uid);
+  }
+
+  return;
+}
+
 export function convertMarkdownNode(
   fileName: string,
   filePath: string,
@@ -34,7 +49,6 @@ export function convertMarkdownNode(
     return convertCodeBlock(obsidianNode, today, context);
   }
 
-  //1 sec
   const [uid, content] = requestUidForContentNode(fileName, filePath, obsidianNode.content, context);
   const tanaNode: TanaIntermediateNode = {
     uid,
@@ -64,21 +78,7 @@ export function convertMarkdownNode(
     tanaNode.supertags = superTagUidRequests(tags, context.superTagTracker, context.idGenerator, true);
   }
 
-  const foundUIDs = getBracketLinks(tanaNode.name, true)
-    .filter((bracketLink) => bracketLink.trim() !== '')
-    .map((bracketLink) => {
-      //handling aliases
-      const aliasArr = bracketLink.split('|');
-      const link = aliasArr[0];
-      const alias = aliasArr[1];
-      const foundUid = requestUidForLink(link, context);
-      const result =
-        alias !== undefined && alias.trim() !== ''
-          ? '[' + alias.trim() + ']([[' + foundUid + ']])'
-          : '[[' + foundUid + ']]';
-
-      return [bracketLink, foundUid, result];
-    });
+  const foundUIDs = requestUidsForAllLinks(tanaNode.name, context);
 
   if (foundUIDs.length > 0) {
     //using Set to filter out links that appear multiple times
@@ -95,5 +95,7 @@ export function convertMarkdownNode(
 
   handleImages(tanaNode, today, context);
 
-  return tanaNode;
+  const dataviewAttributeNode = convertDataViewAttribute(obsidianNode, tanaNode, today, context);
+
+  return dataviewAttributeNode ?? tanaNode;
 }

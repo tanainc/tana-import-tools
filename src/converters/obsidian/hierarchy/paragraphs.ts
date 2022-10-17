@@ -4,6 +4,7 @@ import { detectHeadingHierarchy } from './headings';
 import { Hierarchy } from './markdownNodes';
 import { lastPositionIsNewline, nextNewLine } from '../markdown/newline';
 import { detectCodeBlockHierarchy } from './codeblocks';
+import { detectDataViewAttributeHierarchy } from './dataviewattributes';
 
 export function findParagraphSliceStartPosition(curPosition: number) {
   //we don't trim the start
@@ -51,6 +52,11 @@ function newTypeOfHierarchyStarts(content: string, pos: number): Hierarchy | nul
   if (hierarchy) {
     return hierarchy;
   }
+  hierarchy = detectDataViewAttributeHierarchy(content, pos);
+  if (hierarchy) {
+    return hierarchy;
+  }
+
   hierarchy = detectBulletHierarchy(content, pos);
   if (hierarchy) {
     return hierarchy;

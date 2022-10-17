@@ -89,11 +89,11 @@
                         },
                         {
                           "uid": "19",
-                          "name": "[[63]]",
+                          "name": "[[66]]",
                           "createdAt": 1,
                           "editedAt": 1,
                           "type": "node",
-                          "refs": ["63"]
+                          "refs": ["66"]
                         },
                         {
                           "uid": "21",
@@ -336,6 +336,15 @@
                     },
                     {
                       "uid": "63",
+                      "name": "Key1",
+                      "type": "field",
+                      "createdAt": 1,
+                      "editedAt": 1,
+                      "children": [{ "uid": "64", "name": "Value1", "type": "node", "createdAt": 1, "editedAt": 1 }]
+                    },
+                    { "uid": "65", "name": "KeyX::ValueY", "createdAt": 1, "editedAt": 1, "type": "node" },
+                    {
+                      "uid": "66",
                       "name": "Heading 2",
                       "createdAt": 1,
                       "editedAt": 1,
@@ -350,7 +359,7 @@
                           "refs": ["48"],
                           "children": [
                             {
-                              "uid": "65",
+                              "uid": "68",
                               "name": "Node with [[13]] [[14]]",
                               "createdAt": 1,
                               "editedAt": 1,
@@ -359,24 +368,34 @@
                               "refs": ["13", "14"]
                             },
                             {
-                              "uid": "66",
-                              "name": "Fun with missing block ref [[67]] [[68]]",
+                              "uid": "69",
+                              "name": "Fun with missing block ref [[70]] [[71]]",
                               "createdAt": 1,
                               "editedAt": 1,
                               "type": "node",
-                              "refs": ["67", "68"]
+                              "refs": ["70", "71"]
+                            },
+                            {
+                              "uid": "72",
+                              "name": "Key2",
+                              "type": "field",
+                              "createdAt": 1,
+                              "editedAt": 1,
+                              "children": [
+                                { "uid": "73", "name": "Value2", "type": "node", "createdAt": 1, "editedAt": 1 }
+                              ]
                             }
                           ]
                         },
                         {
-                          "uid": "69",
+                          "uid": "74",
                           "name": "Out of Level",
                           "createdAt": 1,
                           "editedAt": 1,
                           "type": "node",
                           "children": [
                             {
-                              "uid": "70",
+                              "uid": "75",
                               "name": "Referencing a block [[43]]",
                               "createdAt": 1,
                               "editedAt": 1,
@@ -391,9 +410,9 @@
                 }
               ]
             },
-            { "uid": "71", "name": "test3", "createdAt": 1, "editedAt": 1, "type": "node" },
+            { "uid": "76", "name": "test3", "createdAt": 1, "editedAt": 1, "type": "node" },
             {
-              "uid": "72",
+              "uid": "77",
               "name": "folder",
               "createdAt": 1,
               "editedAt": 1,
@@ -405,7 +424,7 @@
       ]
     },
     {
-      "uid": "73",
+      "uid": "78",
       "name": "Missing Nodes for vault",
       "createdAt": 1,
       "editedAt": 1,
@@ -416,9 +435,9 @@
         { "uid": "!42!", "name": "Heading 2#Heading here", "createdAt": 1, "editedAt": 1, "type": "node" },
         { "uid": "13", "name": "Link", "createdAt": 1, "editedAt": 1, "type": "node" },
         { "uid": "14", "name": "Link2", "createdAt": 1, "editedAt": 1, "type": "node" },
-        { "uid": "68", "name": "missing#^MISSING", "createdAt": 1, "editedAt": 1, "type": "node" },
+        { "uid": "71", "name": "missing#^MISSING", "createdAt": 1, "editedAt": 1, "type": "node" },
         { "uid": "8", "name": "Some", "createdAt": 1, "editedAt": 1, "type": "node" },
-        { "uid": "67", "name": "test#^MISSING", "createdAt": 1, "editedAt": 1, "type": "node" }
+        { "uid": "70", "name": "test#^MISSING", "createdAt": 1, "editedAt": 1, "type": "node" }
       ]
     }
   ],
@@ -430,7 +449,9 @@
   ],
   "attributes": [
     { "name": "field0", "values": [], "count": 2 },
-    { "name": "field1", "values": [], "count": 1 }
+    { "name": "field1", "values": [], "count": 1 },
+    { "name": "Key1", "values": [], "count": 1 },
+    { "name": "Key2", "values": [], "count": 1 }
   ],
-  "summary": { "leafNodes": 66, "topLevelNodes": 2, "totalNodes": 68, "calendarNodes": 1, "fields": 3, "brokenRefs": 0 }
+  "summary": { "leafNodes": 71, "topLevelNodes": 2, "totalNodes": 73, "calendarNodes": 1, "fields": 5, "brokenRefs": 0 }
 }

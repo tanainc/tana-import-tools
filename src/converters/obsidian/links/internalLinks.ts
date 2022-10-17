@@ -3,6 +3,7 @@ import { removeBlockId } from '../markdown/blockIds';
 import { blockLinkUidRequestForUsing, blockLinkUidRequestForDefining } from './blockLinks';
 import { untrackedUidRequest } from './genericLinks';
 import { headingLinkUidRequestForUsing } from './headingLinks';
+import { getBracketLinks } from '../../../utils/utils';
 
 export enum UidRequestType {
   FILE,
@@ -13,6 +14,24 @@ export enum LinkType {
   DEFAULT,
   HEADING,
   BLOCK,
+}
+
+export function requestUidsForAllLinks(content: string, context: VaultContext) {
+  return getBracketLinks(content, true)
+    .filter((bracketLink) => bracketLink.trim() !== '')
+    .map((bracketLink) => {
+      //handling aliases
+      const aliasArr = bracketLink.split('|');
+      const link = aliasArr[0];
+      const alias = aliasArr[1];
+      const foundUid = requestUidForLink(link, context);
+      const result =
+        alias !== undefined && alias.trim() !== ''
+          ? '[' + alias.trim() + ']([[' + foundUid + ']])'
+          : '[[' + foundUid + ']]';
+
+      return [bracketLink, foundUid, result];
+    });
 }
 
 export function cleanUpLink(link: string) {
@@ -44,7 +63,6 @@ export function requestUidForLink(obsidianLink: string, context: VaultContext) {
   const linkType = detectLinkType(cleanLink);
   switch (linkType) {
     case LinkType.DEFAULT:
-      //20 secs!
       return standardLinkUidRequest(cleanLink[0], context);
     case LinkType.BLOCK:
       return blockLinkUidRequestForUsing(cleanLink, context);

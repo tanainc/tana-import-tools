@@ -1,5 +1,10 @@
 import { detectBulletHierarchy, findBulletSliceEndPosition, findBulletSliceStartPosition } from './bullets';
 import { detectCodeBlockHierarchy, findCodeBlockSliceEndPosition, findCodeBlockSliceStartPosition } from './codeblocks';
+import {
+  detectDataViewAttributeHierarchy,
+  findDataViewAttributeSliceStartPosition,
+  findDataViewSliceEndPosition,
+} from './dataviewattributes';
 import { detectHeadingHierarchy, findHeadingSliceEndPosition, findHeadingSliceStartPosition } from './headings';
 import { findParagraphSliceEndPosition, findParagraphSliceStartPosition } from './paragraphs';
 
@@ -10,6 +15,8 @@ export enum HierarchyType {
   BULLET = 'Bullet Node',
   PARAGRAPH = 'Paragraph',
   CODEBLOCK = 'Code Block',
+  //we add them as extra hierarchy type to distinguish them from the PARAGRAPH, however, they might also show up in the bullet
+  DATAVIEWATTRIBUTE = 'Data View Attribute', //TODO: add some proper tests
 }
 
 export interface MarkdownNode {
@@ -93,6 +100,11 @@ export function detectNextHierarchy(content: string, curPosition: number): Hiera
     if (hierarchy) {
       return hierarchy;
     }
+    //TODO: I need to paste this code to many times
+    hierarchy = detectDataViewAttributeHierarchy(content, curPosition);
+    if (hierarchy) {
+      return hierarchy;
+    }
   }
   return { type: HierarchyType.PARAGRAPH, level: 0 };
 }
@@ -111,6 +123,8 @@ function findSliceStartPosition(content: string, curPosition: number, hierarchy:
       return findParagraphSliceStartPosition(curPosition);
     case HierarchyType.CODEBLOCK:
       return findCodeBlockSliceStartPosition(curPosition);
+    case HierarchyType.DATAVIEWATTRIBUTE:
+      return findDataViewAttributeSliceStartPosition(curPosition);
     default:
       throw 'Unsupported HierarchyType detected: ' + hierarchy;
   }
@@ -133,6 +147,8 @@ function findSliceEndPosition(
       return findParagraphSliceEndPosition(content, curPosition);
     case HierarchyType.CODEBLOCK:
       return [findCodeBlockSliceEndPosition(curPosition, hierarchy)];
+    case HierarchyType.DATAVIEWATTRIBUTE:
+      return [findDataViewSliceEndPosition(content, curPosition)];
     default:
       throw 'Unsupported HierarchyType detected: ' + hierarchy;
   }
@@ -155,6 +171,14 @@ export function isMarkdownNodeChild(potentialParent: MarkdownNode, potentialChil
 
   //CODEBLOCK can only be child of HEADING and can not be a parent
   if (potentialParent.type === HierarchyType.CODEBLOCK || potentialChild.type === HierarchyType.CODEBLOCK) {
+    return false;
+  }
+
+  //DATAVIEWATTRIBUTE can only be child of DATAVIEWATTRIBUTE and can not be a parent
+  if (
+    potentialParent.type === HierarchyType.DATAVIEWATTRIBUTE ||
+    potentialChild.type === HierarchyType.DATAVIEWATTRIBUTE
+  ) {
     return false;
   }
 

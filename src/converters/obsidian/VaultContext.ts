@@ -28,10 +28,10 @@ export interface VaultContext {
   invalidLinks: { uid: string; link: string }[];
   superTagTracker: SuperTagTracker;
   attributes: TanaIntermediateAttribute[];
-  dailyNoteFormat: string;
   vaultPath: string;
   idGenerator: IdGenerator;
-  fileSystemAdapter: CustomFileSystemAdapter;
+  adapter: CustomFileSystemAdapter;
+  dailyNoteFormat: string;
 }
 
 export function incrementSummary(summary: TanaIntermediateSummary) {
@@ -48,6 +48,7 @@ export function createVaultContext(
   vaultPath: string,
   fileSystemAdapter: CustomFileSystemAdapter,
   idGenerator: () => string = randomGenerator,
+  dailyNoteFormat = 'YYYY-MM-DD',
 ): VaultContext {
   if (vaultPath.endsWith(SEPARATOR)) {
     vaultPath = vaultPath.slice(0, -1);
@@ -63,7 +64,7 @@ export function createVaultContext(
       fields: 0,
       brokenRefs: 0,
     },
-    fileSystemAdapter,
+    adapter: fileSystemAdapter,
     idGenerator,
     vaultPath,
     defaultLinkTracker: new FileDescMap(),
@@ -73,6 +74,6 @@ export function createVaultContext(
     invalidLinks: [],
     superTagTracker: new Map(),
     attributes: [],
-    dailyNoteFormat: 'YYYY-MM-DD', //Default obsidian Daily note format
+    dailyNoteFormat,
   };
 }

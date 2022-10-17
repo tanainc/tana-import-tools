@@ -4,7 +4,7 @@ import { getAllInvalidLinks } from '../links/invalidLinks';
 import { untrackedUidRequest } from '../links/genericLinks';
 import { createVaultContext } from '../VaultContext';
 import { deterministicGenerator } from './testUtils';
-import { requestUidForLink, requestUidForContentNode } from '../links/internalLinks';
+import { requestUidForLink, requestUidForContentNode, requestUidForFile } from '../links/internalLinks';
 import { CustomFileSystemAdapter } from '../filesystem/CustomFileSystemAdapter';
 
 const dummyAdapter: CustomFileSystemAdapter = { resolve: (str: string) => str } as any;
@@ -36,6 +36,66 @@ test('VaultContext uid test', () => {
   expect(untrackedUidRequest(context)).toBe('2');
   //having folder UIDs does not change other UIDs
   expect(requestUidForLink('link', context)).toBe('0');
+});
+
+test('VaultContext file links: top level and mixed are unchanged', () => {
+  const context = createVaultContext('', dummyAdapter, deterministicGenerator());
+  expect(requestUidForFile('fileName', 'fileName', context)).toBe('0');
+  expect(requestUidForFile('fileName', 'filePath/fileName', context)).toBe('1');
+  expect(requestUidForFile('fileName', 'filePath/fileName2', context)).toBe('2');
+
+  expect(requestUidForFile('fileName', 'fileName', context)).toBe('0');
+  expect(requestUidForFile('fileName', 'filePath/fileName', context)).toBe('1');
+  expect(requestUidForFile('fileName', 'filePath/fileName2', context)).toBe('2');
+});
+
+test('VaultContext file links: top level and mixed order does matter', () => {
+  const context = createVaultContext('', dummyAdapter, deterministicGenerator());
+  //this case should never happen, because we always read top level files first
+  expect(requestUidForFile('fileName', 'filePath/fileName', context)).toBe('0');
+  //but if this would happen, we would misclassify this request
+  expect(requestUidForLink('fileName', context)).toBe('0');
+  expect(requestUidForFile('fileName', 'fileName', context)).toBe('1');
+  //and then correctly classify it once the top level file is read
+  expect(requestUidForLink('fileName', context)).toBe('1');
+  expect(requestUidForFile('fileName', 'filePath/fileName2', context)).toBe('2');
+  expect(requestUidForLink('fileName', context)).toBe('1');
+});
+
+test('VaultContext file links: link is detected first', () => {
+  const context = createVaultContext('', dummyAdapter, deterministicGenerator());
+  expect(requestUidForLink('fileName', context)).toBe('0');
+  expect(requestUidForFile('fileName', 'fileName', context)).toBe('0');
+});
+
+test('VaultContext nested file links link is detected first', () => {
+  const context = createVaultContext('', dummyAdapter, deterministicGenerator());
+  expect(requestUidForLink('filePath/fileName', context)).toBe('0');
+  expect(requestUidForFile('fileName', 'filePath/fileName', context)).toBe('0');
+});
+
+test('VaultContext same filename test: files are handled first', () => {
+  const context = createVaultContext('', dummyAdapter, deterministicGenerator());
+  expect(requestUidForFile('fileName', 'fileName', context)).toBe('0');
+  expect(requestUidForFile('fileName', 'filePath/fileName', context)).toBe('1');
+  expect(requestUidForLink('fileName', context)).toBe('0');
+  expect(requestUidForLink('filePath/fileName', context)).toBe('1');
+});
+
+test('VaultContext same filename test: files are handled after', () => {
+  const context = createVaultContext('', dummyAdapter, deterministicGenerator());
+  expect(requestUidForLink('filePath/fileName', context)).toBe('0');
+  expect(requestUidForLink('fileName', context)).toBe('1');
+  expect(requestUidForFile('fileName', 'fileName', context)).toBe('1');
+  expect(requestUidForFile('fileName', 'filePath/fileName', context)).toBe('0');
+});
+
+test('VaultContext same filename test: files are handled mixed', () => {
+  const context = createVaultContext('', dummyAdapter, deterministicGenerator());
+  expect(requestUidForLink('filePath/fileName', context)).toBe('0');
+  expect(requestUidForFile('fileName', 'fileName', context)).toBe('1');
+  expect(requestUidForLink('fileName', context)).toBe('1');
+  expect(requestUidForFile('fileName', 'filePath/fileName', context)).toBe('0');
 });
 
 test('VaultContext uid block link test', () => {

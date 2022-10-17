@@ -44,6 +44,7 @@ export function requestUidForLink(obsidianLink: string, context: VaultContext) {
   const linkType = detectLinkType(cleanLink);
   switch (linkType) {
     case LinkType.DEFAULT:
+      //20 secs!
       return standardLinkUidRequest(cleanLink[0], context);
     case LinkType.BLOCK:
       return blockLinkUidRequestForUsing(cleanLink, context);
@@ -55,7 +56,7 @@ export function requestUidForLink(obsidianLink: string, context: VaultContext) {
 }
 
 function standardLinkUidRequest(obsidianLink: string, context: VaultContext) {
-  const uidData = context.defaultLinkTracker.partialRetrieveAndUpdate(obsidianLink, () => {
+  const uidData = context.defaultLinkTracker.accessAsLink(obsidianLink, () => {
     incrementSummary(context.summary);
     const uid = context.idGenerator();
     return { uid, obsidianLink, type: UidRequestType.CONTENT };
@@ -79,7 +80,7 @@ export function requestUidForContentNode(fileName: string, filePath: string, con
 
 export function requestUidForFile(fileName: string, filePath: string, context: VaultContext) {
   const obsidianLink = fileName.trim();
-  const uidData = context.defaultLinkTracker.fullRetrieveAndUpdate(obsidianLink, filePath, () => {
+  const uidData = context.defaultLinkTracker.accessAsFile(obsidianLink, filePath, () => {
     incrementSummary(context.summary);
     const uid = context.idGenerator();
     return { uid, obsidianLink, type: UidRequestType.FILE };

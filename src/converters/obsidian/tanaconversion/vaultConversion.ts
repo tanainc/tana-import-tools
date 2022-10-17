@@ -3,7 +3,7 @@ import { VaultContext } from '../VaultContext';
 import { untrackedUidRequest } from '../links/genericLinks';
 import { basename, CustomFileSystemEntry, SEPARATOR } from '../filesystem/CustomFileSystemAdapter';
 
-enum ChildrenPosition {
+export enum ChildrenPosition {
   NOT_LAST = 'NOT_LAST',
   LAST = 'LAST',
 }
@@ -16,14 +16,24 @@ function getChildrenPosition(index: number, dirents: CustomFileSystemEntry[]) {
   return ChildrenPosition.NOT_LAST;
 }
 
-function readFilteredDir(context: VaultContext, dir: string) {
-  return context.fileSystemAdapter.readDirectory(dir).filter((dirent) => {
-    const name = dir + SEPARATOR + dirent.getName();
-    return (
-      (dirent.isDirectory() && !name.endsWith('.github') && !name.endsWith('.obsidian')) ||
-      (!dirent.isDirectory() && name.endsWith('.md'))
-    );
-  });
+function readFilteredAndSortedDir(context: VaultContext, dir: string) {
+  return (
+    context.adapter
+      .readDirectory(dir)
+      .filter((dirent) => {
+        const name = dir + SEPARATOR + dirent.getName();
+        return (
+          (dirent.isDirectory() && !name.endsWith('.github') && !name.endsWith('.obsidian')) ||
+          (!dirent.isDirectory() && name.endsWith('.md'))
+        );
+      })
+      //folders at the end
+      //this is critically important so that the top level of files are read before any other files with the same names can be read
+      //E.g.
+      // vault/test is read before vault/folder/test
+      //if "test" is used as a link, we now we can safely use the first pathName that appeared
+      .sort((a, b) => Number(a.isDirectory()) - Number(b.isDirectory()))
+  );
 }
 
 export async function handleVault(
@@ -35,7 +45,7 @@ export async function handleVault(
   childrenPosition: ChildrenPosition = ChildrenPosition.LAST,
 ) {
   handleDirStart(dir);
-  const dirents = readFilteredDir(context, dir);
+  const dirents = readFilteredAndSortedDir(context, dir);
   for (let index = 0; index < dirents.length; index++) {
     const dirent = dirents[index];
     const res = dirent.getName();
@@ -52,7 +62,7 @@ export function addParentNodeStart(targetPath: string, today: number, context: V
   return (dir: string) => {
     const name = basename(dir);
     const uid = untrackedUidRequest(context);
-    context.fileSystemAdapter.appendToResultFile(
+    context.adapter.appendToResultFile(
       targetPath,
       `{
         "uid": "${uid}", 
@@ -68,13 +78,13 @@ export function addParentNodeStart(targetPath: string, today: number, context: V
 
 export function addParentNodeEnd(context: VaultContext, targetPath: string) {
   return (childrenPosition: ChildrenPosition) => {
-    context.fileSystemAdapter.appendToResultFile(
+    context.adapter.appendToResultFile(
       targetPath,
       `]
     }`,
     );
     if (childrenPosition !== ChildrenPosition.LAST) {
-      context.fileSystemAdapter.appendToResultFile(targetPath, ',');
+      context.adapter.appendToResultFile(targetPath, ',');
     }
   };
 }
@@ -87,13 +97,13 @@ export function addFileNode(targetPath: string, today: number, context: VaultCon
     const fileNode = convertObsidianFile(
       basename(file).replace('.md', ''),
       absoluteFilePath,
-      await context.fileSystemAdapter.readFile(file),
+      await context.adapter.readFile(file),
       context,
       today,
     );
-    context.fileSystemAdapter.appendToResultFile(targetPath, JSON.stringify(fileNode, null, 2));
+    context.adapter.appendToResultFile(targetPath, JSON.stringify(fileNode, null, 2));
     if (childrenPosition !== ChildrenPosition.LAST) {
-      context.fileSystemAdapter.appendToResultFile(targetPath, ',');
+      context.adapter.appendToResultFile(targetPath, ',');
     }
   };
 }

@@ -47,8 +47,8 @@ export function matchHeadingLinks(
   const missingHeadingLinks = [];
   const validHeadingLinks = [];
   for (const [unchangedInlineLink, dummyHeadingUidData] of dummyHeadingLinks.entries()) {
-    const matchingFileDesc = tracker.findMatchingFile(unchangedInlineLink);
-    const potentiallyMatchingNodes = matchingFileDesc ? tracker.get(matchingFileDesc) : null;
+    // const matchingFileDesc = tracker.findMatchingFile(unchangedInlineLink);
+    const potentiallyMatchingNodes = tracker.findData(unchangedInlineLink);
     if (potentiallyMatchingNodes) {
       //we use a dummy because the tree function needs one root node
       const dummySourceRoot: HeadingData = { uid: 'DUMMY', content: '', level: -1 };
@@ -94,19 +94,19 @@ export async function postProcessTIFFIle(filePath: string, context: VaultContext
   });
 
   const tempPath = filePath + '_TEMP';
-  context.fileSystemAdapter.initPostProcessingResultFile(filePath);
+  context.adapter.initPostProcessingResultFile(filePath);
   const regExes = validHeadingLinks.map((link) => ({
     old: new RegExp(link.old, 'g'),
     new: link.new,
   }));
-  for await (const line of context.fileSystemAdapter.chunkIter()) {
+  for await (const line of context.adapter.chunkIter()) {
     let updatedLine = line;
     regExes.forEach((regEx) => {
       updatedLine = updatedLine.replace(regEx.old, regEx.new);
     });
-    await context.fileSystemAdapter.appendToPostProcessingFile(tempPath, updatedLine);
+    await context.adapter.appendToPostProcessingFile(tempPath, updatedLine);
   }
-  context.fileSystemAdapter.endPostProcessingFile(tempPath);
-  context.fileSystemAdapter.removeFile(filePath);
-  context.fileSystemAdapter.renameFile(tempPath, filePath);
+  context.adapter.endPostProcessingFile(tempPath);
+  context.adapter.removeFile(filePath);
+  context.adapter.renameFile(tempPath, filePath);
 }

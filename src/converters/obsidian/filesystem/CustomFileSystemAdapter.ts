@@ -1,5 +1,8 @@
+import { VaultContext } from '../VaultContext';
+
 export interface CustomFileSystemAdapter {
   initReadingVault: () => Promise<void>;
+
   readDirectory: (dir: string) => CustomFileSystemEntry[];
   readFile: (file: string) => Promise<string>;
   exists: (path: string) => boolean;
@@ -36,3 +39,16 @@ export function basename(str: string) {
 //TODO: add "join" method to adapter
 //in the browser I think its normalized to / but not on every os
 export const SEPARATOR = '/';
+
+export async function readConfig<Result>(
+  context: VaultContext,
+  configSubPath: string,
+  checkResult: (res?: Result) => Result,
+): Promise<Result> {
+  const configPath = context.vaultPath + '/.obsidian/' + configSubPath + '.json';
+  let res;
+  if (context.adapter.exists(configPath)) {
+    res = JSON.parse(await context.adapter.readFile(configPath)) as Result;
+  }
+  return checkResult(res);
+}

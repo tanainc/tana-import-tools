@@ -18,7 +18,7 @@ export interface BlockUidData {
 export function blockLinkUidRequestForUsing(link: string[], context: VaultContext) {
   const fileName = link[0];
   const blockObsidianUid = link[1];
-  const blockUidMap = context.blockLinkTracker.partialRetrieveAndUpdate(fileName, () => {
+  const blockUidMap = context.blockLinkTracker.accessAsLink(fileName, () => {
     return new Map<string, BlockUidData>();
   });
   let blockUidData = blockUidMap.get(blockObsidianUid);
@@ -37,7 +37,7 @@ export function blockLinkUidRequestForUsing(link: string[], context: VaultContex
 export function blockLinkUidRequestForDefining(link: string[], filePath: string, context: VaultContext) {
   const fileName = link[0];
   const blockObsidianUid = link[1];
-  const blockUidMap = context.blockLinkTracker.fullRetrieveAndUpdate(fileName, filePath, () => {
+  const blockUidMap = context.blockLinkTracker.accessAsFile(fileName, filePath, () => {
     return new Map<string, BlockUidData>();
   });
   let blockUidData = blockUidMap.get(blockObsidianUid);
@@ -57,7 +57,7 @@ export function blockLinkUidRequestForDefining(link: string[], filePath: string,
 export function filterInvalidBlockLinks(tracker: BlockLinkTracker) {
   const unlinkedNodes: { uid: string; link: string }[] = [];
 
-  for (const fileBlockLinks of tracker.values()) {
+  for (const fileBlockLinks of tracker.getData()) {
     for (const blockLink of fileBlockLinks.values()) {
       //if it has only been accessed via a link (e.g. [[file#^UID]]), it is not valid
       //because that means we didn't find it in "file"

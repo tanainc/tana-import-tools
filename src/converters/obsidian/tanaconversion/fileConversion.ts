@@ -57,7 +57,10 @@ export function convertObsidianFile(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   obsidianNodes = null as any;
 
-  context.headingTracker.set({ name: displayName, path: filePath }, headingData);
+  context.headingTracker.pathMap.set(filePath, headingData);
+  if (!context.headingTracker.nameMap.get(fileName)) {
+    context.headingTracker.nameMap.set(fileName, headingData);
+  }
 
   return fileNode;
 }
@@ -80,11 +83,13 @@ function createFileNode(
     }
   });
 
+  //we need this uid request even if its a date node, only this way will other links to it work
+  //TODO: evaluate if it might not need to set dateDisplayName as uid?
   let nodeUid = requestUidForFile(displayName, filePath, context);
   let nodeType: NodeType = 'node';
   const dateDisplayName = dateStringToDateUID(displayName, context.dailyNoteFormat);
 
-  if (dateDisplayName.length > 0) {
+  if (dateDisplayName) {
     nodeUid = dateDisplayName;
     nodeType = 'date';
     displayName = dateDisplayName;
@@ -102,10 +107,10 @@ function createFileNode(
   };
 }
 
-function dateStringToDateUID(displayName: string, dateFormat: string): string {
+function dateStringToDateUID(displayName: string, dateFormat: string) {
   const date = moment(displayName, dateFormat, true);
   if (date.isValid()) {
     return date.format('MM-DD-YYYY');
   }
-  return '';
+  return null;
 }

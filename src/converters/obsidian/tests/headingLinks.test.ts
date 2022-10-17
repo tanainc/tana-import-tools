@@ -4,7 +4,7 @@ import { HeadingTracker, HeadingDummyUidTracker, matchHeadingLinks } from '../li
 
 test('headingLinks test', () => {
   const headingTracker: HeadingTracker = new FileDescMap();
-  headingTracker.set({ name: 'fileName' }, [
+  headingTracker.nameMap.set('fileName', [
     { uid: '1', level: 1, content: '1' },
     { uid: '2', level: 2, content: '2' },
     { uid: '3', level: 3, content: '3' },
@@ -12,11 +12,11 @@ test('headingLinks test', () => {
     { uid: '1_2', level: 1, content: '1_2' },
     { uid: '4_2', level: 3, content: '4' },
   ]);
-  headingTracker.set({ name: 'fileName2' }, [
+  headingTracker.nameMap.set('fileName2', [
     { uid: '3', level: 3, content: '3' },
     { uid: '1', level: 1, content: '1' },
   ]);
-  headingTracker.set({ name: 'fileName3' }, []); //empty is handled fine
+  headingTracker.nameMap.set('fileName3', []); //empty is handled fine
   const headingLinks: HeadingDummyUidTracker = new Map();
   headingLinks.set('fileName', [
     { uid: 'OLD_2', link: ['1', '2'] },

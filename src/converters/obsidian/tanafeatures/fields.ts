@@ -2,8 +2,12 @@ import { NodeType, TanaIntermediateAttribute, TanaIntermediateNode } from '../..
 import { VaultContext } from '../VaultContext';
 import { FrontmatterData } from '../markdown/frontmatter';
 import { untrackedUidRequest } from '../links/genericLinks';
+import { postProcessContentNode } from './postprocessing';
 
+//TODO: separate contexts cleanly again
 export function keyValToFieldNode(
+  fileName: string,
+  filePath: string,
   key: string,
   values: string[],
   today: number,
@@ -16,13 +20,20 @@ export function keyValToFieldNode(
   if (values && values.length > 0) {
     childNodes = children ?? [];
     childNodes?.push(
-      ...values.map((value) => ({
-        uid: untrackedUidRequest(context),
-        name: value,
-        type: 'node' as NodeType,
-        createdAt: today,
-        editedAt: today,
-      })),
+      ...values.map((value) =>
+        postProcessContentNode(
+          fileName,
+          filePath,
+          today,
+          {
+            name: value,
+            type: 'node' as NodeType,
+            createdAt: today,
+            editedAt: today,
+          },
+          context,
+        ),
+      ),
     );
   }
   addAttribute(key, context.attributes);
@@ -39,11 +50,13 @@ export function keyValToFieldNode(
 }
 
 export function frontMatterToFieldNode(
+  fileName: string,
+  filePath: string,
   data: FrontmatterData,
   today: number,
   context: VaultContext,
 ): TanaIntermediateNode {
-  return keyValToFieldNode(data.key, data.values, today, context);
+  return keyValToFieldNode(fileName, filePath, data.key, data.values, today, context);
 }
 
 function addAttribute(name: string, attributes: TanaIntermediateAttribute[]) {

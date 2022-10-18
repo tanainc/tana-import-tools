@@ -79,7 +79,7 @@ function createFileNode(
     if (data.key === 'tags') {
       supertags = superTagUidRequests(data.values, context.superTagTracker, context.idGenerator);
     } else {
-      fieldNodes.push(frontMatterToFieldNode(data, today, context));
+      fieldNodes.push(frontMatterToFieldNode(displayName, filePath, data, today, context));
     }
   });
 

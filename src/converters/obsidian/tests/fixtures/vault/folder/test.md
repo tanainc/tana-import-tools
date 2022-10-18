@@ -9,7 +9,7 @@ Starting without [[heading]] 2.
 Stuff but with
 a newline.
 
-Key1:: Value1
+Key1:: [[Value1]]
 KeyX::ValueY
 
 ## Heading 2

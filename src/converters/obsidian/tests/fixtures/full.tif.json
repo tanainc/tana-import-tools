@@ -21,102 +21,102 @@
               "type": "field",
               "createdAt": 1,
               "editedAt": 1,
-              "children": [{ "uid": "1", "name": "value0", "type": "node", "createdAt": 1, "editedAt": 1 }]
+              "children": [{ "name": "value0", "type": "node", "createdAt": 1, "editedAt": 1, "uid": "1" }]
             },
             {
-              "uid": "4",
               "name": "Starting without [[5]].",
               "createdAt": 1,
               "editedAt": 1,
               "type": "node",
+              "uid": "4",
               "refs": ["5"]
             },
             {
-              "uid": "6",
               "name": "Heading here",
               "createdAt": 1,
               "editedAt": 1,
               "type": "node",
+              "uid": "6",
               "children": [
-                { "uid": "7", "name": "[[8]]", "createdAt": 1, "editedAt": 1, "type": "node", "refs": ["8"] },
-                { "uid": "9", "name": "Stuff but with\na newline.", "createdAt": 1, "editedAt": 1, "type": "node" },
+                { "name": "[[8]]", "createdAt": 1, "editedAt": 1, "type": "node", "uid": "7", "refs": ["8"] },
+                { "name": "Stuff but with\na newline.", "createdAt": 1, "editedAt": 1, "type": "node", "uid": "9" },
                 {
-                  "uid": "10",
                   "name": "Heading 2",
                   "createdAt": 1,
                   "editedAt": 1,
                   "type": "node",
+                  "uid": "10",
                   "children": [
                     {
-                      "uid": "11",
                       "name": "Some",
                       "createdAt": 1,
                       "editedAt": 1,
                       "type": "node",
+                      "uid": "11",
                       "children": [
                         {
-                          "uid": "12",
                           "name": "Node with [[13]] [[14]]",
                           "createdAt": 1,
                           "editedAt": 1,
                           "type": "node",
+                          "uid": "12",
                           "refs": ["13", "14"]
                         },
                         {
-                          "uid": "15",
                           "name": "Fun",
                           "createdAt": 1,
                           "editedAt": 1,
                           "type": "node",
-                          "todoState": "todo"
+                          "todoState": "todo",
+                          "uid": "15"
                         }
                       ]
                     },
                     {
-                      "uid": "16",
                       "name": "Out of Level",
                       "createdAt": 1,
                       "editedAt": 1,
                       "type": "node",
+                      "uid": "16",
                       "children": [
                         {
-                          "uid": "17",
                           "name": "[[18]]",
                           "createdAt": 1,
                           "editedAt": 1,
                           "type": "node",
+                          "uid": "17",
                           "refs": ["18"]
                         },
                         {
-                          "uid": "19",
-                          "name": "[[66]]",
+                          "name": "[[67]]",
                           "createdAt": 1,
                           "editedAt": 1,
                           "type": "node",
-                          "refs": ["66"]
+                          "uid": "19",
+                          "refs": ["67"]
                         },
                         {
-                          "uid": "21",
                           "name": "[[22]]",
                           "createdAt": 1,
                           "editedAt": 1,
                           "type": "node",
+                          "uid": "21",
                           "refs": ["22"]
                         },
                         {
-                          "uid": "23",
                           "name": "Using a duplicate but valid block id [[24]]",
                           "createdAt": 1,
                           "editedAt": 1,
                           "type": "node",
+                          "uid": "23",
                           "refs": ["24"]
                         },
                         {
-                          "uid": "25",
                           "name": "Invalid [[26]]",
                           "createdAt": 1,
                           "editedAt": 1,
                           "type": "node",
+                          "uid": "25",
                           "refs": ["26"]
                         }
                       ]
@@ -141,7 +141,7 @@
               "type": "field",
               "createdAt": 1,
               "editedAt": 1,
-              "children": [{ "uid": "27", "name": "zero", "type": "node", "createdAt": 1, "editedAt": 1 }]
+              "children": [{ "name": "zero", "type": "node", "createdAt": 1, "editedAt": 1, "uid": "27" }]
             },
             {
               "uid": "33",
@@ -150,58 +150,58 @@
               "createdAt": 1,
               "editedAt": 1,
               "children": [
-                { "uid": "31", "name": "value1", "type": "node", "createdAt": 1, "editedAt": 1 },
-                { "uid": "32", "name": "value2", "type": "node", "createdAt": 1, "editedAt": 1 }
+                { "name": "value1", "type": "node", "createdAt": 1, "editedAt": 1, "uid": "31" },
+                { "name": "value2", "type": "node", "createdAt": 1, "editedAt": 1, "uid": "32" }
               ]
             },
             {
-              "uid": "35",
               "name": "Starting without [[5]].",
               "createdAt": 1,
               "editedAt": 1,
               "type": "node",
+              "uid": "35",
               "refs": ["5"]
             },
             {
-              "uid": "36",
               "name": "Heading here",
               "createdAt": 1,
               "editedAt": 1,
               "type": "node",
+              "uid": "36",
               "children": [
-                { "uid": "37", "name": "[[8]]", "createdAt": 1, "editedAt": 1, "type": "node", "refs": ["8"] },
-                { "uid": "38", "name": "Stuff but with\na newline.", "createdAt": 1, "editedAt": 1, "type": "node" },
+                { "name": "[[8]]", "createdAt": 1, "editedAt": 1, "type": "node", "uid": "37", "refs": ["8"] },
+                { "name": "Stuff but with\na newline.", "createdAt": 1, "editedAt": 1, "type": "node", "uid": "38" },
                 {
-                  "uid": "39",
                   "name": "Heading 2",
                   "createdAt": 1,
                   "editedAt": 1,
                   "type": "node",
+                  "uid": "39",
                   "children": [
-                    { "uid": "40", "name": "```", "createdAt": 1, "editedAt": 1, "type": "node" },
+                    { "name": "```", "createdAt": 1, "editedAt": 1, "type": "node", "uid": "40" },
                     {
-                      "uid": "41",
                       "name": "Invalid Heading [[!42!]]",
                       "createdAt": 1,
                       "editedAt": 1,
                       "type": "node",
+                      "uid": "41",
                       "refs": ["!42!"],
                       "children": [
                         {
-                          "uid": "43",
                           "name": "Block with #inlinetag2 [alias]([[13]]) [[13]] [[14]]",
                           "createdAt": 1,
                           "editedAt": 1,
                           "type": "node",
+                          "uid": "43",
                           "supertags": ["44", "45"],
                           "refs": ["13", "14"]
                         },
                         {
-                          "uid": "46",
                           "name": "#inlinetag2 Fun",
                           "createdAt": 1,
                           "editedAt": 1,
                           "type": "node",
+                          "uid": "46",
                           "supertags": ["44"]
                         }
                       ]
@@ -215,35 +215,35 @@
                       "type": "codeblock"
                     },
                     {
-                      "uid": "48",
                       "name": "Out of Level",
                       "createdAt": 1,
                       "editedAt": 1,
                       "type": "node",
+                      "uid": "48",
                       "children": [
                         { "uid": "49", "name": "code here", "createdAt": 1, "editedAt": 1, "type": "codeblock" },
                         {
-                          "uid": "50",
                           "name": "single image",
                           "createdAt": 1,
                           "editedAt": 1,
                           "type": "image",
+                          "uid": "50",
                           "mediaUrl": "https://mdg.imgix.net/assets/images/tux.png?auto=format&fit=clip&q=40&w=100"
                         },
                         {
-                          "uid": "51",
                           "name": "single image some text",
                           "createdAt": 1,
                           "editedAt": 1,
                           "type": "image",
+                          "uid": "51",
                           "mediaUrl": "https://mdg.imgix.net/assets/images/tux.png?auto=format&fit=clip&q=40&w=100"
                         },
                         {
-                          "uid": "52",
                           "name": "[[53]] [[54]]",
                           "createdAt": 1,
                           "editedAt": 1,
                           "type": "node",
+                          "uid": "52",
                           "children": [
                             {
                               "uid": "53",
@@ -264,11 +264,11 @@
                           ]
                         },
                         {
-                          "uid": "55",
                           "name": "[[56]] [[56]]",
                           "createdAt": 1,
                           "editedAt": 1,
                           "type": "node",
+                          "uid": "55",
                           "children": [
                             {
                               "uid": "56",
@@ -281,11 +281,11 @@
                           ]
                         },
                         {
-                          "uid": "57",
                           "name": "ancient public baths",
                           "createdAt": 1,
                           "editedAt": 1,
                           "type": "image",
+                          "uid": "57",
                           "mediaUrl": "http://dankoboldt.com/wp-content/uploads/2020/07/ancient-public-baths.jpg"
                         }
                       ]
@@ -312,27 +312,27 @@
               "supertags": ["29", "30"],
               "children": [
                 {
-                  "uid": "59",
                   "name": "Starting without [[5]] 2.",
                   "createdAt": 1,
                   "editedAt": 1,
                   "type": "node",
+                  "uid": "59",
                   "refs": ["5"]
                 },
                 {
-                  "uid": "60",
                   "name": "Heading here",
                   "createdAt": 1,
                   "editedAt": 1,
                   "type": "node",
+                  "uid": "60",
                   "children": [
-                    { "uid": "61", "name": "[[8]]", "createdAt": 1, "editedAt": 1, "type": "node", "refs": ["8"] },
+                    { "name": "[[8]]", "createdAt": 1, "editedAt": 1, "type": "node", "uid": "61", "refs": ["8"] },
                     {
-                      "uid": "62",
                       "name": "Stuff but with\na newline.",
                       "createdAt": 1,
                       "editedAt": 1,
-                      "type": "node"
+                      "type": "node",
+                      "uid": "62"
                     },
                     {
                       "uid": "63",
@@ -340,66 +340,68 @@
                       "type": "field",
                       "createdAt": 1,
                       "editedAt": 1,
-                      "children": [{ "uid": "64", "name": "Value1", "type": "node", "createdAt": 1, "editedAt": 1 }]
+                      "children": [
+                        { "name": "[[65]]", "type": "node", "createdAt": 1, "editedAt": 1, "uid": "64", "refs": ["65"] }
+                      ]
                     },
-                    { "uid": "65", "name": "KeyX::ValueY", "createdAt": 1, "editedAt": 1, "type": "node" },
+                    { "name": "KeyX::ValueY", "createdAt": 1, "editedAt": 1, "type": "node", "uid": "66" },
                     {
-                      "uid": "66",
                       "name": "Heading 2",
                       "createdAt": 1,
                       "editedAt": 1,
                       "type": "node",
+                      "uid": "67",
                       "children": [
                         {
-                          "uid": "24",
                           "name": "Valid Heading [[48]] with duplicate but valid",
                           "createdAt": 1,
                           "editedAt": 1,
                           "type": "node",
+                          "uid": "24",
                           "refs": ["48"],
                           "children": [
                             {
-                              "uid": "68",
                               "name": "Node with [[13]] [[14]]",
                               "createdAt": 1,
                               "editedAt": 1,
                               "type": "node",
                               "todoState": "done",
+                              "uid": "69",
                               "refs": ["13", "14"]
                             },
                             {
-                              "uid": "69",
-                              "name": "Fun with missing block ref [[70]] [[71]]",
+                              "name": "Fun with missing block ref [[71]] [[72]]",
                               "createdAt": 1,
                               "editedAt": 1,
                               "type": "node",
-                              "refs": ["70", "71"]
+                              "uid": "70",
+                              "refs": ["71", "72"]
                             },
                             {
-                              "uid": "72",
+                              "uid": "73",
                               "name": "Key2",
                               "type": "field",
                               "createdAt": 1,
                               "editedAt": 1,
                               "children": [
-                                { "uid": "73", "name": "Value2", "type": "node", "createdAt": 1, "editedAt": 1 }
+                                { "name": "Value2", "type": "node", "createdAt": 1, "editedAt": 1, "uid": "74" }
                               ]
                             }
                           ]
                         },
                         {
-                          "uid": "74",
                           "name": "Out of Level",
                           "createdAt": 1,
                           "editedAt": 1,
                           "type": "node",
+                          "uid": "75",
                           "children": [
                             {
-                              "uid": "75",
                               "name": "Referencing a block [[43]]",
                               "createdAt": 1,
                               "editedAt": 1,
                               "type": "node",
+                              "uid": "76",
                               "refs": ["43"]
                             }
                           ]
@@ -410,21 +412,32 @@
                 }
               ]
             },
-            { "uid": "76", "name": "test3", "createdAt": 1, "editedAt": 1, "type": "node" },
+            { "uid": "77", "name": "test3", "createdAt": 1, "editedAt": 1, "type": "node" },
             {
-              "uid": "77",
+              "uid": "78",
               "name": "folder",
               "createdAt": 1,
               "editedAt": 1,
               "type": "node",
-              "children": [{ "uid": "22", "name": "test4", "createdAt": 1, "editedAt": 1, "type": "node" }]
+              "children": [
+                {
+                  "uid": "22",
+                  "name": "test4",
+                  "createdAt": 1,
+                  "editedAt": 1,
+                  "type": "node",
+                  "children": [
+                    { "name": "[[|invalid link]]", "createdAt": 1, "editedAt": 1, "type": "node", "uid": "79" }
+                  ]
+                }
+              ]
             }
           ]
         }
       ]
     },
     {
-      "uid": "78",
+      "uid": "80",
       "name": "Missing Nodes for vault",
       "createdAt": 1,
       "editedAt": 1,
@@ -435,9 +448,10 @@
         { "uid": "!42!", "name": "Heading 2#Heading here", "createdAt": 1, "editedAt": 1, "type": "node" },
         { "uid": "13", "name": "Link", "createdAt": 1, "editedAt": 1, "type": "node" },
         { "uid": "14", "name": "Link2", "createdAt": 1, "editedAt": 1, "type": "node" },
-        { "uid": "71", "name": "missing#^MISSING", "createdAt": 1, "editedAt": 1, "type": "node" },
+        { "uid": "72", "name": "missing#^MISSING", "createdAt": 1, "editedAt": 1, "type": "node" },
         { "uid": "8", "name": "Some", "createdAt": 1, "editedAt": 1, "type": "node" },
-        { "uid": "70", "name": "test#^MISSING", "createdAt": 1, "editedAt": 1, "type": "node" }
+        { "uid": "71", "name": "test#^MISSING", "createdAt": 1, "editedAt": 1, "type": "node" },
+        { "uid": "65", "name": "Value1", "createdAt": 1, "editedAt": 1, "type": "node" }
       ]
     }
   ],
@@ -453,5 +467,5 @@
     { "name": "Key1", "values": [], "count": 1 },
     { "name": "Key2", "values": [], "count": 1 }
   ],
-  "summary": { "leafNodes": 71, "topLevelNodes": 2, "totalNodes": 73, "calendarNodes": 1, "fields": 5, "brokenRefs": 0 }
+  "summary": { "leafNodes": 73, "topLevelNodes": 2, "totalNodes": 75, "calendarNodes": 1, "fields": 5, "brokenRefs": 0 }
 }

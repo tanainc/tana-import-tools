@@ -4,6 +4,7 @@ import { blockLinkUidRequestForUsing, blockLinkUidRequestForDefining } from './b
 import { untrackedUidRequest } from './genericLinks';
 import { headingLinkUidRequestForUsing } from './headingLinks';
 import { getBracketLinks } from '../../../utils/utils';
+import { TanaIntermediateNode } from '../../../types/types';
 
 export enum UidRequestType {
   FILE,
@@ -16,12 +17,32 @@ export enum LinkType {
   BLOCK,
 }
 
-export function requestUidsForAllLinks(content: string, context: VaultContext) {
+export function setUidsInNodeContent(tanaNode: TanaIntermediateNode, context: VaultContext) {
+  const foundUIDs = requestUidsForAllLinks(tanaNode.name, context);
+
+  if (foundUIDs.length > 0) {
+    //using Set to filter out links that appear multiple times
+    const refSet = new Set<string>();
+    if (!tanaNode.refs) {
+      tanaNode.refs = [];
+    }
+    for (const [link, foundUid, result] of foundUIDs) {
+      refSet.add(foundUid);
+      tanaNode.name = tanaNode.name.replaceAll('[[' + link + ']]', result);
+    }
+    tanaNode.refs.push(...Array.from(refSet.values()));
+  }
+}
+
+export function requestUidsForAllLinks(content: string, context: VaultContext): [string, string, string][] {
   return getBracketLinks(content, true)
-    .filter((bracketLink) => bracketLink.trim() !== '')
-    .map((bracketLink) => {
+    .map((bracketLink): [string, string[]] => {
+      return [bracketLink, bracketLink.split('|').map((s) => s.trim())];
+    })
+    .filter((arr) => arr[1][0] !== '')
+    .map((arr) => {
+      const aliasArr = arr[1];
       //handling aliases
-      const aliasArr = bracketLink.split('|');
       const link = aliasArr[0];
       const alias = aliasArr[1];
       const foundUid = requestUidForLink(link, context);
@@ -30,7 +51,7 @@ export function requestUidsForAllLinks(content: string, context: VaultContext) {
           ? '[' + alias.trim() + ']([[' + foundUid + ']])'
           : '[[' + foundUid + ']]';
 
-      return [bracketLink, foundUid, result];
+      return [arr[0], foundUid, result];
     });
 }
 

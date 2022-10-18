@@ -18,9 +18,13 @@ export interface BlockUidData {
 export function blockLinkUidRequestForUsing(link: string[], context: VaultContext) {
   const fileName = link[0];
   const blockObsidianUid = link[1];
-  const blockUidMap = context.blockLinkTracker.accessAsLink(fileName, () => {
-    return new Map<string, BlockUidData>();
-  });
+  const blockUidMap = context.blockLinkTracker.accessAsLink(
+    fileName,
+    () => {
+      return new Map<string, BlockUidData>();
+    },
+    context.dailyNoteFormat,
+  );
   let blockUidData = blockUidMap.get(blockObsidianUid);
   if (!blockUidData) {
     blockUidData = {
@@ -37,9 +41,14 @@ export function blockLinkUidRequestForUsing(link: string[], context: VaultContex
 export function blockLinkUidRequestForDefining(link: string[], filePath: string, context: VaultContext) {
   const fileName = link[0];
   const blockObsidianUid = link[1];
-  const blockUidMap = context.blockLinkTracker.accessAsFile(fileName, filePath, () => {
-    return new Map<string, BlockUidData>();
-  });
+  const blockUidMap = context.blockLinkTracker.accessAsFile(
+    fileName,
+    filePath,
+    () => {
+      return new Map<string, BlockUidData>();
+    },
+    context.dailyNoteFormat,
+  );
   let blockUidData = blockUidMap.get(blockObsidianUid);
   if (!blockUidData) {
     blockUidData = {

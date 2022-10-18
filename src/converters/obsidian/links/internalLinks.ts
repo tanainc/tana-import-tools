@@ -95,11 +95,15 @@ export function requestUidForLink(obsidianLink: string, context: VaultContext) {
 }
 
 function standardLinkUidRequest(obsidianLink: string, context: VaultContext) {
-  const uidData = context.defaultLinkTracker.accessAsLink(obsidianLink, () => {
-    incrementSummary(context.summary);
-    const uid = context.idGenerator();
-    return { uid, obsidianLink, type: UidRequestType.CONTENT };
-  });
+  const uidData = context.defaultLinkTracker.accessAsLink(
+    obsidianLink,
+    (dateUID) => {
+      incrementSummary(context.summary);
+      const uid = dateUID ?? context.idGenerator();
+      return { uid, obsidianLink, type: UidRequestType.CONTENT };
+    },
+    context.dailyNoteFormat,
+  );
   return uidData.uid;
 }
 
@@ -119,11 +123,18 @@ export function requestUidForContentNode(fileName: string, filePath: string, con
 
 export function requestUidForFile(fileName: string, filePath: string, context: VaultContext) {
   const obsidianLink = fileName.trim();
-  const uidData = context.defaultLinkTracker.accessAsFile(obsidianLink, filePath, () => {
-    incrementSummary(context.summary);
-    const uid = context.idGenerator();
-    return { uid, obsidianLink, type: UidRequestType.FILE };
-  });
+  const uidData = context.defaultLinkTracker.accessAsFile(
+    obsidianLink,
+    filePath,
+    (dateUID) => {
+      incrementSummary(context.summary);
+      //if this is a daily note, we need to use its new name as the UID
+      //TODO: we only need the UID here?
+      const uid = dateUID ?? context.idGenerator();
+      return { uid, obsidianLink, type: UidRequestType.FILE };
+    },
+    context.dailyNoteFormat,
+  );
   uidData.type = UidRequestType.FILE;
 
   return uidData.uid;

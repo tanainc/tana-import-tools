@@ -1,4 +1,5 @@
 import { basename } from '../filesystem/CustomFileSystemAdapter';
+import { dateStringToDateUID } from './dateLinks';
 
 function isPath(searchStr: string) {
   return basename(searchStr) !== searchStr;
@@ -11,10 +12,17 @@ export class FileDescMap<Data> {
   pathMap = new Map<string, Data>();
   nameMap = new Map<string, Data>();
 
+  //TODO: make a proper hook approach to catching dateUIDs
   /**
    * Should only be called once per file for this instance. Top level files need to be called first to disambiguate. A top level file will have path === name.
    */
-  accessAsFile(fileName: string, filePath: string, defaultData: () => Data) {
+  accessAsFile(fileName: string, filePath: string, defaultData: (dateUID?: string) => Data, dailyNoteFormat: string) {
+    //if this is a daly note, we need to track the re-formatted date as its filename because that is how it will be saved
+    const dateUID = dateStringToDateUID(fileName, dailyNoteFormat);
+    if (dateUID) {
+      fileName = dateUID;
+    }
+
     const pathMatch = this.pathMap.get(filePath);
     if (pathMatch) {
       if (!this.nameMap.get(fileName)) {
@@ -30,7 +38,7 @@ export class FileDescMap<Data> {
       return nameMatch;
     }
 
-    const data = defaultData();
+    const data = defaultData(dateUID);
     this.pathMap.set(filePath, data);
     if (!this.nameMap.get(fileName)) {
       this.nameMap.set(fileName, data);
@@ -39,13 +47,18 @@ export class FileDescMap<Data> {
     return data;
   }
 
-  accessAsLink(searchStr: string, defaultData: () => Data) {
+  accessAsLink(searchStr: string, defaultData: (dateUID?: string) => Data, dailyNoteFormat: string) {
+    const dateUID = dateStringToDateUID(searchStr, dailyNoteFormat);
+    if (dateUID) {
+      searchStr = dateUID;
+    }
+
     const match = this.findData(searchStr);
     if (match) {
       return match;
     }
     const isPathBool = isPath(searchStr);
-    const data = defaultData();
+    const data = defaultData(dateUID);
     if (isPathBool) {
       this.pathMap.set(searchStr, data);
     } else {

@@ -27,6 +27,8 @@ function readFilteredAndSortedDir(context: VaultContext, dir: string) {
           (!dirent.isDirectory() && name.endsWith('.md'))
         );
       })
+      //TODO: this is a hack to prevent the files in the zip to have a different order, so that we can have similar tests
+      .sort((a, b) => a.getName().localeCompare(b.getName()))
       //folders at the end
       //this is critically important so that the top level of files are read before any other files with the same names can be read
       //E.g.

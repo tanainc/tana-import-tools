@@ -3,12 +3,12 @@ import { createTree } from '../utils/createTree';
 import { HierarchyType, MarkdownNode, extractMarkdownNodes, isMarkdownNodeChild } from '../hierarchy/markdownNodes';
 import { extractFrontmatter, FrontmatterData } from '../markdown/frontmatter';
 import { VaultContext } from '../VaultContext';
-import moment from 'moment';
 import { TanaIntermediateNode, NodeType } from '../../../types/types';
 import { superTagUidRequests } from '../tanafeatures/supertags';
 import { requestUidForFile } from '../links/internalLinks';
 import { HeadingData } from '../links/headingLinks';
 import { frontMatterToFieldNode } from '../tanafeatures/fields';
+import { dateStringToDateUID } from '../links/dateLinks';
 
 export function convertObsidianFile(
   fileName: string, //without ending
@@ -85,12 +85,12 @@ function createFileNode(
 
   //we need this uid request even if its a date node, only this way will other links to it work
   //TODO: evaluate if it might not need to set dateDisplayName as uid?
-  let nodeUid = requestUidForFile(displayName, filePath, context);
+  const nodeUid = requestUidForFile(displayName, filePath, context);
   let nodeType: NodeType = 'node';
+  //TODO: replace duplication of this call - its also used inside the FileDescMap
   const dateDisplayName = dateStringToDateUID(displayName, context.dailyNoteFormat);
 
   if (dateDisplayName) {
-    nodeUid = dateDisplayName;
     nodeType = 'date';
     displayName = dateDisplayName;
     context.summary.calendarNodes++;
@@ -105,12 +105,4 @@ function createFileNode(
     supertags,
     children: fieldNodes.length > 0 ? fieldNodes : undefined,
   };
-}
-
-function dateStringToDateUID(displayName: string, dateFormat: string) {
-  const date = moment(displayName, dateFormat, true);
-  if (date.isValid()) {
-    return date.format('MM-DD-YYYY');
-  }
-  return null;
 }

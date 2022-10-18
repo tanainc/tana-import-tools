@@ -1,0 +1,45 @@
+{
+  "version": "TanaIntermediateFile V0.1",
+  "nodes": [
+    {
+      "uid": "boldNodeId",
+      "name": "<b>the bold</b>",
+      "type": "node"
+    },
+    {
+      "uid": "underlineNodeId",
+      "name": "<i>the underlined</i>",
+      "type": "node"
+    },
+    {
+      "uid": "highlightNodeId",
+      "name": "<mark>the highlighted</mark>",
+      "type": "node"
+    },
+    {
+      "uid": "strikedNodeId",
+      "name": "<del>the striked</del>",
+
+      "type": "node"
+    },
+
+    {
+      "uid": "boldFielId",
+      "name": "Cool",
+      "children": [
+        {
+          "uid": "boldFiledValueId",
+          "name": "<b>a bold field value</b>",
+          "type": "node"
+        }
+      ],
+      "type": "field"
+    }
+  ],
+  "attributes": [
+    {
+      "name": "Cool",
+      "count": 1
+    }
+  ]
+}

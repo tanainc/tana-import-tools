@@ -1,0 +1,21 @@
+{
+  "version": "TanaIntermediateFile V0.1",
+  "nodes": [
+    {
+      "name": "Jack Black",
+      "type": "node"
+    },
+    {
+      "name": "do not touch [[Jack Black]] inside this one",
+      "type": "codeblock"
+    },
+    {
+      "name": "before ```do not touch [[Jack Black]] inside this one``` after",
+      "type": "node"
+    },
+    {
+      "name": "before `do not touch [[Jack Black]] #Jack Black inside this one either` after",
+      "type": "node"
+    }
+  ]
+}

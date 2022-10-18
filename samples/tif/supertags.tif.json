@@ -1,0 +1,19 @@
+{
+  "version": "TanaIntermediateFile V0.1",
+  "nodes": [
+    {
+      "uid": "someMeetingId",
+      "name": "Some meeting",
+      "createdAt": 1654674792663,
+      "editedAt": 1654674792663,
+      "supertags": ["meetingTagId"],
+      "type": "node"
+    }
+  ],
+  "supertags": [
+    {
+      "uid": "meetingTagId",
+      "name": "Meeting"
+    }
+  ]
+}

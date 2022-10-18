@@ -244,6 +244,7 @@
                           "editedAt": 1,
                           "type": "node",
                           "uid": "52",
+                          "refs": ["53", "54"],
                           "children": [
                             {
                               "uid": "53",
@@ -269,6 +270,7 @@
                           "editedAt": 1,
                           "type": "node",
                           "uid": "55",
+                          "refs": ["56"],
                           "children": [
                             {
                               "uid": "56",

@@ -19,6 +19,8 @@ export function handleImages(tanaNode: TanaIntermediateNode, today: number, cont
   //more than one image means we add them as child nodes
   const childImageNodes: TanaIntermediateNode[] = [];
 
+  const refs = new Set<string>();
+
   imageData.forEach((image) => {
     const altText = image[0];
     const url = image[1];
@@ -26,6 +28,7 @@ export function handleImages(tanaNode: TanaIntermediateNode, today: number, cont
     if (childImageNodes.every((node) => altText.trim() !== node.name || url.trim() !== node.mediaUrl)) {
       const oldLink = image[3];
       const uid = untrackedUidRequest(context);
+      refs.add(uid);
       tanaNode.name = tanaNode.name.replaceAll(oldLink, '[[' + uid + ']]');
       childImageNodes.push({
         uid,
@@ -37,6 +40,10 @@ export function handleImages(tanaNode: TanaIntermediateNode, today: number, cont
       });
     }
   });
+
+  if (refs.size > 0) {
+    tanaNode.refs = [...(tanaNode.refs ?? []), ...Array.from(refs.values())];
+  }
 
   tanaNode.children = [...(tanaNode.children ?? []), ...childImageNodes];
 }

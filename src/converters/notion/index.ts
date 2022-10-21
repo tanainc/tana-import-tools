@@ -1,4 +1,4 @@
-import { TanaIntermediateFile } from '../../types/types';
+import { TanaIntermediateFile, TanaIntermediateNode } from '../../types/types';
 import { IConverter, IConverterOptions } from '../IConverter';
 import { nodesToTanaFile } from './nodeUtils';
 import { csvToTana } from './csv';
@@ -6,7 +6,7 @@ import { mdToTana } from './markdown';
 
 export class NotionConverter implements IConverter {
   convert(fileContent: string, { fileExtension }: IConverterOptions): TanaIntermediateFile | undefined {
-    let nodes;
+    let nodes: TanaIntermediateNode[];
     switch (fileExtension) {
       case '.csv': {
         nodes = csvToTana(fileContent);

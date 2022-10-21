@@ -1,73 +1,94 @@
-import * as mdast from 'mdast-util-from-markdown';
-import type { Paragraph, Link, Text, Heading } from 'mdast-util-from-markdown/lib';
+import { marked } from 'marked';
 import { TanaIntermediateNode } from '../../types/types';
 import { idgenerator } from '../../utils/utils';
 import merge from 'lodash.merge';
 import takeWhile from 'lodash.takewhile';
+import last from 'lodash.last';
 
-const createNode = (name: string): TanaIntermediateNode => {
+const lexer = new marked.Lexer();
+
+type CreateNodeArgs = {
+  name: string;
+  todoState?: 'done' | 'todo';
+};
+const createNode = ({ name, todoState }: CreateNodeArgs): TanaIntermediateNode => {
   return {
     uid: idgenerator(),
     name,
     createdAt: new Date().getTime(),
     editedAt: new Date().getTime(),
     type: 'node',
-    todoState: undefined,
+    todoState,
   };
 };
 
-const ignoreList = ['thematicBreak'];
-
-const parentNode = ['heading', 'list'];
-
-const parseText = (text: Text) => {
-  return createNode(text.value);
+const parseToken = (token: marked.Token): string | undefined => {
+  switch (token.type) {
+    case 'em': {
+      return `__${parseTokens(token.tokens)}__`;
+    }
+    case 'text': {
+      return token.text;
+    }
+    case 'link': {
+      return `[${parseTokens(token.tokens)}](${token.href})`;
+    }
+    case 'heading': {
+      return parseTokens(token.tokens);
+    }
+    case 'paragraph': {
+      return parseTokens(token.tokens);
+    }
+    case 'list': {
+      console.log(token.items[0], token.items[0].tokens);
+    }
+  }
 };
 
-const parseLink = (link: Link) => {
-  const url = link.url;
-  const child = link.children.at(0);
-
-  if (child?.type === 'text') {
-    return createNode(`[${child.value}](${url})`);
-  }
-
-  return createNode(url);
+const createListNode = (list: marked.Tokens.List): TanaIntermediateNode[] => {
+  return list.items.map(({ task, checked, tokens }) => {
+    const result = parseTokens(tokens);
+    const todoState: 'done' | 'todo' | undefined = task ? (checked ? 'done' : 'todo') : undefined;
+    return createNode({ name: result, todoState });
+  });
 };
 
-const parseParagraph = (paragraph: Paragraph) => {
-  const [child] = paragraph.children;
+function parseTokens(tokens: marked.Token[]) {
+  const result = tokens.map(parseToken);
 
-  if (child.type === 'text') {
-    return parseText(child);
-  } else if (child.type === 'link') {
-    return parseLink(child);
-  }
+  return result.join();
+}
 
-  console.error(`Paragraph child type not supported ${child.type}`);
-};
-
-const parseHeading = (heading: Heading) => {
-  const [child] = heading.children;
-
-  if (child.type === 'text') {
-    return parseText(child);
-  }
-
-  console.error(`Heading child type not supported ${child.type}`);
+type NodePathItem = {
+  depth: number;
+  uid: string;
 };
 
 type Accumulator = {
-  rootNodePath: { level: number; uid: string }[];
+  rootNodePath: NodePathItem[];
   rootNodeOrder: string[];
   nodes: Record<string, TanaIntermediateNode>;
   nodeUidToChildren: Record<string, string[]>;
 };
 
+const nestChild = (
+  nodeUid: string,
+  nodes: Record<string, TanaIntermediateNode>,
+  nodeParentToChildren: Record<string, string[]>,
+): TanaIntermediateNode => {
+  const node = nodes[nodeUid];
+  const childrenKeys = nodeParentToChildren[nodeUid];
+  const children = childrenKeys?.map((childUid) => nestChild(childUid, nodes, nodeParentToChildren));
+  return {
+    ...node,
+    children,
+  };
+};
+
 const nestNormalizedNodes = (nodes: Record<string, TanaIntermediateNode>, nodeChildren: Record<string, string[]>) => {
   const nestedNodes = Object.keys(nodeChildren).reduce((acc, parentNodeKey) => {
     const node = acc[parentNodeKey];
-    const children = nodeChildren[parentNodeKey].map((childKey) => acc[childKey]);
+    const children = nodeChildren[parentNodeKey].map((childKey) => nestChild(childKey, nodes, nodeChildren));
     return merge(acc, { [parentNodeKey]: { ...node, children } });
   }, nodes);
 
@@ -76,59 +97,74 @@ const nestNormalizedNodes = (nodes: Record<string, TanaIntermediateNode>, nodeCh
   return Object.values(nestedNodes).filter((node) => !uidsToRemove.includes(node.uid));
 };
 
+const determineRootNodePath = (rootNodePath: NodePathItem[], curr: marked.Token, newNode: TanaIntermediateNode) => {
+  const lastNode = last(rootNodePath);
+  if (curr.type !== 'heading') {
+    return { newRootNodePath: rootNodePath, parentNodeUid: lastNode?.uid };
+  }
+
+  if (!lastNode) {
+    return { newRootNodePath: [{ depth: curr.depth, uid: newNode.uid }], parentNodeUid: null };
+  } else if (lastNode.depth === curr.depth) {
+    const newRootNodePath = rootNodePath.filter((_, i) => {
+      return i !== rootNodePath.length - 1;
+    });
+    return {
+      newRootNodePath: [...newRootNodePath, { depth: curr.depth, uid: newNode.uid }],
+      parentNodeUid: curr.depth === 1 ? null : lastNode.uid,
+    };
+  } else if (lastNode.depth > curr.depth) {
+    const newRootNodePath = takeWhile(rootNodePath, ({ depth }) => depth < curr.depth);
+    const parentNodeUid = last(newRootNodePath)?.uid;
+    return {
+      newRootNodePath: [...newRootNodePath, { depth: curr.depth, uid: newNode.uid }],
+      parentNodeUid,
+    };
+  } else if (lastNode.depth < curr.depth) {
+    return { newRootNodePath: [...rootNodePath, { depth: curr.depth, uid: newNode.uid }], parentNodeUid: lastNode.uid };
+  }
+
+  return { newRootNodePath: rootNodePath, parentNodeUid: lastNode.uid };
+};
+
 export const mdToTana = (fileContent: string) => {
-  const ast = mdast.fromMarkdown(fileContent);
+  const tokens = lexer.lex(fileContent);
 
-  const { rootNodeOrder, nodes, nodeUidToChildren } = ast.children.reduce(
+  const { rootNodeOrder, nodes, nodeUidToChildren } = tokens.reduce(
     (acc, curr) => {
-      if (ignoreList.includes(curr.type)) {
+      if (curr.type === 'space' || curr.type === 'hr' || curr.type === 'br' || curr.type === 'escape') {
         return acc;
       }
 
-      let newNode;
-      let parentNodeUid;
-      if (curr.type === 'paragraph') {
-        parentNodeUid = acc.rootNodePath.at(-1)?.uid;
-        newNode = parseParagraph(curr);
-        if (!newNode) {
-          return acc;
-        }
-      } else if (curr.type === 'heading') {
-        newNode = parseHeading(curr);
-        if (!newNode) {
-          return acc;
-        }
-
-        const lastNode = acc.rootNodePath.at(-1);
-        console.log(acc.rootNodePath);
-        if (!lastNode) {
-          acc.rootNodePath.push({ level: curr.depth, uid: newNode.uid });
-        } else if (lastNode.level === curr.depth) {
-          const newRootNodePath = acc.rootNodePath.filter((_, i) => {
-            return i !== acc.rootNodePath.length - 1;
-          });
-          parentNodeUid = newRootNodePath[-1]?.uid;
-          acc.rootNodePath = [...newRootNodePath, { level: curr.depth, uid: newNode.uid }];
-        } else if (lastNode.level > curr.depth) {
-          const newRootNodePath = takeWhile(acc.rootNodePath, ({ level }) => level < curr.depth);
-          parentNodeUid = acc.rootNodePath[-1].uid;
-          acc.rootNodePath = [...newRootNodePath, { level: curr.depth, uid: newNode.uid }];
-        }
-      }
-
-      if (!newNode) {
-        return acc;
-      }
-
-      acc.nodes[newNode.uid] = newNode;
-
-      if (parentNodeUid) {
-        acc.nodeUidToChildren[parentNodeUid] = [...(acc.nodeUidToChildren[parentNodeUid] ?? []), newNode.uid];
+      const newNodes: TanaIntermediateNode[] = [];
+      if (curr.type === 'list') {
+        newNodes.push(...createListNode(curr));
       } else {
-        acc.rootNodeOrder.push(newNode.uid);
+        const result = parseToken(curr);
+
+        if (!result) {
+          return acc;
+        }
+
+        newNodes.push(createNode({ name: result }));
       }
 
-      return acc;
+      if (newNodes.length === 0) {
+        return acc;
+      }
+
+      const { parentNodeUid, newRootNodePath } = determineRootNodePath(acc.rootNodePath, curr, newNodes[0]);
+
+      newNodes.forEach((node) => {
+        acc.nodes[node.uid] = node;
+        if (parentNodeUid) {
+          acc.nodeUidToChildren[parentNodeUid] = [...(acc.nodeUidToChildren[parentNodeUid] ?? []), node.uid];
+        } else {
+          acc.rootNodeOrder.push(node.uid);
+        }
+      });
+
+      return { ...acc, rootNodePath: newRootNodePath };
     },
     {
       headingLevelPath: [],

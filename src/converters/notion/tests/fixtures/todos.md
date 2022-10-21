@@ -1,0 +1,2 @@
+- [ ] Wake up
+- [x] Brush teeth

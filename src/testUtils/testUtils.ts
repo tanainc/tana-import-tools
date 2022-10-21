@@ -90,7 +90,7 @@ function findNodeById(nodes: TanaIntermediateNode[], id: string): TanaIntermedia
   }
 }
 
-function findNodeByName(nodes: TanaIntermediateNode[], name: string): TanaIntermediateNode | undefined {
+export function findNodeByName(nodes: TanaIntermediateNode[], name: string): TanaIntermediateNode | undefined {
   for (let i = 0; i < nodes.length; i++) {
     const node = nodes[i];
     if (node.name === name) {

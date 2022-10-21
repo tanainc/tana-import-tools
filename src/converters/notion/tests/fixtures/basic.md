@@ -1,6 +1,6 @@
 # Quick Note
 
-Quickly create a rich document.
+_Quickly_ create a rich document.
 
 # Jot down some text
 

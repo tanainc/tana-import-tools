@@ -16,17 +16,19 @@ import {
 } from '../../utils/utils';
 import { IConverter } from '../IConverter';
 import {
-  getAttributeDefintionsFromName,
+  getAttributeDefinitionsFromName as getAttributeDefinitionsFromName,
   getValueForAttribute,
   hasField,
   hasImages,
+  dateStringToRoamDateUID,
+  dateStringToYMD,
+} from '../common'
+import {
   isDone,
   isTodo,
   replaceRoamSyntax,
-  dateStringToRoamDateUID,
   setNodeAsDone,
   setNodeAsTodo,
-  dateStringToYMD,
 } from './logseqUtils';
 
 const DATE_REGEX = /^\w+\s\d{1,2}\w{2},\s\d+$/;
@@ -133,33 +135,33 @@ export class LogseqConverter implements IConverter {
     const fullNodeTitle = nodeWithField.name;
 
     // if we have more fields this will be unset after each created field
-    let currentFiledNode: TanaIntermediateNode | undefined = nodeWithField;
+    let currentFieldNode: TanaIntermediateNode | undefined = nodeWithField;
 
-    const attriuteDefintions = getAttributeDefintionsFromName(currentFiledNode.name);
+    const attributeDefinitions = getAttributeDefinitionsFromName(currentFieldNode.name);
 
-    if (!attriuteDefintions.length) {
+    if (!attributeDefinitions.length) {
       return;
     }
 
-    // we suport foo::bar and bam::bim on the same line
-    for (const attrDef of attriuteDefintions) {
+    // we support foo::bar and bam::bim on the same line
+    for (const attrDef of attributeDefinitions) {
       const currentFieldValues = [];
 
-      if (!currentFiledNode) {
+      if (!currentFieldNode) {
         // create a new field since we have multiple
-        currentFiledNode = this.createNodeForImport({
+        currentFieldNode = this.createNodeForImport({
           uid: idgenerator(),
           name: attrDef,
           createdAt: nodeWithField.createdAt,
           editedAt: nodeWithField.editedAt,
         });
         if (parentNode && parentNode.children) {
-          parentNode.children.push(currentFiledNode);
+          parentNode.children.push(currentFieldNode);
         }
       } else {
-        currentFiledNode.name = attrDef;
+        currentFieldNode.name = attrDef;
       }
-      currentFiledNode.type = 'field';
+      currentFieldNode.type = 'field';
 
       const attrValue = getValueForAttribute(attrDef, fullNodeTitle) || '';
 
@@ -183,9 +185,9 @@ export class LogseqConverter implements IConverter {
             this.createNodeForImport({
               uid: idgenerator(),
               name: `[[${link}]]`, // We link to [[Peter Pan]] etc. It should be found by broken refs later
-              createdAt: currentFiledNode.createdAt,
-              editedAt: currentFiledNode.editedAt,
-              parentNode: currentFiledNode.uid,
+              createdAt: currentFieldNode.createdAt,
+              editedAt: currentFieldNode.editedAt,
+              parentNode: currentFieldNode.uid,
             }),
           );
         }
@@ -194,26 +196,26 @@ export class LogseqConverter implements IConverter {
           this.createNodeForImport({
             uid: idgenerator(),
             name: attrValue,
-            createdAt: currentFiledNode.createdAt,
-            editedAt: currentFiledNode.editedAt,
-            parentNode: currentFiledNode.uid,
+            createdAt: currentFieldNode.createdAt,
+            editedAt: currentFieldNode.editedAt,
+            parentNode: currentFieldNode.uid,
           }),
         );
       }
 
-      if (!currentFiledNode.children) {
-        currentFiledNode.children = [];
+      if (!currentFieldNode.children) {
+        currentFieldNode.children = [];
       }
       for (const f of currentFieldValues) {
-        currentFiledNode.children.push(f);
+        currentFieldNode.children.push(f);
       }
 
-      this.ensureAttrMapIsUpdated(currentFiledNode);
+      this.ensureAttrMapIsUpdated(currentFieldNode);
       if (!parentNode) {
         throw new Error('Cannot create fields without a parent node');
       }
 
-      currentFiledNode = undefined;
+      currentFieldNode = undefined;
     }
   }
 
@@ -372,7 +374,7 @@ export class LogseqConverter implements IConverter {
     }
 
     const pageName = node['page-name'];
-    // journal pages in Roam havehave special UID (03-31-2022), we flag these as date nodes
+    // journal pages in Roam-alikes have special UID (MM-DD-YYYY), we flag these as date nodes
     if (pageName?.match(DATE_REGEX)) {
       this.summary.calendarNodes += 1;
       intermediateNode.name = dateStringToRoamDateUID(pageName);

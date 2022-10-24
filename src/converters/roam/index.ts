@@ -15,17 +15,19 @@ import {
 } from '../../utils/utils';
 import { IConverter } from '../IConverter';
 import {
-  getAttributeDefintionsFromName,
+  getAttributeDefinitionsFromName,
   getValueForAttribute,
   hasField,
   hasImages,
+  dateStringToRoamDateUID,
+  dateStringToYMD,
+} from '../common'
+import {
   isDone,
   isTodo,
   replaceRoamSyntax,
-  dateStringToRoamDateUID,
   setNodeAsDone,
   setNodeAsTodo,
-  dateStringToYMD,
 } from './roamUtils';
 
 type RoamNode = {
@@ -128,7 +130,7 @@ export class RoamConverter implements IConverter {
     // if we have more fields this will be unset after each created field
     let currentFiledNode: TanaIntermediateNode | undefined = nodeWithField;
 
-    const attriuteDefintions = getAttributeDefintionsFromName(currentFiledNode.name);
+    const attriuteDefintions = getAttributeDefinitionsFromName(currentFiledNode.name);
 
     if (!attriuteDefintions.length) {
       return;

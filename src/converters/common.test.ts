@@ -11,8 +11,8 @@ import {
 test('getAttributeDefintions', () => {
   expect(getAttributeDefinitionsFromName('foo::bar')).toEqual(['foo']);
   expect(getAttributeDefinitionsFromName('[[foo]]::bar')).toEqual(['foo']);
-  expect(getAttributeDefinitionsFromName('**foo:**')).toEqual(['foo']);
-  expect(getAttributeDefinitionsFromName('**foo:**\nbam::bim')).toEqual(['foo', 'bam']);
+  expect(getAttributeDefinitionsFromName('**foo:**')).toEqual([]);
+  expect(getAttributeDefinitionsFromName('**foo:**\nbam::bim')).toEqual(['bam']);
 });
 
 test('findPreceedingAlias', () => {
@@ -22,7 +22,7 @@ test('findPreceedingAlias', () => {
 
 test('getValueForAttribute', () => {
   expect(getValueForAttribute('foo', 'foo::bar')).toEqual('bar');
-  expect(getValueForAttribute('foo', '**foo:** bam')).toEqual('bam');
+  expect(getValueForAttribute('foo', '**foo:** bam')).toEqual(undefined);
   expect(getValueForAttribute('bam', '**foo:**\nbam::bim')).toEqual('bim');
 });
 

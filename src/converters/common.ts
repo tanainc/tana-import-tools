@@ -1,5 +1,5 @@
 export function hasField(node: string) {
-  return node.includes('::') || node.includes(':*');
+  return node.includes('::');
 }
 
 export function hasImages(name: string) {
@@ -55,25 +55,23 @@ export function dateStringToYMD(str: string) {
 }
 
 export function getValueForAttribute(fieldName: string, node: string): string | undefined {
-  if (!node.includes('::') && !node.includes(':*')) {
+  if (!node.includes('::')) {
     return undefined;
   }
   for (const line of node.split('\n')) {
     // foo::bar
     if (line.startsWith(`${fieldName}::`)) {
       return line.split(`${fieldName}::`)[1].trim();
-    } else if (line.startsWith(`**${fieldName}:**`)) {
-      return line.split(`**${fieldName}:**`)[1].trim();
     } else if (line.startsWith(`[[${fieldName}]]:`)) {
       return line.split(`[[${fieldName}]]::`)[1].trim();
     }
   }
 }
 
-// Finds attribute defintions like Foo:: and **foo:**
+// Finds attribute defintions like Foo::
 export function getAttributeDefinitionsFromName(node: string): string[] {
   // quicker than regex
-  if (!node.includes('::') && !node.includes(':*')) {
+  if (!node.includes('::')) {
     return [];
   }
 
@@ -85,12 +83,6 @@ export function getAttributeDefinitionsFromName(node: string): string[] {
     const attrMatch = line.match(/^(.+)::/i);
     if (attrMatch && attrMatch[1]) {
       attrDefs.push(attrMatch[1].replace('[[', '').replace(']]', ''));
-      continue;
-    }
-
-    const attrMatchAlt = line.match(/^\*\*(.+):\*\*/i);
-    if (attrMatchAlt && attrMatchAlt[1]) {
-      attrDefs.push(attrMatchAlt[1].replace('[[', '').replace(']]', ''));
       continue;
     }
   }

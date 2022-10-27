@@ -15,21 +15,8 @@ import {
   isIndexWithinBackticks,
 } from '../../utils/utils';
 import { IConverter } from '../IConverter';
-import {
-  getAttributeDefinitionsFromName as getAttributeDefinitionsFromName,
-  getValueForAttribute,
-  hasField,
-  hasImages,
-  dateStringToRoamDateUID,
-  dateStringToYMD,
-} from '../common'
-import {
-  isDone,
-  isTodo,
-  replaceRoamSyntax,
-  setNodeAsDone,
-  setNodeAsTodo,
-} from './logseqUtils';
+import { hasImages, dateStringToRoamDateUID, dateStringToYMD } from '../common';
+import { isDone, isTodo, replaceRoamSyntax, setNodeAsDone, setNodeAsTodo } from './logseqUtils';
 
 const DATE_REGEX = /^\w+\s\d{1,2}\w{2},\s\d+$/;
 
@@ -130,93 +117,55 @@ export class LogseqConverter implements IConverter {
     return theMetaNode.children?.length || 0;
   }
 
-  // convers "foo::bar bas::bam" into two fileds with values
-  private convertToField(nodeWithField: TanaIntermediateNode, parentNode: TanaIntermediateNode) {
-    const fullNodeTitle = nodeWithField.name;
+  private convertToField(key: string, value: unknown, node: TanaIntermediateNode) {
+    this.summary.fields += 1;
 
-    // if we have more fields this will be unset after each created field
-    let currentFieldNode: TanaIntermediateNode | undefined = nodeWithField;
+    const fieldNode = this.createNodeForImport({
+      uid: idgenerator(),
+      name: key,
+      createdAt: node.createdAt,
+      editedAt: node.editedAt,
+      type: 'field',
+    });
+    const fieldChildren = [];
 
-    const attributeDefinitions = getAttributeDefinitionsFromName(currentFieldNode.name);
+    node.children = node.children ? [...node.children, fieldNode] : [fieldNode];
 
-    if (!attributeDefinitions.length) {
-      return;
-    }
-
-    // we support foo::bar and bam::bim on the same line
-    for (const attrDef of attributeDefinitions) {
-      const currentFieldValues = [];
-
-      if (!currentFieldNode) {
-        // create a new field since we have multiple
-        currentFieldNode = this.createNodeForImport({
-          uid: idgenerator(),
-          name: attrDef,
-          createdAt: nodeWithField.createdAt,
-          editedAt: nodeWithField.editedAt,
-        });
-        if (parentNode && parentNode.children) {
-          parentNode.children.push(currentFieldNode);
-        }
-      } else {
-        currentFieldNode.name = attrDef;
-      }
-      currentFieldNode.type = 'field';
-
-      const attrValue = getValueForAttribute(attrDef, fullNodeTitle) || '';
-
-      const links = getBracketLinks(attrValue, false);
-      let remainingAttrValue = attrValue;
-
-      for (const link of links) {
-        if (link.match(DATE_REGEX)) {
-          continue;
-        }
-
-        remainingAttrValue = remainingAttrValue.replace(`[[${link}]]`, '').trim();
-      }
-
-      const wasLinksOnly = remainingAttrValue.length === 0;
-
-      if (wasLinksOnly) {
-        // create node of type field, add values as children
-        for (const link of links) {
-          currentFieldValues.push(
-            this.createNodeForImport({
-              uid: idgenerator(),
-              name: `[[${link}]]`, // We link to [[Peter Pan]] etc. It should be found by broken refs later
-              createdAt: currentFieldNode.createdAt,
-              editedAt: currentFieldNode.editedAt,
-              parentNode: currentFieldNode.uid,
-            }),
-          );
-        }
-      } else {
-        currentFieldValues.push(
+    // arrays as property values are references
+    if (Array.isArray(value)) {
+      for (const link of value) {
+        fieldChildren.push(
           this.createNodeForImport({
             uid: idgenerator(),
-            name: attrValue,
-            createdAt: currentFieldNode.createdAt,
-            editedAt: currentFieldNode.editedAt,
-            parentNode: currentFieldNode.uid,
+            name: `[[${link}]]`, // We link to [[Peter Pan]] etc. It should be found by broken refs later
+            createdAt: fieldNode.createdAt,
+            editedAt: fieldNode.editedAt,
+            parentNode: fieldNode.uid,
           }),
         );
       }
-
-      if (!currentFieldNode.children) {
-        currentFieldNode.children = [];
-      }
-      for (const f of currentFieldValues) {
-        currentFieldNode.children.push(f);
-      }
-
-      this.ensureAttrMapIsUpdated(currentFieldNode);
-      if (!parentNode) {
-        throw new Error('Cannot create fields without a parent node');
-      }
-
-      currentFieldNode = undefined;
     }
+
+    if (typeof value === 'string' || typeof value === 'number') {
+      fieldChildren.push(
+        this.createNodeForImport({
+          uid: idgenerator(),
+          name: value.toString(),
+          createdAt: node.createdAt,
+          editedAt: node.editedAt,
+        }),
+      );
+    }
+
+    if (!fieldNode.children) {
+      fieldNode.children = [];
+    }
+
+    for (const child of fieldChildren) {
+      fieldNode.children.push(child);
+    }
+
+    this.ensureAttrMapIsUpdated(fieldNode);
   }
 
   private createNodeForImport(n: {
@@ -387,6 +336,19 @@ export class LogseqConverter implements IConverter {
 
     this.originalNodeNames.set(node.id, intermediateNode.name);
     this.nodesForImport.set(node.id, intermediateNode);
+
+    // convert Logseq properties to Tana fields
+    if (node.properties) {
+      // is top-level page
+      if (node['page-name']) {
+        // logseq properties appear to be duplicated. Remove first child if node is a page with properties
+        // TODO: check for equality of property fields
+        node.children?.shift();
+      }
+      for (const [key, value] of Object.entries(node.properties)) {
+        this.convertToField(key, value, intermediateNode);
+      }
+    }
 
     // import any children
 

@@ -16,23 +16,10 @@ import {
 } from '../../utils/utils';
 import { IConverter } from '../IConverter';
 import { hasImages, dateStringToRoamDateUID, dateStringToYMD } from '../common';
-import { isDone, isTodo, replaceRoamSyntax, setNodeAsDone, setNodeAsTodo } from './logseqUtils';
+import { hasDuplicateProperties, isDone, isTodo, replaceRoamSyntax, setNodeAsDone, setNodeAsTodo } from './logseqUtils';
+import { LogseqBlock, LogseqFile } from './types';
 
 const DATE_REGEX = /^\w+\s\d{1,2}\w{2},\s\d+$/;
-
-type LogseqFile = {
-  version: number;
-  blocks: LogseqBlock[];
-};
-
-type LogseqBlock = {
-  id: string;
-  'page-name': string;
-  properties: Record<string, unknown>;
-  format: 'markdown';
-  children?: LogseqBlock[];
-  content: string;
-};
 
 export class LogseqConverter implements IConverter {
   private nodesForImport: Map<string, TanaIntermediateNode> = new Map();
@@ -339,10 +326,9 @@ export class LogseqConverter implements IConverter {
 
     // convert Logseq properties to Tana fields
     if (node.properties) {
-      // is top-level page
-      if (node['page-name']) {
-        // logseq properties appear to be duplicated. Remove first child if node is a page with properties
-        // TODO: check for equality of property fields
+      if (node['page-name'] && hasDuplicateProperties(node, node.children?.[0])) {
+        // logseq properties appear to be duplicated in the page node and the first child node
+        // if properties are equal, remove first child
         node.children?.shift();
       }
       for (const [key, value] of Object.entries(node.properties)) {

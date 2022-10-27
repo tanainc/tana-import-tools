@@ -90,8 +90,6 @@ test('Images', () => {
 test('Fields', () => {
   const [file, f] = importLogseqFile('fields.json');
 
-  console.log(JSON.stringify(file, null, 2));
-
   expect(file.summary.fields).toEqual(5);
   expect(file.attributes?.length).toEqual(3);
 

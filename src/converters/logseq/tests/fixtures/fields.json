@@ -10,7 +10,7 @@
         {
           "id": "dupeProps1",
           "format": "markdown",
-          "properties": { "test": "Value" },
+          "properties": { "test": "Value", "num": "1" },
           "children": []
         },
         {

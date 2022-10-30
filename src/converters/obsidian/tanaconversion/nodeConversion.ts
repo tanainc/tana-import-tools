@@ -31,6 +31,11 @@ function convertDataViewAttribute(
   if (obsidianNode.type === HierarchyType.DATAVIEWATTRIBUTE || isSoloDataViewAttribute(obsidianNode.content)) {
     const [uid, content] = requestUidForContentNode(fileName, filePath, obsidianNode.content, context);
     const splitName = content.split('::');
+    //empty data view nodes
+    //TODO: not sure how that happens?
+    if (splitName[1] === undefined) {
+      console.log(obsidianNode.content, content, splitName);
+    }
     return keyValToFieldNode(fileName, filePath, splitName[0], [splitName[1].trim()], today, context, uid);
   }
 }

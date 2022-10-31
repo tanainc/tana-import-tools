@@ -7,7 +7,7 @@ export function removeBlockId(content: string): [string, string | undefined] {
       const splitLine = line.split(' ');
       const lastEle = splitLine[splitLine.length - 1];
       if (lastEle.startsWith('^')) {
-        //we take the last id, rest will be detected as invalid
+        //we take the last id, rest will be detected as invalid if they are used
         id = lastEle;
         return splitLine.slice(0, -1).join(' ');
       } else {

@@ -10,6 +10,8 @@ export function removeBlockId(content: string): [string, string | undefined] {
         //we take the last id, rest will be detected as invalid
         id = lastEle;
         return splitLine.slice(0, -1).join(' ');
+      } else {
+        return line;
       }
     })
     .join('\n');

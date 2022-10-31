@@ -1,18 +1,18 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import { expect, test } from '@jest/globals';
-import { expectField, expectImage } from '../../../testUtils/testUtils';
-import { importLogseqFile } from './testUtils';
+import { expectImage } from '../../../testUtils/testUtils';
+import { getField, importLogseqFile } from './testUtils';
 
 test('Summary smoketest', async () => {
   const [file] = importLogseqFile('smoketest.json');
 
   expect(file.summary).toEqual({
     brokenRefs: 0,
-    topLevelNodes: 5,
-    leafNodes: 15,
-    fields: 0,
-    totalNodes: 20,
+    topLevelNodes: 7,
+    leafNodes: 18,
+    fields: 10,
+    totalNodes: 25,
     calendarNodes: 3,
   });
 });
@@ -85,4 +85,18 @@ test('Images', () => {
   expect(f('third')?.name).toBe(
     `[[${f('third')?.children![0].uid}]] [[${f('third')?.children![1].uid}]] (pp. 726-727)`,
   );
+});
+
+test('Fields', () => {
+  const [file, f] = importLogseqFile('fields.json');
+
+  expect(file.summary.fields).toEqual(5);
+  expect(file.attributes?.length).toEqual(3);
+
+  const page1 = f('page1');
+  expect(page1?.children?.length).toBe(3);
+
+  const blockAttrs = getField('blockAttrs', 'refs', f);
+  expect(blockAttrs.type).toBe('field');
+  expect(blockAttrs.children?.length).toBe(2);
 });

@@ -1,4 +1,5 @@
 import { TanaIntermediateNode } from '../../types/types';
+import { LogseqBlock } from './types';
 
 // TODO and DONE in roam
 const TODO_FLAG = 'TODO';
@@ -37,4 +38,12 @@ export function replaceRoamSyntax(nameToUse: string) {
     });
   }
   return nameToUse;
+}
+
+export function hasDuplicateProperties(parent?: LogseqBlock, child?: LogseqBlock) {
+  if (!parent || !child) {
+    return false;
+  }
+
+  return JSON.stringify(parent.properties) === JSON.stringify(child.properties);
 }

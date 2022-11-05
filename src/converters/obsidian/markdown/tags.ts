@@ -28,6 +28,15 @@ const disallowedSymbols = new Set([
   '`',
   '[',
   ']',
+  ':',
+  ',',
+  ';',
+  '~',
+  '=',
+  '§',
+  '.',
+  '°',
+  '^',
 ]);
 
 export function validTag(tag: string) {

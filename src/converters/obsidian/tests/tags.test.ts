@@ -5,7 +5,11 @@ test('tag detection test', () => {
   expect(detectTags('')).toStrictEqual(undefined);
   expect(detectTags('#tag')).toStrictEqual(['#tag']);
   expect(detectTags(' #tag')).toStrictEqual([' #tag']);
-  expect(detectTags(' #inlinetag blub #endtag ')).toStrictEqual([' #inlinetag', ' #endtag']);
+  expect(detectTags(' #inlinetag1 blub #endtag ')).toStrictEqual([' #inlinetag1', ' #endtag']);
+  expect(detectTags('#11) #inlinetag #123 blub #endtag #2<br/> #Readwise! #1**')).toStrictEqual([
+    ' #inlinetag',
+    ' #endtag',
+  ]);
 });
 
 test('tag removal test', () => {

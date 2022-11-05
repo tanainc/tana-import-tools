@@ -47,15 +47,27 @@ export function findBulletSliceStartPosition(content: string, curPosition: numbe
 
 export function findBulletSliceEndPosition(content: string, curPosition: number, hierarchy: Hierarchy) {
   //we can skip the empty space before the bullet, the bullet symbol and the empty space after the bullet symbol
-  //TODO: numbered? Works but might search one char extra, oh no
   let endPosition = nextNewLine(content, curPosition + hierarchy.level + 1 + 1);
   let char = content[endPosition];
 
   // eslint-disable-next-line no-constant-condition
   while (true) {
     //new lines that start with the number of empty spaces of the level+1 are considered part of the node
+
+    //but also if they are just equal to the hierachy-level:
+    //e.g.
+    //- Text1
+    // - Text2
+    // Text3
+    //Text4
+    //"Text3" is still part of Text2 because Obsidian allows that!
+    //but not "Text4" because its on the zero level
     const emptySpaces = countEmptySpace(content, endPosition + 1);
-    if (emptySpaces == hierarchy.level + 2 && !detectBulletHierarchy(content, endPosition + 1 + emptySpaces)) {
+    if (
+      emptySpaces > 0 &&
+      (emptySpaces == hierarchy.level + 2 || emptySpaces == hierarchy.level) &&
+      !detectBulletHierarchy(content, endPosition + 1 + emptySpaces)
+    ) {
       endPosition = nextNewLine(content, endPosition + 1);
       char = content[endPosition];
     } else {

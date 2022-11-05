@@ -4,6 +4,13 @@ import * as fs from 'fs';
 import { RoamConverter } from './converters/roam/index';
 import { TanaIntermediateFile } from './types/types';
 import { WorkflowyConverter } from './converters/workflowy';
+import { lstatSync } from 'fs';
+import {
+  ObsidianVaultConverter,
+  LocalFileSystemAdapter,
+  createVaultContext,
+  LocalObsidianZipVaultConverter,
+} from './converters/obsidian';
 
 const fileType = process.argv[2];
 const file = process.argv[3];
@@ -14,45 +21,85 @@ if (!fileType) {
 }
 
 if (!file) {
-  console.log('No file provided');
+  console.log('No file or folder provided');
   exit(0);
 }
 
-const supportedTypes = ['roam', 'workflowy'];
+const supportedTypes = ['roam', 'workflowy', 'obsidian'];
 if (!supportedTypes.includes(fileType)) {
   console.log(`File type: ${fileType} is not supported`);
   exit(0);
 }
 
-console.log(`\n\nReading file: ${file} for import as: ${fileType}`);
+function handleSingleFileConversion() {
+  console.log(`\n\nReading file: ${file} for import as: ${fileType}`);
 
-const contents = fs.readFileSync(file, 'utf8');
-console.log('File length:', contents.length);
+  const contents = fs.readFileSync(file, 'utf8');
+  console.log('File length:', contents.length);
 
-function saveFile(fileName: string, tanaIntermediteNodes: TanaIntermediateFile) {
-  const targetFileName = `${fileName}.tif.json`;
-  fs.writeFileSync(targetFileName, JSON.stringify(tanaIntermediteNodes, null, 2));
-  console.log(`Tana Intermediate Nodes written to : ${targetFileName}`);
-}
+  function saveFile(fileName: string, tanaIntermediteNodes: TanaIntermediateFile) {
+    const targetFileName = `${fileName}.tif.json`;
+    fs.writeFileSync(targetFileName, JSON.stringify(tanaIntermediteNodes, null, 2));
+    console.log(`Tana Intermediate Nodes written to : ${targetFileName}`);
+  }
 
-let tanaIntermediteFile = undefined;
-switch (fileType) {
-  case 'roam':
-    tanaIntermediteFile = new RoamConverter().convert(contents);
-    break;
-  case 'workflowy':
-    tanaIntermediteFile = new WorkflowyConverter().convert(contents);
-    break;
-  default:
-    console.log(`File type ${fileType} is not supported`);
+  let tanaIntermediteFile = undefined;
+  switch (fileType) {
+    case 'roam':
+      tanaIntermediteFile = new RoamConverter().convert(contents);
+      break;
+    case 'workflowy':
+      tanaIntermediteFile = new WorkflowyConverter().convert(contents);
+      break;
+    default:
+      console.log(`File type ${fileType} is not supported for single files`);
+      exit(0);
+  }
+
+  if (!tanaIntermediteFile) {
+    console.log('No nodes found');
     exit(0);
+  }
+
+  console.dir(tanaIntermediteFile.summary);
+
+  saveFile(file, tanaIntermediteFile);
 }
 
-if (!tanaIntermediteFile) {
-  console.log('No nodes found');
-  exit(0);
+async function handleZipConversion() {
+  console.log(`\n\nReading zip: ${file} for import as: ${fileType}`);
+  let summary;
+  switch (fileType) {
+    case 'obsidian':
+      summary = (await LocalObsidianZipVaultConverter(file))[0];
+      break;
+    default:
+      console.log(`File type ${fileType} is not supported for zips`);
+      exit(0);
+  }
+  console.dir(summary);
 }
 
-console.dir(tanaIntermediteFile.summary);
+async function handleFolderConversion() {
+  console.log(`\n\nReading folder: ${file} for import as: ${fileType}`);
+  let summary;
+  switch (fileType) {
+    case 'obsidian':
+      summary = await ObsidianVaultConverter(createVaultContext(file, new LocalFileSystemAdapter()));
+      break;
+    default:
+      console.log(`File type ${fileType} is not supported for folders`);
+      exit(0);
+  }
+  console.dir(summary);
+}
 
-saveFile(file, tanaIntermediteFile);
+if (lstatSync(file).isDirectory()) {
+  handleFolderConversion();
+} else {
+  if (file.endsWith('.zip')) {
+    handleZipConversion();
+  } else {
+    handleSingleFileConversion();
+  }
+}

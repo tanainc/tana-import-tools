@@ -10,6 +10,7 @@ Supported formats:
 
 - Workflowy (OPML)
 - Roam Research JSON
+- Obsidian Markdown
 
 If you need to do some something special with your data before putting it into Tana you can just fork this project and hack the current converters into doing what you need. As long as the resulting file follows the format you will be able to import it into Tana.
 
@@ -22,6 +23,10 @@ If you are making changes that you think will benefit other users, please create
 #### Converting Workflowy OPML to Tana JSON
 
 `yarn convert:workflowy datasets/my_workflowy_export.opml`
+
+#### Converting Obsidian Markdown Vault to Tana JSON
+
+`yarn convert:obsidian datasets/my_obsidian_vault/`
 
 # ✍️ Contributing
 

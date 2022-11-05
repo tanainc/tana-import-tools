@@ -3,7 +3,7 @@ import { HierarchyType } from '../hierarchy/markdownNodes';
 import { VaultContext } from '../VaultContext';
 import { superTagUidRequests } from './supertags';
 import { removeTodo } from '../markdown/todo';
-import { detectTags } from '../markdown/tags';
+import { detectTags, removeTagsFromEnd } from '../markdown/tags';
 import { handleImages } from './imageNodes';
 import { requestUidForContentNode, setUidsInNodeContent } from '../links/internalLinks';
 
@@ -30,12 +30,8 @@ export function postProcessContentNode(
   // in obsidian tags are really tags so should be kept that way, but might be used inline, so should'nt be removed
   const tags = detectTags(tanaNode.name);
   if (tags) {
-    //we can remove the last tag without losing meaning because it will show up as a super tag anyways
-    const lastTag = tags[tags.length - 1];
-    if (tanaNode.name.endsWith(lastTag)) {
-      tanaNode.name = tanaNode.name.slice(0, -lastTag.length);
-    }
-
+    //we can remove the last tags without losing meaning because they will show up as super tags anyways
+    tanaNode.name = removeTagsFromEnd(tanaNode.name, tags);
     tanaNode.supertags = superTagUidRequests(tags, context.superTagTracker, context.idGenerator, true);
   }
 

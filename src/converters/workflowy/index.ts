@@ -1,6 +1,6 @@
 import { TanaIntermediateFile, TanaIntermediateNode, TanaIntermediateSummary } from '../../types/types';
 import { idgenerator } from '../../utils/utils';
-import { opml2js } from './opml2js';
+import { opml2js, Sub, TheOutline } from './opml2js';
 
 export class WorkflowyConverter {
   private nodesForImport: Map<string, TanaIntermediateNode> = new Map();

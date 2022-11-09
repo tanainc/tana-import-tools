@@ -15,7 +15,7 @@ function html_entity_decode(message: string) {
   return message;
 }
 
-type TheOutline = {
+export type TheOutline = {
   opml: {
     head: {
       title: string;
@@ -27,7 +27,7 @@ type TheOutline = {
   };
 };
 
-type Sub = {
+export type Sub = {
   text: string;
   subs?: Sub[];
   _complete?: boolean;

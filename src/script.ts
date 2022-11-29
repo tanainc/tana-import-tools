@@ -69,7 +69,7 @@ zipInput.addEventListener('change', async (event) => {
     document.body.appendChild(document.createElement('br'));
     document.body.appendChild(document.createElement('br'));
     const errorContent = document.createElement('b');
-    errorContent.innerText = 'Content of Error (please post in the Slack):\n\n' + stackStr;
+    errorContent.innerText = 'Content of Error (please post in the Slack and tag me):\n\n' + stackStr;
     document.body.appendChild(errorContent);
   }
 });

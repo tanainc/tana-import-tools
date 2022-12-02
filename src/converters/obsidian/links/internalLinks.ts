@@ -82,9 +82,12 @@ export function detectLinkType(link: string[]) {
 export function requestUidForLink(obsidianLink: string, context: VaultContext) {
   const cleanLink = cleanUpLink(obsidianLink);
   const linkType = detectLinkType(cleanLink);
+  if (cleanLink[0] === undefined) {
+    console.log('Parsed undefined clean link. Original link: ' + obsidianLink, 'Type of link: ' + linkType);
+  }
   switch (linkType) {
     case LinkType.DEFAULT:
-      return standardLinkUidRequest(cleanLink[0], context);
+      return standardLinkUidRequest(cleanLink, context);
     case LinkType.BLOCK:
       return blockLinkUidRequestForUsing(cleanLink, context);
     case LinkType.HEADING:
@@ -94,10 +97,8 @@ export function requestUidForLink(obsidianLink: string, context: VaultContext) {
   }
 }
 
-function standardLinkUidRequest(obsidianLink: string, context: VaultContext) {
-  if (obsidianLink == undefined) {
-    console.log('Parsed undefined link in standard link.');
-  }
+function standardLinkUidRequest(link: string[], context: VaultContext) {
+  const obsidianLink = link[0];
   const uidData = context.defaultLinkTracker.accessAsLink(
     obsidianLink,
     (dateUID) => {

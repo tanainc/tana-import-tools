@@ -18,9 +18,6 @@ export interface BlockUidData {
 export function blockLinkUidRequestForUsing(link: string[], context: VaultContext) {
   const fileName = link[0];
   const blockObsidianUid = link[1];
-  if (fileName == undefined) {
-    console.log('Parsed undefined file name in block link.');
-  }
   const blockUidMap = context.blockLinkTracker.accessAsLink(
     fileName,
     () => {

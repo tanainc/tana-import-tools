@@ -95,6 +95,9 @@ export function requestUidForLink(obsidianLink: string, context: VaultContext) {
 }
 
 function standardLinkUidRequest(obsidianLink: string, context: VaultContext) {
+  if (obsidianLink == undefined) {
+    console.log('Parsed undefined link in standard link.');
+  }
   const uidData = context.defaultLinkTracker.accessAsLink(
     obsidianLink,
     (dateUID) => {

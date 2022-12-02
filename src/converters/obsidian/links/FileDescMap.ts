@@ -2,12 +2,7 @@ import { basename } from '../filesystem/CustomFileSystemAdapter';
 import { dateStringToDateUID } from './dateLinks';
 
 function isPath(searchStr: string) {
-  try {
-    return basename(searchStr) !== searchStr;
-  } catch (error) {
-    console.log('Error in isPath: ' + searchStr);
-    throw 'Error in isPath: ' + searchStr;
-  }
+  return basename(searchStr) !== searchStr;
 }
 
 //using a mix of fileName and filePath in the links might lead to random results

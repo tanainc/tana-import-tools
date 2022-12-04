@@ -33,7 +33,7 @@
               ]
             },
             {
-              "name": "This is for testing what happens if the date is accessed first. Should write some more other tests.",
+              "name": "This is for testing what happens if the date is accessed first. Should write some more other tests.\n[[ # ]] Not a valid link",
               "createdAt": 1,
               "editedAt": 1,
               "type": "node",

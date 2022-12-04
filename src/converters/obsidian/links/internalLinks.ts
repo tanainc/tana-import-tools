@@ -39,7 +39,7 @@ export function requestUidsForAllLinks(content: string, context: VaultContext): 
     .map((bracketLink): [string, string[]] => {
       return [bracketLink, bracketLink.split('|').map((s) => s.trim())];
     })
-    .filter((arr) => arr[1][0] !== '')
+    .filter((arr) => arr[1][0] !== '' && arr[1][0] !== '#')
     .map((arr) => {
       const aliasArr = arr[1];
       //handling aliases
@@ -83,7 +83,7 @@ export function requestUidForLink(obsidianLink: string, context: VaultContext) {
   const cleanLink = cleanUpLink(obsidianLink);
   const linkType = detectLinkType(cleanLink);
   if (cleanLink[0] === undefined) {
-    console.log('Parsed undefined clean link. Original link: ' + obsidianLink, 'Type of link: ' + linkType);
+    console.log('Parsed undefined clean link. Original link: ' + obsidianLink + '.', 'Type of link: ' + linkType);
   }
   switch (linkType) {
     case LinkType.DEFAULT:

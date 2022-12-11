@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "blocks": [
+    {
+      "id": "page1",
+      "page-name": "Test page 1",
+      "format": "markdown",
+      "properties": { "test": "Value", "num": "1" },
+      "children": [
+        {
+          "id": "dupeProps1",
+          "format": "markdown",
+          "properties": { "test": "Value", "num": "1" },
+          "children": []
+        },
+        {
+          "id": "child1",
+          "format": "markdown",
+          "children": [],
+          "content": "[[Test page 2]]"
+        }
+      ]
+    },
+    {
+      "id": "page2",
+      "page-name": "Test page 2",
+      "format": "markdown",
+      "properties": { "refs": "[[Test page 1]]" },
+      "children": [
+        {
+          "id": "dupeProps2",
+          "format": "markdown",
+          "properties": { "refs": "[[Test page 1]]" },
+          "children": []
+        },
+        {
+          "id": "child2",
+          "format": "markdown",
+          "children": [],
+          "content": "test"
+        }
+      ]
+    },
+    {
+      "id": "page3",
+      "page-name": "Test page 3",
+      "format": "markdown",
+      "children": [
+        {
+          "id": "blockAttrs",
+          "format": "markdown",
+          "content": "I have attributes",
+          "properties": { "refs": ["Test page 1", "Test page 2"], "num": 3 },
+          "children": []
+        }
+      ]
+    }
+  ]
+}

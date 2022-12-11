@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "blocks": [
+    {
+      "id": "page1",
+      "page-name": "Test page 1",
+      "format": "markdown",
+      "children": [
+        {
+          "id": "child1",
+          "format": "markdown",
+          "children": [],
+          "content": "[[Test page 2]]"
+        }
+      ]
+    },
+    {
+      "id": "page2",
+      "page-name": "Test page 2",
+      "format": "markdown",
+      "children": [
+        {
+          "id": "child2",
+          "format": "markdown",
+          "children": [],
+          "content": "test"
+        }
+      ]
+    }
+  ]
+}

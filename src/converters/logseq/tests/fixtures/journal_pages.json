@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "blocks": [
+    {
+      "id": "date1",
+      "page-name": "Oct 6th, 2022",
+      "format": "markdown",
+      "children": []
+    },
+    {
+      "id": "bad date",
+      "page-name": "Oct 6, 2022",
+      "format": "markdown",
+      "children": []
+    }
+  ]
+}

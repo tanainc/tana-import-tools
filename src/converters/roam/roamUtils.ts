@@ -53,22 +53,30 @@ const months = [
 
 // Convert 'June 1st, 2021' to '06-01-2021' without dealing with timezones etc
 export function dateStringToRoamDateUID(str: string) {
-  str = str.replace(/(^\w+\s\d{1,2})(\w{2}),(\s\d+)/, '$1$3');
-  const pieces = str.split(' ');
-  const month = months.indexOf(pieces[0]) + 1;
-  return `${month.toString().padStart(2, '0')}-${pieces[1].toString().padStart(2, '0')}-${pieces[2]
-    .toString()
-    .padStart(4, '0')}`;
+  try {
+    str = str.replace(/(^\w+\s\d{1,2})(\w{2}),(\s\d+)/, '$1$3');
+    const pieces = str.split(/ /);
+    const month = months.indexOf(pieces[0]) + 1;
+    return `${month.toString().padStart(2, '0')}-${pieces[1].toString().padStart(2, '0')}-${pieces[2]
+      .toString()
+      .padStart(4, '0')}`;
+  } catch (e) {
+    console.warn(str, e);
+  }
 }
 
 // Convert 'June 1st, 2021' to 'YYYY-MM-DD' without dealing with timezones etc
 export function dateStringToYMD(str: string) {
-  str = str.replace(/(^\w+\s\d{1,2})(\w{2}),(\s\d+)/, '$1$3');
-  const pieces = str.split(' ');
-  const month = months.indexOf(pieces[0]) + 1;
-  return `${pieces[2].toString().padStart(4, '0')}-${month.toString().padStart(2, '0')}-${pieces[1]
-    .toString()
-    .padStart(2, '0')}`;
+  try {
+    str = str.replace(/(^\w+\s\d{1,2})(\w{2}),(\s\d+)/, '$1$3');
+    const pieces = str.split(' ');
+    const month = months.indexOf(pieces[0]) + 1;
+    return `${pieces[2].toString().padStart(4, '0')}-${month.toString().padStart(2, '0')}-${pieces[1]
+      .toString()
+      .padStart(2, '0')}`;
+  } catch (e) {
+    console.warn(str, e);
+  }
 }
 
 export function getValueForAttribute(fieldName: string, node: string): string | undefined {

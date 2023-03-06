@@ -6,7 +6,7 @@
     </ownerEmail>
   </head>
   <body>
-    <outline text="Hello how are you">
+    <outline text="Hello how are you" _note="Some note here">
       <outline text="Good" />
       <outline text="Great" />
     </outline>

@@ -1,6 +1,34 @@
 import { expect, test } from '@jest/globals';
 import { opml2js } from '../opml2js';
 
+test('note support ', async () => {
+  const opml = `
+  <?xml version="1.0"?>
+  <opml version="2.0">
+    <head>
+      <ownerEmail>
+        hello@tana.inc
+      </ownerEmail>
+    </head>
+    <body>
+      <outline text="Hello" _note="Some note here"/>
+    </body>
+  </opml>`;
+
+  expect(opml2js(opml)).toEqual({
+    opml: {
+      head: {
+        title: '',
+        ownerEmail: 'hello@tana.inc',
+      },
+      body: {
+        subs: [{ text: 'Hello', note:'Some note here' }],
+      },
+    },
+  });
+});
+
+
 test('one level ', async () => {
   const opml = `
   <?xml version="1.0"?>

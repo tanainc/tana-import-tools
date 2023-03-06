@@ -36,6 +36,7 @@ export class WorkflowyConverter {
     const nodeForImport: TanaIntermediateNode = {
       uid: idgenerator(),
       name: sub.text,
+      description:sub.note,
       children: [],
       createdAt: new Date().getTime(),
       editedAt: new Date().getTime(),

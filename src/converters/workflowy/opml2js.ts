@@ -30,6 +30,7 @@ export type TheOutline = {
 export type Sub = {
   text: string;
   subs?: Sub[];
+  note?: string;
   _complete?: boolean;
 };
 
@@ -90,6 +91,7 @@ export function opml2js(opmlString: string): TheOutline {
       const isLeaf = bodyPart[endOfOutlineTag - 2] === '/';
 
       const text = getAttribute(outlineTagAsString, 'text');
+      const description = getAttribute(outlineTagAsString, '_note');
       const complete = !!getAttribute(outlineTagAsString, '_complete');
 
       // jump cursor to end of tag
@@ -98,6 +100,9 @@ export function opml2js(opmlString: string): TheOutline {
       const item: Sub = {
         text: html_entity_decode(text),
       };
+      if (description){
+        item.note = description
+      }
 
       if (complete) {
         item['_complete'] = true;

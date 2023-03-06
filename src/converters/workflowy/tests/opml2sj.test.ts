@@ -11,7 +11,7 @@ test('note support ', async () => {
       </ownerEmail>
     </head>
     <body>
-      <outline text="Hello" note="Some note here"/>
+      <outline text="Hello" _note="Some note here"/>
     </body>
   </opml>`;
 
@@ -22,7 +22,7 @@ test('note support ', async () => {
         ownerEmail: 'hello@tana.inc',
       },
       body: {
-        subs: [{ text: 'Hello',description:'Some note here' }],
+        subs: [{ text: 'Hello', note:'Some note here' }],
       },
     },
   });

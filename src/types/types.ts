@@ -68,6 +68,9 @@ export type TanaIntermediateNode = {
    */
   name: string;
 
+  // Description of the node
+  description?:string;
+
   // children
   children?: TanaIntermediateNode[];
 

@@ -529,8 +529,10 @@ export class RoamConverter implements IConverter {
       if (link?.match(DATE_REGEX)) {
         const dateUid = dateStringToYMD(link);
 
-        nodeForImport.name = nodeForImport.name.replace(link, 'date:' + dateUid);
-        continue;
+        if (dateUid) {
+          nodeForImport.name = nodeForImport.name.replace(link, 'date:' + dateUid);
+          continue;
+        }
       }
       if (nodeForImport.children?.some((c) => c.name === link || c.uid === link)) {
         continue;

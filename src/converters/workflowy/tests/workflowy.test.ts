@@ -16,6 +16,7 @@ test('Smoke test import preview ', async () => {
   expect(file.attributes).toBeUndefined();
 
   expect(fn('Hello how are you')?.children!.length).toBe(2);
+  expect(fn('Hello how are you')?.description).toBe('Some note here')
   expect(fn('Hello how are you')?.children![0].name).toBe('Good');
   expect(fn('Hello how are you')?.children![1].name).toBe('Great');
 

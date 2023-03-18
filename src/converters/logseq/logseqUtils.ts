@@ -26,7 +26,7 @@ export function setNodeAsDone(node: TanaIntermediateNode) {
   node.todoState = 'done';
 }
 
-export function replaceRoamSyntax(nameToUse: string) {
+export function replaceLogseqSyntax(nameToUse: string) {
   if (nameToUse.includes('{{embed')) {
     // Replace {embed:((id))} with ((id))
     nameToUse = nameToUse.replace(/\{\{embed\s?\(\((.+)\)\)\}\}/, function (match, contents) {

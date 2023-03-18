@@ -19,7 +19,7 @@ import {
   getValueForAttribute,
   hasField,
   hasImages,
-  dateStringToRoamDateUID,
+  dateStringToUSDateUID,
   dateStringToYMD,
 } from '../common'
 import {
@@ -377,7 +377,7 @@ export class RoamConverter implements IConverter {
 
     // Some dates in Roam do not have the correct date-formatted UID for some reason, so we'll try to fix those
     if (node.title?.match(DATE_REGEX)) {
-      const dateUid = dateStringToRoamDateUID(node.title);
+      const dateUid = dateStringToUSDateUID(node.title);
       if (dateUid) {
         node.uid = dateUid;
       }

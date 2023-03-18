@@ -15,8 +15,8 @@ import {
   isIndexWithinBackticks,
 } from '../../utils/utils';
 import { IConverter } from '../IConverter';
-import { hasImages, dateStringToRoamDateUID, dateStringToYMD } from '../common';
-import { hasDuplicateProperties, isDone, isTodo, replaceRoamSyntax, setNodeAsDone, setNodeAsTodo } from './logseqUtils';
+import { hasImages, dateStringToUSDateUID, dateStringToYMD } from '../common';
+import { hasDuplicateProperties, isDone, isTodo, replaceLogseqSyntax, setNodeAsDone, setNodeAsTodo } from './logseqUtils';
 import { LogseqBlock, LogseqFile } from './types';
 
 const DATE_REGEX = /^\w+\s\d{1,2}\w{2},\s\d+$/;
@@ -44,7 +44,7 @@ export class LogseqConverter implements IConverter {
       const nodes = logseq.blocks;
 
       for (let i = 0; i < nodes.length; i++) {
-        const node = this.roamToIntermediate(nodes[i], undefined);
+        const node = this.logseqToIntermediate(nodes[i], undefined);
         if (node) {
           rootLevelNodes.push(node);
         }
@@ -89,7 +89,7 @@ export class LogseqConverter implements IConverter {
     if (theMetaNode.children) {
       for (const child of theMetaNode.children) {
         if (child.content.includes('::')) {
-          const c = this.roamToIntermediate(child, parentNode);
+          const c = this.logseqToIntermediate(child, parentNode);
           if (c && parentNode.children) {
             parentNode.children.push(c);
             movedChildren.push(child.id);
@@ -207,7 +207,7 @@ export class LogseqConverter implements IConverter {
     return nodeForImport;
   }
 
-  private roamToIntermediate(node: LogseqBlock, parentNode?: TanaIntermediateNode): TanaIntermediateNode | undefined {
+  private logseqToIntermediate(node: LogseqBlock, parentNode?: TanaIntermediateNode): TanaIntermediateNode | undefined {
     const createdChildNodes: TanaIntermediateNode[] = [];
 
     if (this.nodesForImport.has(node.id)) {
@@ -313,12 +313,12 @@ export class LogseqConverter implements IConverter {
     // journal pages in Roam-alikes have special UID (MM-DD-YYYY), we flag these as date nodes
     if (pageName?.match(DATE_REGEX)) {
       this.summary.calendarNodes += 1;
-      intermediateNode.name = dateStringToRoamDateUID(pageName);
+      intermediateNode.name = dateStringToUSDateUID(pageName);
       intermediateNode.type = 'date';
     }
 
     if (intermediateNode.type !== 'codeblock') {
-      intermediateNode.name = replaceRoamSyntax(intermediateNode.name);
+      intermediateNode.name = replaceLogseqSyntax(intermediateNode.name);
     }
 
     this.originalNodeNames.set(node.id, intermediateNode.name);
@@ -343,7 +343,7 @@ export class LogseqConverter implements IConverter {
         intermediateNode.children = [];
       }
       for (let j = 0; j < node.children.length; j++) {
-        const child = this.roamToIntermediate(node.children[j], intermediateNode);
+        const child = this.logseqToIntermediate(node.children[j], intermediateNode);
         if (child) {
           intermediateNode.children.push(child);
         }

@@ -24,7 +24,7 @@ const months = [
 const monthPrefixes = months.map((m) => m.slice(0, 3))
 
 // Convert 'June 1st, 2021' and 'Jun 1st, 2021' to 'MM-DD-YYYY' without dealing with timezones, etc.
-export function dateStringToRoamDateUID(str: string) {
+export function dateStringToUSDateUID(str: string) {
   str = str.replace(/(^\w+\s\d{1,2})(\w{2}),(\s\d+)/, '$1$3');
   const pieces = str.split(' ');
 

@@ -4,7 +4,7 @@ import {
   getAttributeDefinitionsFromName,
   getValueForAttribute,
   hasImages,
-  dateStringToRoamDateUID,
+  dateStringToUSDateUID,
   dateStringToYMD,
 } from './common';
 
@@ -26,9 +26,9 @@ test('getValueForAttribute', () => {
   expect(getValueForAttribute('bam', '**foo:**\nbam::bim')).toEqual('bim');
 });
 
-test('dateStringToRoamDateUID', () => {
-  expect(dateStringToRoamDateUID('June 1st, 2021')).toBe('06-01-2021');
-  expect(dateStringToRoamDateUID('August 14th, 2021')).toBe('08-14-2021');
+test('dateStringToUSDateUID', () => {
+  expect(dateStringToUSDateUID('June 1st, 2021')).toBe('06-01-2021');
+  expect(dateStringToUSDateUID('August 14th, 2021')).toBe('08-14-2021');
 });
 
 test('dateStringToYMD', () => {

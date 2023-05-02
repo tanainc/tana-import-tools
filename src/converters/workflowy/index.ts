@@ -1,6 +1,6 @@
 import { TanaIntermediateFile, TanaIntermediateNode, TanaIntermediateSummary } from '../../types/types';
-import { idgenerator } from '../../utils/utils';
-import { opml2js, Sub, TheOutline } from './opml2js';
+import { idgenerator } from '../../utils/utils.js';
+import { opml2js, Sub, TheOutline } from './opml2js.js';
 
 export class WorkflowyConverter {
   private nodesForImport: Map<string, TanaIntermediateNode> = new Map();
@@ -36,7 +36,7 @@ export class WorkflowyConverter {
     const nodeForImport: TanaIntermediateNode = {
       uid: idgenerator(),
       name: sub.text,
-      description:sub.note,
+      description: sub.note,
       children: [],
       createdAt: new Date().getTime(),
       editedAt: new Date().getTime(),

@@ -1,10 +1,10 @@
 import { exit } from 'process';
 import * as fs from 'fs';
 
-import { RoamConverter } from './converters/roam/index';
 import { TanaIntermediateFile } from './types/types';
-import { WorkflowyConverter } from './converters/workflowy';
-import { LogseqConverter } from './converters/logseq';
+import { RoamConverter } from './converters/roam/index.js';
+import { WorkflowyConverter } from './converters/workflowy/index.js';
+import { LogseqConverter } from './converters/logseq/index.js';
 
 const fileType = process.argv[2];
 const file = process.argv[3];

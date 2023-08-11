@@ -1,3 +1,4 @@
+import { exit } from 'process';
 import {
   NodeType,
   TanaIntermediateAttribute,
@@ -14,29 +15,20 @@ import {
   isIndexWithinBackticks,
 } from '../../utils/utils.js';
 import { IConverter } from '../IConverter';
+import { hasImages, dateStringToUSDateUID, dateStringToYMD } from '../common.js';
 import {
-  getAttributeDefinitionsFromName,
-  getValueForAttribute,
-  hasField,
-  hasImages,
-  dateStringToUSDateUID,
-  dateStringToYMD,
-} from '../common.js';
-import { isDone, isTodo, replaceRoamSyntax, setNodeAsDone, setNodeAsTodo } from './roamUtils.js';
-
-type RoamNode = {
-  uid: string;
-  string: string;
-  title: string;
-  children?: RoamNode[];
-  refs?: { uid: string }[];
-  'create-time': number;
-  'edit-time': number;
-};
+  hasDuplicateProperties,
+  isDone,
+  isTodo,
+  replaceLogseqSyntax,
+  setNodeAsDone,
+  setNodeAsTodo,
+} from './logseqUtils.js';
+import { LogseqBlock, LogseqFile } from './types';
 
 const DATE_REGEX = /^\w+\s\d{1,2}\w{2},\s\d+$/;
 
-export class RoamConverter implements IConverter {
+export class LogseqConverter implements IConverter {
   private nodesForImport: Map<string, TanaIntermediateNode> = new Map();
   private originalNodeNames: Map<string, string> = new Map();
   private attrMap: Map<string, TanaIntermediateAttribute> = new Map();
@@ -55,9 +47,11 @@ export class RoamConverter implements IConverter {
   convert(fileContent: string): TanaIntermediateFile | undefined {
     const rootLevelNodes: TanaIntermediateNode[] = [];
     try {
-      const nodes: RoamNode[] = JSON.parse(fileContent);
+      const logseq: LogseqFile = JSON.parse(fileContent);
+      const nodes = logseq.blocks;
+
       for (let i = 0; i < nodes.length; i++) {
-        const node = this.roamToIntermediate(nodes[i], undefined);
+        const node = this.logseqToIntermediate(nodes[i], undefined);
         if (node) {
           rootLevelNodes.push(node);
         }
@@ -95,115 +89,77 @@ export class RoamConverter implements IConverter {
   }
 
   private extractMetaNodeContentAndGetNumRemaningChildren(
-    theMetaNode: RoamNode,
+    theMetaNode: LogseqBlock,
     parentNode: TanaIntermediateNode,
   ): number {
     const movedChildren: string[] = [];
     if (theMetaNode.children) {
       for (const child of theMetaNode.children) {
-        if (child.string.includes('::')) {
-          const c = this.roamToIntermediate(child, parentNode);
+        if (child.content.includes('::')) {
+          const c = this.logseqToIntermediate(child, parentNode);
           if (c && parentNode.children) {
             parentNode.children.push(c);
-            movedChildren.push(child.uid);
+            movedChildren.push(child.id);
           }
         }
       }
     }
 
     // remove the children we outdented
-    theMetaNode.children = theMetaNode.children?.filter((id) => !movedChildren.find((c) => c === id.uid));
+    theMetaNode.children = theMetaNode.children?.filter((id) => !movedChildren.find((c) => c === id.id));
 
     return theMetaNode.children?.length || 0;
   }
 
-  // convers "foo::bar bas::bam" into two fileds with values
-  private convertToField(nodeWithField: TanaIntermediateNode, parentNode: TanaIntermediateNode) {
-    const fullNodeTitle = nodeWithField.name;
+  private convertToField(key: string, value: unknown, node: TanaIntermediateNode) {
+    this.summary.fields += 1;
 
-    // if we have more fields this will be unset after each created field
-    let currentFiledNode: TanaIntermediateNode | undefined = nodeWithField;
+    const fieldNode = this.createNodeForImport({
+      uid: idgenerator(),
+      name: key,
+      createdAt: node.createdAt,
+      editedAt: node.editedAt,
+      type: 'field',
+    });
+    const fieldChildren = [];
 
-    const attriuteDefintions = getAttributeDefinitionsFromName(currentFiledNode.name);
+    node.children = node.children ? [...node.children, fieldNode] : [fieldNode];
 
-    if (!attriuteDefintions.length) {
-      return;
-    }
-
-    // we suport foo::bar and bam::bim on the same line
-    for (const attrDef of attriuteDefintions) {
-      const currentFieldValues = [];
-
-      if (!currentFiledNode) {
-        // create a new field since we have multiple
-        currentFiledNode = this.createNodeForImport({
-          uid: idgenerator(),
-          name: attrDef,
-          createdAt: nodeWithField.createdAt,
-          editedAt: nodeWithField.editedAt,
-        });
-        if (parentNode && parentNode.children) {
-          parentNode.children.push(currentFiledNode);
-        }
-      } else {
-        currentFiledNode.name = attrDef;
-      }
-      currentFiledNode.type = 'field';
-
-      const attrValue = getValueForAttribute(attrDef, fullNodeTitle) || '';
-
-      const links = getBracketLinks(attrValue, false);
-      let remainingAttrValue = attrValue;
-
-      for (const link of links) {
-        if (link.match(DATE_REGEX)) {
-          continue;
-        }
-
-        remainingAttrValue = remainingAttrValue.replace(`[[${link}]]`, '').trim();
-      }
-
-      const wasLinksOnly = remainingAttrValue.length === 0;
-
-      if (wasLinksOnly) {
-        // create node of type field, add values as children
-        for (const link of links) {
-          currentFieldValues.push(
-            this.createNodeForImport({
-              uid: idgenerator(),
-              name: `[[${link}]]`, // We link to [[Peter Pan]] etc. It should be found by broken refs later
-              createdAt: currentFiledNode.createdAt,
-              editedAt: currentFiledNode.editedAt,
-              parentNode: currentFiledNode.uid,
-            }),
-          );
-        }
-      } else {
-        currentFieldValues.push(
+    // arrays as property values are references
+    if (Array.isArray(value)) {
+      for (const link of value) {
+        fieldChildren.push(
           this.createNodeForImport({
             uid: idgenerator(),
-            name: attrValue,
-            createdAt: currentFiledNode.createdAt,
-            editedAt: currentFiledNode.editedAt,
-            parentNode: currentFiledNode.uid,
+            name: `[[${link}]]`, // We link to [[Peter Pan]] etc. It should be found by broken refs later
+            createdAt: fieldNode.createdAt,
+            editedAt: fieldNode.editedAt,
+            parentNode: fieldNode.uid,
           }),
         );
       }
-
-      if (!currentFiledNode.children) {
-        currentFiledNode.children = [];
-      }
-      for (const f of currentFieldValues) {
-        currentFiledNode.children.push(f);
-      }
-
-      this.ensureAttrMapIsUpdated(currentFiledNode);
-      if (!parentNode) {
-        throw new Error('Cannot create fields without a parent node');
-      }
-
-      currentFiledNode = undefined;
     }
+
+    if (typeof value === 'string' || typeof value === 'number') {
+      fieldChildren.push(
+        this.createNodeForImport({
+          uid: idgenerator(),
+          name: value.toString(),
+          createdAt: node.createdAt,
+          editedAt: node.editedAt,
+        }),
+      );
+    }
+
+    if (!fieldNode.children) {
+      fieldNode.children = [];
+    }
+
+    for (const child of fieldChildren) {
+      fieldNode.children.push(child);
+    }
+
+    this.ensureAttrMapIsUpdated(fieldNode);
   }
 
   private createNodeForImport(n: {
@@ -258,35 +214,17 @@ export class RoamConverter implements IConverter {
     return nodeForImport;
   }
 
-  private roamToIntermediate(node: RoamNode, parentNode?: TanaIntermediateNode): TanaIntermediateNode | undefined {
+  private logseqToIntermediate(node: LogseqBlock, parentNode?: TanaIntermediateNode): TanaIntermediateNode | undefined {
     const createdChildNodes: TanaIntermediateNode[] = [];
 
-    if (!node.uid) {
-      node.uid = node.title;
-    }
-
-    if (this.nodesForImport.has(node.uid)) {
+    if (this.nodesForImport.has(node.id)) {
       return;
     }
 
-    let nameToUse = node.title || node.string;
+    let nameToUse = node['page-name'] || node.content;
 
     if (nameToUse === undefined) {
       nameToUse = '';
-    }
-
-    // These nodes are big and mostly useless for Tana, so we skip them
-    if (
-      [
-        '{{{[[roam/js]]}}}',
-        '{{[[roam/js]]}}',
-        'roam/js',
-        '{{{[[roam/css]]}}}',
-        '{{[[roam/css]]}}',
-        'roam/css',
-      ].includes(nameToUse.toLowerCase())
-    ) {
-      return;
     }
 
     // We outdent any fields in meta nodes in roam. If they are empty after we skip them
@@ -301,6 +239,15 @@ export class RoamConverter implements IConverter {
 
     let type: NodeType = 'node';
     if (nameToUse.includes('`')) {
+      if (nameToUse.startsWith('```')) {
+        const newlineIndex = nameToUse.trim().indexOf('\n');
+        // strip language type
+        if (newlineIndex > 3) {
+          const chars = nameToUse.split('');
+          chars.splice(3, newlineIndex - 3);
+          nameToUse = chars.join('');
+        }
+      }
       const code = getCodeIfCodeblock(nameToUse);
       if (code) {
         nameToUse = code;
@@ -327,8 +274,8 @@ export class RoamConverter implements IConverter {
           const childImage: TanaIntermediateNode = this.createNodeForImport({
             uid: idgenerator(),
             name: 'image',
-            createdAt: node['create-time'],
-            editedAt: node['edit-time'],
+            createdAt: Date.now(),
+            editedAt: Date.now(),
             type: 'image',
             url: imageUrl,
           });
@@ -343,11 +290,11 @@ export class RoamConverter implements IConverter {
     }
 
     const intermediateNode: TanaIntermediateNode = {
-      uid: node.uid,
+      uid: node.id,
       name: nameToUse,
       children: createdChildNodes,
-      createdAt: node['create-time'],
-      editedAt: node['edit-time'],
+      createdAt: Date.now(),
+      editedAt: Date.now(),
       refs: refs,
       type: type,
       mediaUrl: url,
@@ -369,42 +316,32 @@ export class RoamConverter implements IConverter {
       setNodeAsDone(intermediateNode);
     }
 
-    // Some dates in Roam do not have the correct date-formatted UID for some reason, so we'll try to fix those
-    if (node.title?.match(DATE_REGEX)) {
-      const dateUid = dateStringToUSDateUID(node.title);
-      if (dateUid) {
-        node.uid = dateUid;
-      }
-    }
-
-    // journal pages in Roam havehave special UID (03-31-2022), we flag these as date nodes
-    if (node.uid?.match(/^\d{2}-\d{2}-\d{4}$/gi)) {
+    const pageName = node['page-name'];
+    // journal pages in Roam-alikes have special UID (MM-DD-YYYY), we flag these as date nodes
+    if (pageName?.match(DATE_REGEX)) {
       this.summary.calendarNodes += 1;
-      intermediateNode.name = node.uid;
+      intermediateNode.name = dateStringToUSDateUID(pageName);
       intermediateNode.type = 'date';
     }
 
-    // we only care about uid for refs
-    if (node.refs) {
-      refs.push(...node.refs.map((r) => r.uid));
+    if (intermediateNode.type !== 'codeblock') {
+      intermediateNode.name = replaceLogseqSyntax(intermediateNode.name);
     }
-    intermediateNode.refs = refs;
 
-    if (hasField(intermediateNode.name)) {
-      this.summary.fields += 1;
-      if (parentNode) {
-        this.convertToField(intermediateNode, parentNode);
-      } else {
-        console.warn(`Field ${intermediateNode.name}, skipped. Fields on top level not supported yet`);
+    this.originalNodeNames.set(node.id, intermediateNode.name);
+    this.nodesForImport.set(node.id, intermediateNode);
+
+    // convert Logseq properties to Tana fields
+    if (node.properties) {
+      if (node['page-name'] && hasDuplicateProperties(node, node.children?.[0])) {
+        // logseq properties appear to be duplicated in the page node and the first child node
+        // if properties are equal, remove first child
+        node.children?.shift();
+      }
+      for (const [key, value] of Object.entries(node.properties)) {
+        this.convertToField(key, value, intermediateNode);
       }
     }
-
-    if (intermediateNode.type !== 'codeblock') {
-      intermediateNode.name = replaceRoamSyntax(intermediateNode.name);
-    }
-
-    this.originalNodeNames.set(node.uid, intermediateNode.name);
-    this.nodesForImport.set(node.uid, intermediateNode);
 
     // import any children
 
@@ -413,7 +350,7 @@ export class RoamConverter implements IConverter {
         intermediateNode.children = [];
       }
       for (let j = 0; j < node.children.length; j++) {
-        const child = this.roamToIntermediate(node.children[j], intermediateNode);
+        const child = this.logseqToIntermediate(node.children[j], intermediateNode);
         if (child) {
           intermediateNode.children.push(child);
         }
@@ -424,6 +361,18 @@ export class RoamConverter implements IConverter {
   }
 
   private normalizeLinksAndSetAliases(nodeForImport: TanaIntermediateNode) {
+    findGroups(nodeForImport.name, '((', '))').forEach((g) => {
+      // make sure we do not insert anything invalid.
+      if (!g.content.includes('(')) {
+        if (!nodeForImport.refs || !nodeForImport.refs.includes(g.content)) {
+          if (!nodeForImport.refs) {
+            nodeForImport.refs = [];
+          }
+          nodeForImport.refs.push(g.content);
+        }
+      }
+    });
+
     if (!nodeForImport.refs) {
       return;
     }
@@ -523,10 +472,8 @@ export class RoamConverter implements IConverter {
       if (link?.match(DATE_REGEX)) {
         const dateUid = dateStringToYMD(link);
 
-        if (dateUid) {
-          nodeForImport.name = nodeForImport.name.replace(link, 'date:' + dateUid);
-          continue;
-        }
+        nodeForImport.name = nodeForImport.name.replace(link, 'date:' + dateUid);
+        continue;
       }
       if (nodeForImport.children?.some((c) => c.name === link || c.uid === link)) {
         continue;
@@ -639,7 +586,8 @@ export class RoamConverter implements IConverter {
     }
 
     if (node.type !== 'field') {
-      throw new Error('Trying to get attr def for non-field node');
+      console.error('Trying to get attr def for non-field node');
+      exit();
     }
 
     let intermediateAttr: TanaIntermediateAttribute | undefined = this.attrMap.get(node.name);

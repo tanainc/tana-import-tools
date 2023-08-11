@@ -51,8 +51,7 @@ test('Block references', () => {
 });
 
 test('Codeblocks', () => {
-  const [file, f] = importLogseqFile('codeblocks.json');
-  // console.log(JSON.stringify(file, null, 2));
+  const [, f] = importLogseqFile('codeblocks.json');
 
   expect(f('block-with-type')?.name).toEqual('\nconst tana = "cool";\n');
   expect(f('block-with-type')?.type).toEqual('codeblock');

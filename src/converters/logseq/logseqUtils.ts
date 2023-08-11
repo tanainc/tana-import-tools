@@ -5,10 +5,6 @@ import { LogseqBlock } from './types';
 const TODO_FLAG = 'TODO';
 const DONE_FLAG = 'DONE';
 
-// some custom variations of TODO and DONE
-const TODO_FLAG_ALT = 'TODO';
-const DONE_FLAG_ALT = 'DONE';
-
 export function isTodo(name: string) {
   return name.substring(0, TODO_FLAG.length) === TODO_FLAG;
 }

@@ -13,9 +13,9 @@ import {
   getCodeIfCodeblock,
   idgenerator,
   isIndexWithinBackticks,
-} from '../../utils/utils.js';
+} from '../../utils/utils';
 import { IConverter } from '../IConverter';
-import { hasImages, dateStringToUSDateUID, dateStringToYMD } from '../common.js';
+import { hasImages, dateStringToUSDateUID, dateStringToYMD } from '../common';
 import {
   hasDuplicateProperties,
   isDone,
@@ -23,7 +23,7 @@ import {
   replaceLogseqSyntax,
   setNodeAsDone,
   setNodeAsTodo,
-} from './logseqUtils.js';
+} from './logseqUtils';
 import { LogseqBlock, LogseqFile } from './types';
 
 const DATE_REGEX = /^\w+\s\d{1,2}\w{2},\s\d+$/;

@@ -12,7 +12,7 @@ import {
   getCodeIfCodeblock,
   idgenerator,
   isIndexWithinBackticks,
-} from '../../utils/utils.js';
+} from '../../utils/utils';
 import { IConverter } from '../IConverter';
 import {
   getAttributeDefinitionsFromName,
@@ -21,8 +21,8 @@ import {
   hasImages,
   dateStringToUSDateUID,
   dateStringToYMD,
-} from '../common.js';
-import { isDone, isTodo, replaceRoamSyntax, setNodeAsDone, setNodeAsTodo } from './roamUtils.js';
+} from '../common';
+import { isDone, isTodo, replaceRoamSyntax, setNodeAsDone, setNodeAsTodo } from './roamUtils';
 
 type RoamNode = {
   uid: string;

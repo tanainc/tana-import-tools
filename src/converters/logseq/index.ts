@@ -1,4 +1,3 @@
-import { exit } from 'process';
 import {
   NodeType,
   TanaIntermediateAttribute,
@@ -586,8 +585,7 @@ export class LogseqConverter implements IConverter {
     }
 
     if (node.type !== 'field') {
-      console.error('Trying to get attr def for non-field node');
-      exit();
+      throw new Error('Trying to get attr def for non-field node');
     }
 
     let intermediateAttr: TanaIntermediateAttribute | undefined = this.attrMap.get(node.name);

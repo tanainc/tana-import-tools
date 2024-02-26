@@ -309,7 +309,7 @@ export class RoamConverter implements IConverter {
     }
 
     let url = undefined;
-    if (hasImages(nameToUse)) {
+    if (type !== 'codeblock' && hasImages(nameToUse)) {
       const allImages = findGroups(nameToUse, '![](', ')');
       // only one image, so we can create a single node
       if (allImages.length === 1 && `![](${allImages[0].content})` === nameToUse) {
@@ -361,12 +361,14 @@ export class RoamConverter implements IConverter {
     }
     this.summary.totalNodes += 1;
 
-    if (isTodo(intermediateNode.name)) {
-      setNodeAsTodo(intermediateNode);
-    }
+    if (type !== 'codeblock') {
+      if (isTodo(intermediateNode.name)) {
+        setNodeAsTodo(intermediateNode);
+      }
 
-    if (isDone(intermediateNode.name)) {
-      setNodeAsDone(intermediateNode);
+      if (isDone(intermediateNode.name)) {
+        setNodeAsDone(intermediateNode);
+      }
     }
 
     // Some dates in Roam do not have the correct date-formatted UID for some reason, so we'll try to fix those
@@ -390,7 +392,7 @@ export class RoamConverter implements IConverter {
     }
     intermediateNode.refs = refs;
 
-    if (hasField(intermediateNode.name)) {
+    if (intermediateNode.type !== 'codeblock' && hasField(intermediateNode.name)) {
       this.summary.fields += 1;
       if (parentNode) {
         this.convertToField(intermediateNode, parentNode);

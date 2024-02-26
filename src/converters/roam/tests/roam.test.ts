@@ -238,6 +238,9 @@ test('Code blocks', () => {
 
   expect(f('otherCodeBlock')?.name).toBe('code here');
   expect(f('otherCodeBlock')?.type).toBe('codeblock');
+
+  expect(f('codefield')?.type).toBe('codeblock');
+  expect(f('codefield')?.children?.map(n=>n.uid)).toEqual([])
 });
 
 test('Complex / nested node', () => {

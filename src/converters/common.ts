@@ -62,7 +62,7 @@ export function getValueForAttribute(fieldName: string, node: string): string | 
     // foo::bar
     if (line.startsWith(`${fieldName}::`)) {
       return line.split(`${fieldName}::`)[1].trim();
-    } else if (line.startsWith(`[[${fieldName}]]:`)) {
+    } else if (line.startsWith(`[[${fieldName}]]::`)) {
       return line.split(`[[${fieldName}]]::`)[1].trim();
     }
   }

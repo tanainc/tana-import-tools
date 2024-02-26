@@ -21,7 +21,7 @@ const months = [
   'December',
 ];
 
-const monthPrefixes = months.map((m) => m.slice(0, 3))
+const monthPrefixes = months.map((m) => m.slice(0, 3));
 
 // Convert 'June 1st, 2021' and 'Jun 1st, 2021' to 'MM-DD-YYYY' without dealing with timezones, etc.
 export function dateStringToUSDateUID(str: string) {
@@ -30,13 +30,13 @@ export function dateStringToUSDateUID(str: string) {
 
   const monthMatch = months.indexOf(pieces[0]);
   const monthPrefixMatch = monthPrefixes.indexOf(pieces[0]);
-  let month
+  let month;
   if (monthMatch !== -1) {
-    month = monthMatch + 1
+    month = monthMatch + 1;
   } else if (monthPrefixMatch !== -1) {
-    month = monthPrefixMatch + 1
+    month = monthPrefixMatch + 1;
   } else {
-    return str
+    return str;
   }
 
   return `${month.toString().padStart(2, '0')}-${pieces[1].toString().padStart(2, '0')}-${pieces[2]
@@ -62,7 +62,7 @@ export function getValueForAttribute(fieldName: string, node: string): string | 
     // foo::bar
     if (line.startsWith(`${fieldName}::`)) {
       return line.split(`${fieldName}::`)[1].trim();
-    } else if (line.startsWith(`[[${fieldName}]]:`)) {
+    } else if (line.startsWith(`[[${fieldName}]]::`)) {
       return line.split(`[[${fieldName}]]::`)[1].trim();
     }
   }

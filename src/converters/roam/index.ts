@@ -4,7 +4,7 @@ import {
   TanaIntermediateNode,
   TanaIntermediateFile,
   TanaIntermediateSummary,
-} from '../../types/types';
+} from '../../types/types.js';
 import {
   enrichRoam,
   findGroups,
@@ -12,8 +12,8 @@ import {
   getCodeIfCodeblock,
   idgenerator,
   isIndexWithinBackticks,
-} from '../../utils/utils';
-import { IConverter } from '../IConverter';
+} from '../../utils/utils.js';
+import { IConverter } from '../IConverter.js';
 import {
   getAttributeDefinitionsFromName,
   getValueForAttribute,
@@ -21,8 +21,8 @@ import {
   hasImages,
   dateStringToUSDateUID,
   dateStringToYMD,
-} from '../common';
-import { isDone, isTodo, replaceRoamSyntax, setNodeAsDone, setNodeAsTodo } from './roamUtils';
+} from '../common.js';
+import { isDone, isTodo, replaceRoamSyntax, setNodeAsDone, setNodeAsTodo } from './roamUtils.js';
 
 type RoamNode = {
   uid: string;

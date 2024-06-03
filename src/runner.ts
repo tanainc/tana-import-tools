@@ -1,7 +1,7 @@
 import { exit } from 'process';
 import * as fs from 'fs';
 
-import { TanaIntermediateFile } from './types/types';
+import { TanaIntermediateFile } from './types/types.js';
 import { RoamConverter } from './converters/roam/index.js';
 import { WorkflowyConverter } from './converters/workflowy/index.js';
 import { LogseqConverter } from './converters/logseq/index.js';

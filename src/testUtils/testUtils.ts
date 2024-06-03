@@ -1,8 +1,8 @@
 import * as fs from 'fs';
 import { expect } from '@jest/globals';
 import { fail } from 'assert';
-import { TanaIntermediateNode, TanaIntermediateFile } from '../types/types';
-import { IConverter } from '../converters/IConverter';
+import { TanaIntermediateNode, TanaIntermediateFile } from '../types/types.js';
+import { IConverter } from '../converters/IConverter.js';
 
 export type IdLookupHelper = (id: string | undefined) => TanaIntermediateNode | undefined;
 

@@ -4,7 +4,7 @@ import {
   TanaIntermediateNode,
   TanaIntermediateFile,
   TanaIntermediateSummary,
-} from '../../types/types';
+} from '../../types/types.js';
 import {
   enrichRoam,
   findGroups,
@@ -12,9 +12,9 @@ import {
   getCodeIfCodeblock,
   idgenerator,
   isIndexWithinBackticks,
-} from '../../utils/utils';
-import { IConverter } from '../IConverter';
-import { hasImages, dateStringToUSDateUID, dateStringToYMD } from '../common';
+} from '../../utils/utils.js';
+import { IConverter } from '../IConverter.js';
+import { hasImages, dateStringToUSDateUID, dateStringToYMD } from '../common.js';
 import {
   hasDuplicateProperties,
   isDone,
@@ -22,8 +22,8 @@ import {
   replaceLogseqSyntax,
   setNodeAsDone,
   setNodeAsTodo,
-} from './logseqUtils';
-import { LogseqBlock, LogseqFile } from './types';
+} from './logseqUtils.js';
+import { LogseqBlock, LogseqFile } from './types.js';
 
 const DATE_REGEX = /^\w+\s\d{1,2}\w{2},\s\d+$/;
 

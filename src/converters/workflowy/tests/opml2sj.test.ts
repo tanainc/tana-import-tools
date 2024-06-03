@@ -1,5 +1,5 @@
 import { expect, test } from '@jest/globals';
-import { opml2js } from '../opml2js';
+import { opml2js } from '../opml2js.js';
 
 test('note support ', async () => {
   const opml = `

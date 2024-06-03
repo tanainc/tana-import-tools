@@ -1,5 +1,5 @@
-import { TanaIntermediateNode } from '../../types/types';
-import { LogseqBlock } from './types';
+import { TanaIntermediateNode } from '../../types/types.js';
+import { LogseqBlock } from './types.js';
 
 // TODO and DONE in roam
 const TODO_FLAG = 'TODO';

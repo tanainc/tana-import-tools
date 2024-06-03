@@ -1,6 +1,6 @@
 import { WorkflowyConverter } from '..';
-import { TanaIntermediateFile, TanaIntermediateNode } from '../../../types/types';
-import { importFileAndGetHelpers } from '../../../testUtils/testUtils';
+import { TanaIntermediateFile, TanaIntermediateNode } from '../../../types/types.js';
+import { importFileAndGetHelpers } from '../../../testUtils/testUtils.js';
 
 export type IdLookupHelper = (id: string | undefined) => TanaIntermediateNode | undefined;
 

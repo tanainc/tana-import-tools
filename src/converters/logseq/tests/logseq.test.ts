@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import { expect, test } from '@jest/globals';
-import { expectImage } from '../../../testUtils/testUtils';
-import { getField, importLogseqFile } from './testUtils';
+import { expectImage } from '../../../testUtils/testUtils.js';
+import { getField, importLogseqFile } from './testUtils.js';
 
 test('Summary smoketest', async () => {
   const [file] = importLogseqFile('smoketest.json');

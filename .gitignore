@@ -5,3 +5,6 @@ dist
 .env
 datasets
 yarn-error.log
+
+.yarn/*
+!.yarn/plugins

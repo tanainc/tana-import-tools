@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import { expect, test } from '@jest/globals';
-import { expectField, expectImage } from '../../../testUtils/testUtils';
-import { importRoamFile } from './testUtils';
+import { expect, test } from 'vitest';
+import { expectField, expectImage } from '../../../testUtils/testUtils.js';
+import { importRoamFile } from './testUtils.js';
 
 test('Smoke test import preview ', async () => {
   const [file] = importRoamFile('smoketest.json');

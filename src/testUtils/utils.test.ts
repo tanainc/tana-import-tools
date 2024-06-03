@@ -1,5 +1,5 @@
-import { expect, test } from '@jest/globals';
-import { findGroups, getBracketLinks, isIndexWithinBackticks, replaceTokenWithHtml } from '../utils/utils';
+import { expect, test } from 'vitest';
+import { findGroups, getBracketLinks, isIndexWithinBackticks, replaceTokenWithHtml } from '../utils/utils.js';
 
 test('isIndexWithinBackticks', () => {
   expect(isIndexWithinBackticks(0, '```fooo```')).toBe(false);

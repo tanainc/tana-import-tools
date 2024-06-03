@@ -1,5 +1,5 @@
-import { expect, test } from '@jest/globals';
-import { importWorkflowyFile } from './testUtils';
+import { expect, test } from 'vitest';
+import { importWorkflowyFile } from './testUtils.js';
 
 test('Smoke test import preview ', async () => {
   const [file, , fn] = importWorkflowyFile('smoketest.opml');

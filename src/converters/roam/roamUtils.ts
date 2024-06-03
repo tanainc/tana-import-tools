@@ -1,4 +1,4 @@
-import { TanaIntermediateNode } from '../../types/types';
+import { TanaIntermediateNode } from '../../types/types.js';
 
 // TODO and DONE in roam
 const TODO_FLAG = '{{[[TODO]]}} ';

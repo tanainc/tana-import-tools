@@ -5,7 +5,7 @@
   "exports": "./dist/index.js",
   "type": "module",
   "engines": {
-    "node": "18"
+    "node": ">18"
   },
   "typings": "dist/index.d.ts",
   "files": [

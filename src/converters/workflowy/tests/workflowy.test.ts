@@ -1,4 +1,4 @@
-import { expect, test } from '@jest/globals';
+import { expect, test } from 'vitest';
 import { importWorkflowyFile } from './testUtils.js';
 
 test('Smoke test import preview ', async () => {

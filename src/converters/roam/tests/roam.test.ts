@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import { expect, test } from '@jest/globals';
+import { expect, test } from 'vitest';
 import { expectField, expectImage } from '../../../testUtils/testUtils.js';
 import { importRoamFile } from './testUtils.js';
 

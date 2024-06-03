@@ -1,4 +1,4 @@
-import { expect, test } from '@jest/globals';
+import { expect, test } from 'vitest';
 import { opml2js } from '../opml2js.js';
 
 test('note support ', async () => {

@@ -1,4 +1,4 @@
-import { expect, test } from '@jest/globals';
+import { expect, test } from 'vitest';
 import { findGroups, getBracketLinks, isIndexWithinBackticks, replaceTokenWithHtml } from '../utils/utils.js';
 
 test('isIndexWithinBackticks', () => {

@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { expect } from '@jest/globals';
+import { expect } from 'vitest';
 import { fail } from 'assert';
 import { TanaIntermediateNode, TanaIntermediateFile } from '../types/types.js';
 import { IConverter } from '../converters/IConverter.js';

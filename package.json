@@ -1,7 +1,8 @@
 {
   "name": "tana-import-tools",
   "version": "1.0.0",
-  "main": "dist/index.js",
+  "main": "./dist/index.js",
+  "exports": "./dist/index.js",
   "type": "module",
   "engines": {
     "node": "18"
@@ -16,7 +17,7 @@
     "ci": "yarn lint && yarn test",
     "format": "prettier --write \"src/**/*.ts\"",
     "lint": "eslint --ext .ts src/",
-    "prepare": "rm -rf dist/ && ./node_modules/.bin/tsc  --project tsconfig.build.json",
+    "prepack": "rm -rf dist/ && ./node_modules/.bin/tsc  --project tsconfig.build.json",
     "build": "yarn prepare",
     "convert:roam": "yarn build && node --experimental-modules --es-module-specifier-resolution=node dist/runner.js roam",
     "convert:workflowy": "yarn build && node --experimental-modules --es-module-specifier-resolution=node dist/runner.js workflowy",
@@ -75,5 +76,6 @@
     "testMatch": [
       "**/?(*.)+(test).[t]s?(x)"
     ]
-  }
+  },
+  "packageManager": "yarn@4.2.2"
 }

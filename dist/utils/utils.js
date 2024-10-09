@@ -2,11 +2,11 @@ export function idgenerator() {
     return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 }
 export function getCodeIfCodeblock(name) {
-    if ((name === null || name === void 0 ? void 0 : name.trim().startsWith('```')) && name.endsWith('```')) {
+    if (name?.trim().startsWith('```') && name.endsWith('```')) {
         return name.substring(3, name.length - 3).substring(0, 100);
     }
     // Starts and ends with backticks, and no more backticks present. ie `hello world`
-    if ((name === null || name === void 0 ? void 0 : name.trim().startsWith('`')) && name.endsWith('`') && name.trim().split('`').length === 3) {
+    if (name?.trim().startsWith('`') && name.endsWith('`') && name.trim().split('`').length === 3) {
         return name.substring(1, name.length - 1).substring(0, 100);
     }
     if (name.startsWith('<%J:```') && name.endsWith('```%>')) {
@@ -17,10 +17,10 @@ export function getCodeIfCodeblock(name) {
 // Checks if the supplied index is within a pair of single or triple backticks, like ```foo``` and `bar`
 export function isIndexWithinBackticks(index, string) {
     if (string && index !== undefined && index !== -1) {
-        if (((string === null || string === void 0 ? void 0 : string.substring(0, index).split('```').length) - 1) % 2 === 1) {
+        if ((string?.substring(0, index).split('```').length - 1) % 2 === 1) {
             return true;
         }
-        else if (((string === null || string === void 0 ? void 0 : string.substring(0, index).split('`').length) - 1) % 2 === 1) {
+        else if ((string?.substring(0, index).split('`').length - 1) % 2 === 1) {
             return true;
         }
     }
@@ -121,7 +121,7 @@ export function enrichRoam(nodeContent) {
             const url = `${protocol}://${restOfLink}`;
             const anchor = `<a href="${url}">${url}</a>`;
             const wasMarkLink = nodeContent[parsedUpToIndex + nextLinkSplitPoint - protocol.length] === '[';
-            if (!(protocol === null || protocol === void 0 ? void 0 : protocol.includes('href')) && !protocol.includes(']') && !wasMarkLink) {
+            if (!protocol?.includes('href') && !protocol.includes(']') && !wasMarkLink) {
                 try {
                     nodeContent = nodeContent.replace(url, anchor);
                 }
@@ -129,7 +129,7 @@ export function enrichRoam(nodeContent) {
                     console.error(error, nodeContent, url);
                 }
             }
-            parsedUpToIndex = parsedUpToIndex + nextLinkSplitPoint - ((protocol === null || protocol === void 0 ? void 0 : protocol.length) || 0) + anchor.length;
+            parsedUpToIndex = parsedUpToIndex + nextLinkSplitPoint - (protocol?.length || 0) + anchor.length;
         }
     }
     nodeContent = replaceTokenWithHtml(nodeContent, '**', 'b');
@@ -139,7 +139,7 @@ export function enrichRoam(nodeContent) {
     // quicker than regex
     if (nodeContent.includes('](')) {
         return nodeContent.replace(/\[([^[\]]*)\]\((.*?)\)/g, (fullMatch, alias, link) => {
-            if (link === null || link === void 0 ? void 0 : link.includes('://')) {
+            if (link?.includes('://')) {
                 return `<a href="${link}">${alias}</a>`;
             }
             return fullMatch || '';

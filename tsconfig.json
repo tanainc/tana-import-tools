@@ -4,15 +4,15 @@
 
     "rootDir": "./src",
     "declaration": true,
-    "target": "es2016",
-    "module": "ESNext",
+    "target": "ESNext",
+    "module": "NodeNext",
     "experimentalDecorators": true,
     "downlevelIteration": true,
     "noFallthroughCasesInSwitch": true,
     "lib": ["dom", "esnext"],
     "esModuleInterop": true,
     "sourceMap": false,
-    "moduleResolution": "node",
+    "moduleResolution": "NodeNext",
 
     "types": ["node"],
     "noImplicitAny": true,

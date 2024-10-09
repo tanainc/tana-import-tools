@@ -1,4 +1,4 @@
-import { RoamConverter } from '..';
+import { RoamConverter } from '../index.js';
 import { importFileAndGetHelpers } from '../../../testUtils/testUtils.js';
 
 export function importRoamFile(fileToLoad: string) {

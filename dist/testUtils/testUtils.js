@@ -29,17 +29,17 @@ export function expectField(id, title, values, f) {
     if (!field) {
         throw new Error(`Field ${id} not found`);
     }
-    expect(field === null || field === void 0 ? void 0 : field.type).toBe('field');
-    expect(field === null || field === void 0 ? void 0 : field.name).toBe(title);
-    if (!(field === null || field === void 0 ? void 0 : field.children)) {
+    expect(field?.type).toBe('field');
+    expect(field?.name).toBe(title);
+    if (!field?.children) {
         fail('No children found');
     }
     for (let i = 0; i < values.length; i++) {
         if (typeof values[i] === 'string') {
-            expect(field === null || field === void 0 ? void 0 : field.children[i].name).toBe(values[i]);
+            expect(field?.children[i].name).toBe(values[i]);
         }
         else {
-            expect(field === null || field === void 0 ? void 0 : field.children[i].name).toBe(`[[${values[i].uid}]]`);
+            expect(field?.children[i].name).toBe(`[[${values[i].uid}]]`);
         }
     }
 }
@@ -48,9 +48,9 @@ export function expectImage(id, url, f) {
     if (!field) {
         throw new Error(`Field ${id} not found`);
     }
-    expect(field === null || field === void 0 ? void 0 : field.name).toBe('image');
-    expect(field === null || field === void 0 ? void 0 : field.type).toBe('image');
-    expect(field === null || field === void 0 ? void 0 : field.mediaUrl).toBe(url);
+    expect(field?.name).toBe('image');
+    expect(field?.type).toBe('image');
+    expect(field?.mediaUrl).toBe(url);
 }
 function findNodeById(nodes, id) {
     for (let i = 0; i < nodes.length; i++) {

@@ -3,20 +3,18 @@ import { getAttributeDefinitionsFromName, getValueForAttribute, hasField, hasIma
 import { isDone, isTodo, replaceRoamSyntax, setNodeAsDone, setNodeAsTodo } from './roamUtils.js';
 const DATE_REGEX = /^\w+\s\d{1,2}\w{2},\s\d+$/;
 export class RoamConverter {
-    constructor() {
-        this.nodesForImport = new Map();
-        this.originalNodeNames = new Map();
-        this.attrMap = new Map();
-        this.topLevelMap = new Map();
-        this.summary = {
-            leafNodes: 0,
-            topLevelNodes: 0,
-            totalNodes: 0,
-            calendarNodes: 0,
-            fields: 0,
-            brokenRefs: 0,
-        };
-    }
+    nodesForImport = new Map();
+    originalNodeNames = new Map();
+    attrMap = new Map();
+    topLevelMap = new Map();
+    summary = {
+        leafNodes: 0,
+        topLevelNodes: 0,
+        totalNodes: 0,
+        calendarNodes: 0,
+        fields: 0,
+        brokenRefs: 0,
+    };
     convert(fileContent) {
         const rootLevelNodes = [];
         try {
@@ -55,7 +53,6 @@ export class RoamConverter {
         return file;
     }
     extractMetaNodeContentAndGetNumRemaningChildren(theMetaNode, parentNode) {
-        var _a, _b;
         const movedChildren = [];
         if (theMetaNode.children) {
             for (const child of theMetaNode.children) {
@@ -69,8 +66,8 @@ export class RoamConverter {
             }
         }
         // remove the children we outdented
-        theMetaNode.children = (_a = theMetaNode.children) === null || _a === void 0 ? void 0 : _a.filter((id) => !movedChildren.find((c) => c === id.uid));
-        return ((_b = theMetaNode.children) === null || _b === void 0 ? void 0 : _b.length) || 0;
+        theMetaNode.children = theMetaNode.children?.filter((id) => !movedChildren.find((c) => c === id.uid));
+        return theMetaNode.children?.length || 0;
     }
     // convers "foo::bar bas::bam" into two fileds with values
     convertToField(nodeWithField, parentNode) {
@@ -183,7 +180,6 @@ export class RoamConverter {
         return nodeForImport;
     }
     roamToIntermediate(node, parentNode) {
-        var _a, _b;
         const createdChildNodes = [];
         if (!node.uid) {
             node.uid = node.title;
@@ -280,14 +276,14 @@ export class RoamConverter {
             }
         }
         // Some dates in Roam do not have the correct date-formatted UID for some reason, so we'll try to fix those
-        if ((_a = node.title) === null || _a === void 0 ? void 0 : _a.match(DATE_REGEX)) {
+        if (node.title?.match(DATE_REGEX)) {
             const dateUid = dateStringToUSDateUID(node.title);
             if (dateUid) {
                 node.uid = dateUid;
             }
         }
         // journal pages in Roam havehave special UID (03-31-2022), we flag these as date nodes
-        if ((_b = node.uid) === null || _b === void 0 ? void 0 : _b.match(/^\d{2}-\d{2}-\d{4}$/gi)) {
+        if (node.uid?.match(/^\d{2}-\d{2}-\d{4}$/gi)) {
             this.summary.calendarNodes += 1;
             intermediateNode.name = node.uid;
             intermediateNode.type = 'date';
@@ -385,7 +381,6 @@ export class RoamConverter {
         }
     }
     fixBrokenLinks(nodeForImport) {
-        var _a, _b, _c;
         const createdNodes = [];
         // Find all links that are not part of other links
         const outerLinks = getBracketLinks(nodeForImport.name, true);
@@ -400,7 +395,7 @@ export class RoamConverter {
             if (!refNode) {
                 continue;
             }
-            const index = ((_a = nodeForImport.refs) === null || _a === void 0 ? void 0 : _a.indexOf(refNode.uid)) || -1;
+            const index = nodeForImport.refs?.indexOf(refNode.uid) || -1;
             if (nodeForImport.refs && index > -1) {
                 nodeForImport.refs.splice(index, 1);
             }
@@ -410,14 +405,14 @@ export class RoamConverter {
             const link = outerLinks[i];
             // links are not in refs since we want to create inline dates
             // change link to be date:DD-MM-YYYY instead
-            if (link === null || link === void 0 ? void 0 : link.match(DATE_REGEX)) {
+            if (link?.match(DATE_REGEX)) {
                 const dateUid = dateStringToYMD(link);
                 if (dateUid) {
                     nodeForImport.name = nodeForImport.name.replace(link, 'date:' + dateUid);
                     continue;
                 }
             }
-            if ((_b = nodeForImport.children) === null || _b === void 0 ? void 0 : _b.some((c) => c.name === link || c.uid === link)) {
+            if (nodeForImport.children?.some((c) => c.name === link || c.uid === link)) {
                 continue;
             }
             let refNode = this.findRefByName(link, nodeForImport);
@@ -493,7 +488,7 @@ export class RoamConverter {
                         editedAt: nodeForImport.editedAt,
                     });
                     // ensure the newly created node is added to refs
-                    if (!((_c = nodeForImport.refs) === null || _c === void 0 ? void 0 : _c.includes(refNode.uid))) {
+                    if (!nodeForImport.refs?.includes(refNode.uid)) {
                         if (!nodeForImport.refs) {
                             nodeForImport.refs = [];
                         }
@@ -523,7 +518,7 @@ export class RoamConverter {
         }
         if (node.children) {
             const newValues = node.children
-                .map((c) => { var _a; return (_a = this.nodesForImport.get(c.uid)) === null || _a === void 0 ? void 0 : _a.name; })
+                .map((c) => this.nodesForImport.get(c.uid)?.name)
                 .filter((c) => c !== undefined);
             intermediateAttr.values.push(...newValues);
             intermediateAttr.count++;

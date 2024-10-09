@@ -3,20 +3,18 @@ import { hasImages, dateStringToUSDateUID, dateStringToYMD } from '../common.js'
 import { hasDuplicateProperties, isDone, isTodo, replaceLogseqSyntax, setNodeAsDone, setNodeAsTodo, } from './logseqUtils.js';
 const DATE_REGEX = /^\w+\s\d{1,2}\w{2},\s\d+$/;
 export class LogseqConverter {
-    constructor() {
-        this.nodesForImport = new Map();
-        this.originalNodeNames = new Map();
-        this.attrMap = new Map();
-        this.topLevelMap = new Map();
-        this.summary = {
-            leafNodes: 0,
-            topLevelNodes: 0,
-            totalNodes: 0,
-            calendarNodes: 0,
-            fields: 0,
-            brokenRefs: 0,
-        };
-    }
+    nodesForImport = new Map();
+    originalNodeNames = new Map();
+    attrMap = new Map();
+    topLevelMap = new Map();
+    summary = {
+        leafNodes: 0,
+        topLevelNodes: 0,
+        totalNodes: 0,
+        calendarNodes: 0,
+        fields: 0,
+        brokenRefs: 0,
+    };
     convert(fileContent) {
         const rootLevelNodes = [];
         try {
@@ -56,7 +54,6 @@ export class LogseqConverter {
         return file;
     }
     extractMetaNodeContentAndGetNumRemaningChildren(theMetaNode, parentNode) {
-        var _a, _b;
         const movedChildren = [];
         if (theMetaNode.children) {
             for (const child of theMetaNode.children) {
@@ -70,8 +67,8 @@ export class LogseqConverter {
             }
         }
         // remove the children we outdented
-        theMetaNode.children = (_a = theMetaNode.children) === null || _a === void 0 ? void 0 : _a.filter((id) => !movedChildren.find((c) => c === id.id));
-        return ((_b = theMetaNode.children) === null || _b === void 0 ? void 0 : _b.length) || 0;
+        theMetaNode.children = theMetaNode.children?.filter((id) => !movedChildren.find((c) => c === id.id));
+        return theMetaNode.children?.length || 0;
     }
     convertToField(key, value, node) {
         this.summary.fields += 1;
@@ -151,7 +148,6 @@ export class LogseqConverter {
         return nodeForImport;
     }
     logseqToIntermediate(node, parentNode) {
-        var _a, _b;
         const createdChildNodes = [];
         if (this.nodesForImport.has(node.id)) {
             return;
@@ -242,7 +238,7 @@ export class LogseqConverter {
         }
         const pageName = node['page-name'];
         // journal pages in Roam-alikes have special UID (MM-DD-YYYY), we flag these as date nodes
-        if (pageName === null || pageName === void 0 ? void 0 : pageName.match(DATE_REGEX)) {
+        if (pageName?.match(DATE_REGEX)) {
             this.summary.calendarNodes += 1;
             intermediateNode.name = dateStringToUSDateUID(pageName);
             intermediateNode.type = 'date';
@@ -254,10 +250,10 @@ export class LogseqConverter {
         this.nodesForImport.set(node.id, intermediateNode);
         // convert Logseq properties to Tana fields
         if (node.properties) {
-            if (node['page-name'] && hasDuplicateProperties(node, (_a = node.children) === null || _a === void 0 ? void 0 : _a[0])) {
+            if (node['page-name'] && hasDuplicateProperties(node, node.children?.[0])) {
                 // logseq properties appear to be duplicated in the page node and the first child node
                 // if properties are equal, remove first child
-                (_b = node.children) === null || _b === void 0 ? void 0 : _b.shift();
+                node.children?.shift();
             }
             for (const [key, value] of Object.entries(node.properties)) {
                 this.convertToField(key, value, intermediateNode);
@@ -348,7 +344,6 @@ export class LogseqConverter {
         }
     }
     fixBrokenLinks(nodeForImport) {
-        var _a, _b, _c;
         const createdNodes = [];
         // Find all links that are not part of other links
         const outerLinks = getBracketLinks(nodeForImport.name, true);
@@ -363,7 +358,7 @@ export class LogseqConverter {
             if (!refNode) {
                 continue;
             }
-            const index = ((_a = nodeForImport.refs) === null || _a === void 0 ? void 0 : _a.indexOf(refNode.uid)) || -1;
+            const index = nodeForImport.refs?.indexOf(refNode.uid) || -1;
             if (nodeForImport.refs && index > -1) {
                 nodeForImport.refs.splice(index, 1);
             }
@@ -373,12 +368,12 @@ export class LogseqConverter {
             const link = outerLinks[i];
             // links are not in refs since we want to create inline dates
             // change link to be date:DD-MM-YYYY instead
-            if (link === null || link === void 0 ? void 0 : link.match(DATE_REGEX)) {
+            if (link?.match(DATE_REGEX)) {
                 const dateUid = dateStringToYMD(link);
                 nodeForImport.name = nodeForImport.name.replace(link, 'date:' + dateUid);
                 continue;
             }
-            if ((_b = nodeForImport.children) === null || _b === void 0 ? void 0 : _b.some((c) => c.name === link || c.uid === link)) {
+            if (nodeForImport.children?.some((c) => c.name === link || c.uid === link)) {
                 continue;
             }
             let refNode = this.findRefByName(link, nodeForImport);
@@ -454,7 +449,7 @@ export class LogseqConverter {
                         editedAt: nodeForImport.editedAt,
                     });
                     // ensure the newly created node is added to refs
-                    if (!((_c = nodeForImport.refs) === null || _c === void 0 ? void 0 : _c.includes(refNode.uid))) {
+                    if (!nodeForImport.refs?.includes(refNode.uid)) {
                         if (!nodeForImport.refs) {
                             nodeForImport.refs = [];
                         }
@@ -484,7 +479,7 @@ export class LogseqConverter {
         }
         if (node.children) {
             const newValues = node.children
-                .map((c) => { var _a; return (_a = this.nodesForImport.get(c.uid)) === null || _a === void 0 ? void 0 : _a.name; })
+                .map((c) => this.nodesForImport.get(c.uid)?.name)
                 .filter((c) => c !== undefined);
             intermediateAttr.values.push(...newValues);
             intermediateAttr.count++;

@@ -1,1 +1,1 @@
-export declare function importRoamFile(fileToLoad: string): [import("../../..").TanaIntermediateFile, import("../../../testUtils/testUtils.js").IdLookupHelper, import("../../../testUtils/testUtils.js").NameLookupHelper];
+export declare function importRoamFile(fileToLoad: string): [import("../../../index.js").TanaIntermediateFile, import("../../../testUtils/testUtils.js").IdLookupHelper, import("../../../testUtils/testUtils.js").NameLookupHelper];

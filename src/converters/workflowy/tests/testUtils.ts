@@ -1,4 +1,4 @@
-import { WorkflowyConverter } from '..';
+import { WorkflowyConverter } from '../index.js';
 import { TanaIntermediateFile, TanaIntermediateNode } from '../../../types/types.js';
 import { importFileAndGetHelpers } from '../../../testUtils/testUtils.js';
 

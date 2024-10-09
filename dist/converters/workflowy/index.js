@@ -1,17 +1,15 @@
 import { idgenerator } from '../../utils/utils.js';
 import { opml2js } from './opml2js.js';
 export class WorkflowyConverter {
-    constructor() {
-        this.nodesForImport = new Map();
-        this.summary = {
-            leafNodes: 0,
-            topLevelNodes: 0,
-            totalNodes: 0,
-            calendarNodes: 0,
-            fields: 0,
-            brokenRefs: 0,
-        };
-    }
+    nodesForImport = new Map();
+    summary = {
+        leafNodes: 0,
+        topLevelNodes: 0,
+        totalNodes: 0,
+        calendarNodes: 0,
+        fields: 0,
+        brokenRefs: 0,
+    };
     convert(fileContent) {
         const outline = opml2js(fileContent);
         if (!outline) {

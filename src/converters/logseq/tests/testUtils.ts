@@ -1,4 +1,4 @@
-import { LogseqConverter } from '..';
+import { LogseqConverter } from '../index.js';
 import { IdLookupHelper, importFileAndGetHelpers } from '../../../testUtils/testUtils.js';
 
 export function importLogseqFile(fileToLoad: string) {

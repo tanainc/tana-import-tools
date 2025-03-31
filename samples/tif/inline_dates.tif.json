@@ -2,12 +2,47 @@
   "version": "TanaIntermediateFile V0.1",
   "nodes": [
     {
-      "name": "See [[date:03-31-2022]]",
+      "uid": "hasInlineDate",
+      "name": "See [[date:2022-03-30]]",
       "type": "node"
     },
     {
-      "uid": "02-09-2022",
+      "uid": "hasInlineDate2",
+      "name": "[[date:2022-03-10 20:30]] and week: [[date:2022-W03]]",
+      "type": "node"
+    },
+    {
+      "uid": "hasInlineDate3",
+      "name": "Weird US date format [[date:03-31-2022]]",
+      "type": "node"
+    },
+    {
+      "uid": "hasInlineDate4",
+      "name": "[[date:2022-03-10 20:30+01:00]] with offset, not supported",
+      "type": "node"
+    },
+    {
+      "uid": "hasInlineDate5",
+      "name": "[[date:2022-03-10 20:30[Europe/Oslo]]] with tz",
+      "type": "node"
+    },
+    {
+      "uid": "02-09-2022_mdy_weird",
       "name": "02-09-2022",
+      "type": "date"
+    },
+    {
+      "uid": "isodate-day",
+      "name": "2022-02-10",
+      "children": [
+        {
+          "uid": "weekDate",
+          "name": "[[date:2024-W03]]",
+          "type": "node"
+        }
+      ],
+      "createdAt": 1644394759884,
+      "editedAt": 1644394759884,
       "type": "date"
     }
   ]

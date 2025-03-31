@@ -2,14 +2,20 @@
   "version": "TanaIntermediateFile V0.1",
   "nodes": [
     {
-      "name": "A task",
+      "uid": "todo",
+      "name": "Task todo",
+
+      "editedAt": 1600000000000,
       "type": "node",
       "todoState": "todo"
     },
     {
-      "name": "A completed task",
+      "uid": "done",
+      "name": "Task done",
+      "editedAt": 1600000100000,
       "type": "node",
       "todoState": "done"
     }
-  ]
+  ],
+  "attributes": []
 }

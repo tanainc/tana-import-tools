@@ -1,0 +1,14 @@
+{
+  "version": "TanaIntermediateFile V0.1",
+  "nodes": [
+    {
+      "uid": "todo",
+      "name": "A simple note",
+      "description": "This is the description",
+      "editedAt": 1654375472356,
+      "type": "node"
+    }
+  ],
+  "attributes": []
+}
+

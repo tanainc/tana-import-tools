@@ -2,20 +2,34 @@
   "version": "TanaIntermediateFile V0.1",
   "nodes": [
     {
+      "uid": "1",
       "name": "Jack Black",
       "type": "node"
     },
     {
+      "uid": "2",
       "name": "do not touch [[Jack Black]] inside this one",
       "type": "codeblock"
     },
     {
+      "uid": "3",
       "name": "before ```do not touch [[Jack Black]] inside this one``` after",
       "type": "node"
     },
     {
+      "uid": "4",
       "name": "before `do not touch [[Jack Black]] #Jack Black inside this one either` after",
       "type": "node"
+    },
+    {
+      "uid": "withCodeLanguage",
+      "name": "console.log(\"hi tana\");",
+      "children": [],
+      "createdAt": 1588863716938,
+      "editedAt": 1647535641290,
+      "refs": [],
+      "type": "codeblock",
+      "codeLanguage": "javascript"
     }
   ]
 }

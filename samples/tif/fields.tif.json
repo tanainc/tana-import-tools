@@ -7,8 +7,8 @@
       "values": [
         "Jack"
       ],
-      "count": 1
-      "_comment2": "Tana's TIF importer will handle fields just fine without 'values' or 'count'" keys,
+      "count": 1,
+      "_comment2": "Tana's TIF importer will handle fields just fine without 'values' or 'count' keys"
     }
   ],
 

@@ -2,8 +2,13 @@
   "version": "TanaIntermediateFile V0.1",
   "attributes": [
     {
-      "name": "Owner",
-      "count": 1
+      "name": "Holder",
+      "_comment1": "the field will be ignored by Tana's TIF importer unless its name is included in the attributes array",
+      "values": [
+        "Jack"
+      ],
+      "count": 1,
+      "_comment2": "Tana's TIF importer will handle fields just fine without 'values' or 'count' keys"
     }
   ],
 
@@ -15,20 +20,15 @@
     },
     {
       "name": "Holder",
-      "type": "node",
       "children": [
         {
-          "name": "Owner",
-          "children": [
-            {
-              "name": "[[jackId]]",
-              "refs": ["jackId"],
-              "type": "node"
-            }
-          ],
-          "type": "field"
+          "uid": "holderId",
+          "name": "[[jackId]]",
+          "refs": ["jackId"],
+          "type": "node"
         }
-      ]
+      ],
+      "type": "field"
     }
   ]
 }

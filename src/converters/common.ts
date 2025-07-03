@@ -7,18 +7,7 @@ export function hasImages(name: string) {
 }
 
 /**
- * Convert a date to US MM-DD-YYYY format, which is used in Tana for journal pages.
- * @param date
- */
-export function convertDateToTanaJournalUID(date: Date): string {
-  const month = (date.getMonth() + 1).toString().padStart(2, '0');
-  const day = date.getDate().toString().padStart(2, '0');
-  const year = date.getFullYear().toString();
-  return `${month}-${day}-${year}`;
-}
-
-/**
- * Convert a date to Tana's YYYY-MM-DD format, which is used for Tana date objects (links).
+ * Convert a date to YYYY-MM-DD format, used for Tana date objects (links) and journal pages.
  * @param date
  */
 export function convertDateToTanaDateStr(date: Date): string {

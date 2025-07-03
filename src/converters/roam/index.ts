@@ -19,7 +19,6 @@ import {
   getValueForAttribute,
   hasField,
   hasImages,
-  convertDateToTanaJournalUID,
   convertDateToTanaDateStr,
 } from '../common.js';
 import { isDone, isTodo, replaceRoamSyntax, setNodeAsDone, setNodeAsTodo } from './roamUtils.js';
@@ -381,7 +380,7 @@ export class RoamConverter implements IConverter {
     // Some dates in Roam do not have the correct date-formatted UID for some reason, so we'll try to fix those
     const parsedDate = this.parseFlexibleDate(node.title);
     if (parsedDate) {
-      node.uid = convertDateToTanaJournalUID(parsedDate);
+      node.uid = convertDateToTanaDateStr(parsedDate);
     }
 
     // journal pages in Roam havehave special UID (03-31-2022), we flag these as date nodes
@@ -526,7 +525,7 @@ export class RoamConverter implements IConverter {
       const link = outerLinks[i];
 
       // links are not in refs since we want to create inline dates
-      // change link to be date:DD-MM-YYYY instead
+      // change link to be date:YYYY-MM-DD instead
       const parsedDate = this.parseFlexibleDate(link);
       if (parsedDate) {
         const dateUid = convertDateToTanaDateStr(parsedDate);

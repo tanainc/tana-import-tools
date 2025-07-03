@@ -14,7 +14,7 @@ import {
   isIndexWithinBackticks,
 } from '../../utils/utils.js';
 import { IConverter } from '../IConverter.js';
-import { hasImages, convertDateToTanaJournalUID, convertDateToTanaDateStr } from '../common.js';
+import { hasImages, convertDateToTanaDateStr } from '../common.js';
 import {
   hasDuplicateProperties,
   isDone,
@@ -351,7 +351,7 @@ export class LogseqConverter implements IConverter {
     const pageDate = this.parseFlexibleDate(pageName);
     if (pageDate) {
       this.summary.calendarNodes += 1;
-      intermediateNode.name = convertDateToTanaJournalUID(pageDate);
+      intermediateNode.name = convertDateToTanaDateStr(pageDate);
       intermediateNode.type = 'date';
     }
 
@@ -499,7 +499,7 @@ export class LogseqConverter implements IConverter {
       const link = outerLinks[i];
 
       // links are not in refs since we want to create inline dates
-      // change link to be date:DD-MM-YYYY instead
+      // change link to be date:YYYY-MM-DD instead
       const linkDate = this.parseFlexibleDate(link);
       if (linkDate) {
         const dateUid = convertDateToTanaDateStr(linkDate);

@@ -30,6 +30,7 @@
     "@types/node": "^20.4.9",
     "@typescript-eslint/eslint-plugin": "^6.3.0",
     "@typescript-eslint/parser": "^6.3.0",
+    "date-fns": "^4.1.0",
     "eslint": "^8.21.0",
     "prettier": "^3.0.1",
     "typescript": "^5.1.6",
@@ -69,6 +70,5 @@
         }
       }
     ]
-  },
-  "packageManager": "yarn@4.2.2"
+  }
 }

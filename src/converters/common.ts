@@ -6,52 +6,15 @@ export function hasImages(name: string) {
   return name.includes('![](https://');
 }
 
-const months = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
-];
-
-const monthPrefixes = months.map((m) => m.slice(0, 3));
-
-// Convert 'June 1st, 2021' and 'Jun 1st, 2021' to 'MM-DD-YYYY' without dealing with timezones, etc.
-export function dateStringToUSDateUID(str: string) {
-  str = str.replace(/(^\w+\s\d{1,2})(\w{2}),(\s\d+)/, '$1$3');
-  const pieces = str.split(/\s/);
-
-  const monthMatch = months.indexOf(pieces[0]);
-  const monthPrefixMatch = monthPrefixes.indexOf(pieces[0]);
-  let month;
-  if (monthMatch !== -1) {
-    month = monthMatch + 1;
-  } else if (monthPrefixMatch !== -1) {
-    month = monthPrefixMatch + 1;
-  } else {
-    return str;
-  }
-
-  return `${month.toString().padStart(2, '0')}-${pieces[1].toString().padStart(2, '0')}-${pieces[2]
-    .toString()
-    .padStart(4, '0')}`;
-}
-
-// Convert 'June 1st, 2021' to 'YYYY-MM-DD' without dealing with timezones etc
-export function dateStringToYMD(str: string) {
-  str = str.replace(/(^\w+\s\d{1,2})(\w{2}),(\s\d+)/, '$1$3');
-  const pieces = str.split(/\s/);
-  const month = months.indexOf(pieces[0]) + 1;
-  return `${pieces[2].toString().padStart(4, '0')}-${month.toString().padStart(2, '0')}-${pieces[1]
-    .toString()
-    .padStart(2, '0')}`;
+/**
+ * Convert a date to YYYY-MM-DD format, used for Tana date objects (links) and journal pages.
+ * @param date
+ */
+export function convertDateToTanaDateStr(date: Date): string {
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  const year = date.getFullYear().toString();
+  return `${year}-${month}-${day}`;
 }
 
 export function getValueForAttribute(fieldName: string, node: string): string | undefined {

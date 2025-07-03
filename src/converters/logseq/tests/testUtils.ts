@@ -1,3 +1,4 @@
+import type { TanaIntermediateNode } from '../../../types/types.ts';
 import { LogseqConverter } from '..';
 import { IdLookupHelper, importFileAndGetHelpers } from '../../../testUtils/testUtils.js';
 
@@ -15,4 +16,17 @@ export function getField(parentId: string | undefined, title: string, f: IdLooku
     throw new Error(`Field with title ${title} not found`);
   }
   return field;
+}
+
+export function hasHeadingField(node: TanaIntermediateNode): boolean {
+  if (!node || !node.children) return false;
+  for (const child of node.children) {
+    if (child.type === 'field' && child.name === 'heading') {
+      return true;
+    }
+    if (hasHeadingField(child)) {
+      return true;
+    }
+  }
+  return false;
 }

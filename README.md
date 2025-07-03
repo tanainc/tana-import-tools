@@ -26,8 +26,11 @@ If you are making changes that you think will benefit other users, please create
 
  - [x] journal pages
  - [x] references
+ - [ ] headings
+ - [x] todos
+ - [x] images
  - [x] code blocks
- - [x] tasks
+ - [ ] code blocks with type
 
 1. Click the 3 dots in the upper-right
 
@@ -43,12 +46,11 @@ If you are making changes that you think will benefit other users, please create
 
  - [x] journal pages
  - [x] references
- - [x] code blocks
- - [ ] tasks
- - [ ] code blocks with type
  - [ ] headings
- - [ ] remote images
- - [ ] local images/assets
+ - [ ] todos
+ - [ ] images (local images/assets still not working)
+ - [x] code blocks
+ - [ ] code blocks with type
  - [ ] simple queries
  - [ ] advanced queries
  - [ ] reference to supertag
@@ -65,6 +67,8 @@ If you are making changes that you think will benefit other users, please create
 4. `yarn convert:logseq datasets/my_logseq_export.json`
 
 ### Workflowy
+
+- [x] todos (workflowy incomplete todos are imported as text)
 
 1. Click the three dots in the upper right
 

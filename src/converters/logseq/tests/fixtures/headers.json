@@ -1,0 +1,92 @@
+{
+	"version": 1,
+	"blocks": [
+		{
+			"id": "page1",
+			"page-name": "Headers",
+			"format": "markdown",
+			"children": [
+				{
+					"id": "child1",
+					"format": "markdown",
+					"children": [],
+					"content": "# Header level 1"
+				},
+				{
+					"id": "child2",
+					"format": "markdown",
+					"children": [],
+					"content": "## Header level 2"
+				},
+				{
+					"id": "child3",
+					"properties": {
+						"heading": 1
+					},
+					"format": "markdown",
+					"children": [
+						{
+							"id": "child3-1",
+							"properties": {
+								"heading": 2
+							},
+							"format": "markdown",
+							"children": [],
+							"content": "## Nested header level 2"
+						}
+					],
+					"content": "## Header level 1"
+				},
+				{
+					"id": "child4",
+					"properties": null,
+					"format": "markdown",
+					"children": [
+						{
+							"id": "child4-1",
+							"properties": {
+								"heading": 3
+							},
+							"format": "markdown",
+							"children": [],
+							"content": "### Nested header level 3"
+						}
+					],
+					"content": "some text"
+				},
+				{
+					"id": "child5",
+					"properties": null,
+					"format": "markdown",
+					"children": [],
+					"content": "#not a header"
+				},
+				{
+					"id": "child6",
+					"properties": null,
+					"format": "markdown",
+					"children": [],
+					"content": "##also not a header"
+				},
+				{
+					"id": "child7",
+					"properties": {
+						"heading": 1
+					},
+					"format": "markdown",
+					"children": [],
+					"content": "#  double spaced-header"
+				},
+				{
+					"id": "child8",
+					"properties": {
+						"heading": 1
+					},
+					"format": "markdown",
+					"children": [],
+					"content": "not prefixed with pound but has a heading property"
+				}
+			]
+		}
+	]
+}

@@ -19,7 +19,9 @@ export function getField(parentId: string | undefined, title: string, f: IdLooku
 }
 
 export function hasHeadingField(node: TanaIntermediateNode): boolean {
-  if (!node || !node.children) return false;
+  if (!node || !node.children) {
+    return false;
+  }
   for (const child of node.children) {
     if (child.type === 'field' && child.name === 'heading') {
       return true;

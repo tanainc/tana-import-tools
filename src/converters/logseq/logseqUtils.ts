@@ -1,12 +1,18 @@
 import { TanaIntermediateNode } from '../../types/types.js';
 import { LogseqBlock } from './types.js';
 
-// TODO and DONE in roam
-const TODO_FLAG = 'TODO';
+// NOW/LATER is the default in logseq
+const TODO_PREFIXES = ['TODO', 'LATER'];
 const DONE_FLAG = 'DONE';
+const TODO_REGEX = new RegExp(`^(${TODO_PREFIXES.join('|')})\\s*`);
 
 export function isTodo(name: string) {
-  return name.substring(0, TODO_FLAG.length) === TODO_FLAG;
+  for (const prefix of TODO_PREFIXES) {
+    if (name.startsWith(prefix)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 export function isDone(name: string) {
@@ -14,11 +20,11 @@ export function isDone(name: string) {
 }
 
 export function setNodeAsTodo(node: TanaIntermediateNode) {
-  node.name = node.name.substring(TODO_FLAG.length);
+  node.name = node.name.replace(TODO_REGEX, '');
   node.todoState = 'todo';
 }
 export function setNodeAsDone(node: TanaIntermediateNode) {
-  node.name = node.name.substring(DONE_FLAG.length);
+  node.name = node.name.substring(DONE_FLAG.length + 1);
   node.todoState = 'done';
 }
 

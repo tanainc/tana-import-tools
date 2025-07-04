@@ -1,0 +1,54 @@
+{
+	"version": 1,
+	"blocks": [
+		{
+			"id": "page1",
+			"page-name": "Test page 1",
+			"format": "markdown",
+			"children": [
+				{
+					"id": "child1",
+					"format": "markdown",
+					"children": [],
+					"content": "LATER later task"
+				},
+				{
+					"id": "child2",
+					"format": "markdown",
+					"children": [],
+					"content": "NOW now task\n:LOGBOOK:\nCLOCK: [2025-07-03 Thu 14:35:05]\nCLOCK: [2025-07-03 Thu 14:35:06]\nCLOCK: [2025-07-03 Thu 14:35:06]\n:END:"
+				},
+				{
+					"id": "child3",
+					"format": "markdown",
+					"children": [],
+					"content": "DONE done task"
+				},
+				{
+					"id": "child4",
+					"format": "markdown",
+					"children": [],
+					"content": "not a task"
+				},
+				{
+					"id": "child5",
+					"format": "markdown",
+					"children": [],
+					"content": "TODO todo task"
+				},
+				{
+					"id": "child6",
+					"format": "markdown",
+					"children": [],
+					"content": "DOING doing task\n:LOGBOOK:\nCLOCK: [2025-07-03 Thu 14:35:05]\nCLOCK: [2025-07-03 Thu 14:35:06]--[2025-07-03 Thu 14:41:53] =>  00:06:47\nCLOCK: [2025-07-03 Thu 14:42:46]\n:END:"
+				},
+				{
+					"id": "child7",
+					"format": "markdown",
+					"children": [],
+					"content": "CANCELED canceled task"
+				}
+			]
+		}
+	]
+}

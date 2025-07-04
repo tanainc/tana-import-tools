@@ -39,6 +39,7 @@ type RoamNode = {
 const ROAM_DATE_FORMATS = [
   'MMMM do, yyyy', // February 8th, 2022
   'MMM do, yyyy', // Feb 8th, 2022
+  'MM-dd-yyyy', // 02-08-2022
 ];
 
 export class RoamConverter implements IConverter {
@@ -161,6 +162,7 @@ export class RoamConverter implements IConverter {
       let remainingAttrValue = attrValue;
 
       for (const link of links) {
+        // this accepts more date formats than Roam seemingly but don't see that as a problem
         const linkDate = this.parseFlexibleDate(link);
         if (linkDate) {
           continue;
@@ -377,22 +379,30 @@ export class RoamConverter implements IConverter {
       }
     }
 
+    // journal pages in Roam have special UID (03-31-2022), we flag these as date nodes
     // Some dates in Roam do not have the correct date-formatted UID for some reason, so we'll try to fix those
-    const parsedDate = this.parseFlexibleDate(node.title);
-    if (parsedDate) {
-      node.uid = convertDateToTanaDateStr(parsedDate);
-    }
-
-    // journal pages in Roam havehave special UID (03-31-2022), we flag these as date nodes
-    if (node.uid?.match(/^\d{2}-\d{2}-\d{4}$/gi)) {
+    const parsedTitleDate = this.parseFlexibleDate(node.title);
+    if (parsedTitleDate) {
+      node.uid = convertDateToTanaDateStr(parsedTitleDate);
       this.summary.calendarNodes += 1;
+      // change to the new tana date format
       intermediateNode.name = node.uid;
       intermediateNode.type = 'date';
     }
 
     // we only care about uid for refs
     if (node.refs) {
-      refs.push(...node.refs.map((r) => r.uid));
+      refs.push(
+        ...node.refs.map((r) => {
+          // if it's a date reference, standardize it to the Tana date format
+          const parsedRefDate = this.parseFlexibleDate(r.uid);
+          if (parsedRefDate) {
+            return convertDateToTanaDateStr(parsedRefDate);
+          } else {
+            return r.uid;
+          }
+        }),
+      );
     }
     intermediateNode.refs = refs;
 
@@ -438,6 +448,7 @@ export class RoamConverter implements IConverter {
       .map((uid) => {
         const n = this.nodesForImport.get(uid);
         if (!n) {
+          console.log(`Broken reference: ${uid} in node ${nodeForImport.name}`);
           this.summary.brokenRefs += 1;
         }
         return n;

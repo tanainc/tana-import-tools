@@ -381,9 +381,9 @@ export class RoamConverter implements IConverter {
 
     // journal pages in Roam have special UID (03-31-2022), we flag these as date nodes
     // Some dates in Roam do not have the correct date-formatted UID for some reason, so we'll try to fix those
-    const parsedDate = this.parseFlexibleDate(node.title);
-    if (parsedDate) {
-      node.uid = convertDateToTanaDateStr(parsedDate);
+    const parsedTitleDate = this.parseFlexibleDate(node.title);
+    if (parsedTitleDate) {
+      node.uid = convertDateToTanaDateStr(parsedTitleDate);
       this.summary.calendarNodes += 1;
       // change to the new tana date format
       intermediateNode.name = node.uid;
@@ -395,9 +395,9 @@ export class RoamConverter implements IConverter {
       refs.push(
         ...node.refs.map((r) => {
           // if it's a date reference, standardize it to the Tana date format
-          const parsedDate = this.parseFlexibleDate(r.uid);
-          if (parsedDate) {
-            return convertDateToTanaDateStr(parsedDate);
+          const parsedRefDate = this.parseFlexibleDate(r.uid);
+          if (parsedRefDate) {
+            return convertDateToTanaDateStr(parsedRefDate);
           } else {
             return r.uid;
           }
@@ -448,6 +448,7 @@ export class RoamConverter implements IConverter {
       .map((uid) => {
         const n = this.nodesForImport.get(uid);
         if (!n) {
+          console.log(`Broken reference: ${uid} in node ${nodeForImport.name}`);
           this.summary.brokenRefs += 1;
         }
         return n;

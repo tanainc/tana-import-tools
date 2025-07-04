@@ -57,7 +57,7 @@ export type TanaIntermediateNode = {
   /**
    * Contents of the node.
    *
-   * For type=date this must contain the date : "MM-DD-YYYY"
+   * For type=date this must contain the date : "YYYY-MM-DD"
    *
    * Supported text formatting: **bold** __italic__ ~~striked~~ ^^highlighted^^
    *

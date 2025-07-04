@@ -19,10 +19,11 @@ import {
   getValueForAttribute,
   hasField,
   hasImages,
-  dateStringToUSDateUID,
-  dateStringToYMD,
+  convertDateToTanaDateStr,
 } from '../common.js';
 import { isDone, isTodo, replaceRoamSyntax, setNodeAsDone, setNodeAsTodo } from './roamUtils.js';
+import { parse, isValid } from 'date-fns';
+import { enUS } from 'date-fns/locale';
 
 type RoamNode = {
   uid: string;
@@ -34,7 +35,12 @@ type RoamNode = {
   'edit-time': number;
 };
 
-const DATE_REGEX = /^\w+\s\d{1,2}\w{2},\s\d+$/;
+// Roam supports dates in format like "February 8th, 2022" or "March 31st, 2022"
+const ROAM_DATE_FORMATS = [
+  'MMMM do, yyyy', // February 8th, 2022
+  'MMM do, yyyy', // Feb 8th, 2022
+  'MM-dd-yyyy', // 02-08-2022
+];
 
 export class RoamConverter implements IConverter {
   private nodesForImport: Map<string, TanaIntermediateNode> = new Map();
@@ -156,7 +162,9 @@ export class RoamConverter implements IConverter {
       let remainingAttrValue = attrValue;
 
       for (const link of links) {
-        if (link.match(DATE_REGEX)) {
+        // this accepts more date formats than Roam seemingly but don't see that as a problem
+        const linkDate = this.parseFlexibleDate(link);
+        if (linkDate) {
           continue;
         }
 
@@ -371,24 +379,30 @@ export class RoamConverter implements IConverter {
       }
     }
 
+    // journal pages in Roam have special UID (03-31-2022), we flag these as date nodes
     // Some dates in Roam do not have the correct date-formatted UID for some reason, so we'll try to fix those
-    if (node.title?.match(DATE_REGEX)) {
-      const dateUid = dateStringToUSDateUID(node.title);
-      if (dateUid) {
-        node.uid = dateUid;
-      }
-    }
-
-    // journal pages in Roam havehave special UID (03-31-2022), we flag these as date nodes
-    if (node.uid?.match(/^\d{2}-\d{2}-\d{4}$/gi)) {
+    const parsedTitleDate = this.parseFlexibleDate(node.title);
+    if (parsedTitleDate) {
+      node.uid = convertDateToTanaDateStr(parsedTitleDate);
       this.summary.calendarNodes += 1;
+      // change to the new tana date format
       intermediateNode.name = node.uid;
       intermediateNode.type = 'date';
     }
 
     // we only care about uid for refs
     if (node.refs) {
-      refs.push(...node.refs.map((r) => r.uid));
+      refs.push(
+        ...node.refs.map((r) => {
+          // if it's a date reference, standardize it to the Tana date format
+          const parsedRefDate = this.parseFlexibleDate(r.uid);
+          if (parsedRefDate) {
+            return convertDateToTanaDateStr(parsedRefDate);
+          } else {
+            return r.uid;
+          }
+        }),
+      );
     }
     intermediateNode.refs = refs;
 
@@ -434,6 +448,7 @@ export class RoamConverter implements IConverter {
       .map((uid) => {
         const n = this.nodesForImport.get(uid);
         if (!n) {
+          console.log(`Broken reference: ${uid} in node ${nodeForImport.name}`);
           this.summary.brokenRefs += 1;
         }
         return n;
@@ -521,14 +536,12 @@ export class RoamConverter implements IConverter {
       const link = outerLinks[i];
 
       // links are not in refs since we want to create inline dates
-      // change link to be date:DD-MM-YYYY instead
-      if (link?.match(DATE_REGEX)) {
-        const dateUid = dateStringToYMD(link);
-
-        if (dateUid) {
-          nodeForImport.name = nodeForImport.name.replace(link, 'date:' + dateUid);
-          continue;
-        }
+      // change link to be date:YYYY-MM-DD instead
+      const parsedDate = this.parseFlexibleDate(link);
+      if (parsedDate) {
+        const dateUid = convertDateToTanaDateStr(parsedDate);
+        nodeForImport.name = nodeForImport.name.replace(link, 'date:' + dateUid);
+        continue;
       }
       if (nodeForImport.children?.some((c) => c.name === link || c.uid === link)) {
         continue;
@@ -686,5 +699,24 @@ export class RoamConverter implements IConverter {
       }
     }
     return undefined;
+  }
+
+  /**
+   * Try every known pattern until one parses cleanly.
+   * @returns a valid Date or undefined if no pattern matched.
+   */
+  private parseFlexibleDate(input: string): Date | undefined {
+    if (!input) {
+      return;
+    }
+    for (const fmt of ROAM_DATE_FORMATS) {
+      // `parse` returns "Invalid Date" if the string doesn't fit the mask,
+      // so we simply loop until we hit a valid one.
+      const candidate = parse(input, fmt, new Date(), { locale: enUS });
+
+      if (isValid(candidate)) {
+        return candidate;
+      }
+    }
   }
 }

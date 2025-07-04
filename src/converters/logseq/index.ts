@@ -14,7 +14,7 @@ import {
   isIndexWithinBackticks,
 } from '../../utils/utils.js';
 import { IConverter } from '../IConverter.js';
-import { hasImages, dateStringToUSDateUID, dateStringToYMD } from '../common.js';
+import { hasImages, convertDateToTanaDateStr } from '../common.js';
 import {
   hasDuplicateProperties,
   isDone,
@@ -24,8 +24,39 @@ import {
   setNodeAsTodo,
 } from './logseqUtils.js';
 import { LogseqBlock, LogseqFile } from './types.js';
+import { parse, isValid } from 'date-fns';
+import { enUS } from 'date-fns/locale';
 
-const DATE_REGEX = /^\w+\s\d{1,2}\w{2},\s\d+$/;
+// surmise the date format by the most common format seen
+// in the user's journal pages.
+const LOGSEQ_DATE_FORMATS = [
+  'E, MM/dd/yyyy',
+  'E, dd-MM-yyyy',
+  'E, dd.MM.yyyy',
+  'E, yyyy/MM/dd',
+  'EEE, MM/dd/yyyy',
+  'EEE, dd-MM-yyyy',
+  'EEE, dd.MM.yyyy',
+  'EEE, yyyy/MM/dd',
+  'EEEE, MM/dd/yyyy',
+  'EEEE, dd-MM-yyyy',
+  'EEEE, dd.MM.yyyy',
+  'EEEE, yyyy/MM/dd',
+  'MM-dd-yyyy',
+  'MM/dd/yyyy',
+  'MMM do, yyyy',
+  'MMMM do, yyyy',
+  'MM_dd_yyyy',
+  'dd-MM-yyyy',
+  'do MMM yyyy',
+  'do MMMM yyyy',
+  'yyyy-MM-dd',
+  'yyyy-MM-dd EEEE',
+  'yyyy/MM/dd',
+  'yyyyMMdd',
+  'yyyy_MM_dd',
+  'yyyy年MM月dd日',
+];
 
 export class LogseqConverter implements IConverter {
   private nodesForImport: Map<string, TanaIntermediateNode> = new Map();
@@ -316,10 +347,11 @@ export class LogseqConverter implements IConverter {
     }
 
     const pageName = node['page-name'];
-    // journal pages in Roam-alikes have special UID (MM-DD-YYYY), we flag these as date nodes
-    if (pageName?.match(DATE_REGEX)) {
+    // journal pages have one of several date formats in logseq
+    const pageDate = this.parseFlexibleDate(pageName);
+    if (pageDate) {
       this.summary.calendarNodes += 1;
-      intermediateNode.name = dateStringToUSDateUID(pageName);
+      intermediateNode.name = convertDateToTanaDateStr(pageDate);
       intermediateNode.type = 'date';
     }
 
@@ -467,9 +499,10 @@ export class LogseqConverter implements IConverter {
       const link = outerLinks[i];
 
       // links are not in refs since we want to create inline dates
-      // change link to be date:DD-MM-YYYY instead
-      if (link?.match(DATE_REGEX)) {
-        const dateUid = dateStringToYMD(link);
+      // change link to be date:YYYY-MM-DD instead
+      const linkDate = this.parseFlexibleDate(link);
+      if (linkDate) {
+        const dateUid = convertDateToTanaDateStr(linkDate);
 
         nodeForImport.name = nodeForImport.name.replace(link, 'date:' + dateUid);
         continue;
@@ -630,5 +663,24 @@ export class LogseqConverter implements IConverter {
       }
     }
     return undefined;
+  }
+
+  /**
+   * Try every known pattern until one parses cleanly.
+   * @returns a valid Date or undefined if no pattern matched.
+   */
+  private parseFlexibleDate(input: string): Date | undefined {
+    if (!input) {
+      return;
+    }
+    for (const fmt of LOGSEQ_DATE_FORMATS) {
+      // `parse` returns “Invalid Date” if the string doesn’t fit the mask,
+      // so we simply loop until we hit a valid one.                     */
+      const candidate = parse(input, fmt, new Date(), { locale: enUS });
+
+      if (isValid(candidate)) {
+        return candidate;
+      }
+    }
   }
 }

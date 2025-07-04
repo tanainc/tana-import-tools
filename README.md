@@ -24,13 +24,13 @@ If you are making changes that you think will benefit other users, please create
 
 ### Roam Research
 
- - [x] journal pages
- - [x] references
- - [ ] headings
- - [x] todos
- - [x] images
- - [x] code blocks
- - [ ] code blocks with type
+ - 🟢 graph
+ - 🟢 journal pages
+ - 🟢 references
+ - 🔴 headings
+ - 🟢 todos
+ - 🟢 images
+ - 🟡 code blocks (no language support)
 
 1. Click the 3 dots in the upper-right
 
@@ -44,19 +44,20 @@ If you are making changes that you think will benefit other users, please create
 
 ### LogSeq
 
- - [x] journal pages
- - [x] references
- - [ ] headings
- - [ ] todos
- - [ ] images (local images/assets still not working)
- - [x] code blocks
- - [ ] code blocks with type
- - [ ] simple queries
- - [ ] advanced queries
- - [ ] reference to supertag
- - [ ] favorites
- - [ ] whiteboards
- - [ ] flashcards
+ - 🟢 graph
+ - 🟢 journal pages
+ - 🟢 references
+ - 🔴 headings
+ - 🟡 todos (TODO/DONE supported, NOW/LATER/DOING/CANCELED not supported)
+ - 🟡 logbook (imported as text)
+ - 🟡 images (only remote images without redirect are working. Local images/assets still not working)
+ - 🟡 code blocks (no language support)
+ - 🔴 simple queries
+ - 🔴 advanced queries
+ - 🔴 reference to supertag
+ - 🔴 favorites (not exported)
+ - 🔴 whiteboards
+ - 🔴 flashcards
 
 1. Click the three dots in the upper right
 
@@ -68,7 +69,15 @@ If you are making changes that you think will benefit other users, please create
 
 ### Workflowy
 
-- [x] todos (workflowy incomplete todos are imported as text)
+ - 🟢 graph
+ - 🟢 todos (workflowy incomplete todos are imported as text)
+ - 🔴 code blocks (exported as plaintext)
+ - 🔴 images (not exported)
+ - 🔴 boards (exported as plaintext)
+ - 🔴 comments (not exported)
+ - 🔴 node notes (exported in OPML)
+ - 🔴 favorites (not exported)
+ - 🔴 date references (exported in OPML)
 
 1. Click the three dots in the upper right
 

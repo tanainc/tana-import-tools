@@ -50,6 +50,8 @@ export type TanaIntermediateSupertag = {
 
 export type NodeType = 'field' | 'image' | 'codeblock' | 'node' | 'date';
 
+export type FlagType = 'section';
+
 export type TanaIntermediateNode = {
   // uid of the node, only used during import. There is no mapping to the Tana Node id
   uid: string;
@@ -69,7 +71,7 @@ export type TanaIntermediateNode = {
   name: string;
 
   // Description of the node
-  description?:string;
+  description?: string;
 
   // children
   children?: TanaIntermediateNode[];
@@ -93,6 +95,9 @@ export type TanaIntermediateNode = {
   codeLanguage?: string;
 
   supertags?: string[];
+
+  // for section/heading nodes
+  flags?: FlagType[];
 
   // if set, we will create TODO / DONE for this node
   todoState?: 'todo' | 'done';

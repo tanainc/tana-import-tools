@@ -221,9 +221,33 @@ export class LogseqConverter implements IConverter {
     }
 
     let nameToUse = node['page-name'] || node.content;
-
     if (nameToUse === undefined) {
       nameToUse = '';
+    }
+
+    // Logseq property: heading: 1, 2, 3, etc
+    // If header, strip leading #s and whitespace, and set flags: ["section"]
+    let isHeader = false;
+    // Markdown style header
+    if (typeof nameToUse === 'string' && nameToUse.match(/^#+\s+[^#]/)) {
+      isHeader = true;
+      nameToUse = nameToUse.replace(/^#+\s+/, '');
+    }
+    // Logseq property style header
+    if (node.properties && typeof node.properties === 'object' && 'heading' in node.properties) {
+      isHeader = true;
+      // Also strip leading #s and whitespace if present
+      nameToUse = nameToUse.replace(/^#+\s+/, '');
+      // Remove the extraneous 'heading' property so it doesn't get converted to a field
+      if (node.properties && typeof node.properties === 'object') {
+        // Create a shallow copy to avoid mutating input
+        node.properties = { ...node.properties };
+        delete node.properties.heading;
+      }
+    }
+
+    if (isHeader) {
+      nameToUse = nameToUse.trim();
     }
 
     // We outdent any fields in meta nodes in roam. If they are empty after we skip them
@@ -298,6 +322,9 @@ export class LogseqConverter implements IConverter {
       type: type,
       mediaUrl: url,
     };
+    if (isHeader) {
+      intermediateNode.flags = ['section'];
+    }
 
     if (!parentNode) {
       this.topLevelMap.set(intermediateNode.name, intermediateNode);

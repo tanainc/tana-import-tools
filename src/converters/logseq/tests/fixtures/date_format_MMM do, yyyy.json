@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "blocks": [
+    {
+      "id": "date1",
+      "page-name": "Oct 6th, 2022",
+      "format": "markdown",
+      "children": []
+    },
+    {
+      "id": "date2",
+      "page-name": "Oct 7th, 2022",
+      "format": "markdown",
+      "children": [
+        {
+          "id": "date2-child1",
+          "properties": null,
+          "format": "markdown",
+          "children": [],
+          "content": "Link to [[Oct 6th, 2022]]"
+        }
+      ]
+    }
+  ]
+}

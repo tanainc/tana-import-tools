@@ -166,11 +166,11 @@ test('Fix broken links', () => {
 
 test('journal page conversion', () => {
   const [, , fn] = importRoamFile('journal_pages.json');
-  const feb = fn('02-08-2022');
-  expect(feb?.name).toBe('02-08-2022');
+  const feb = fn('2022-02-08');
+  expect(feb?.name).toBe('2022-02-08');
   expect(feb?.type).toBe('date');
-  const mar = fn('03-31-2022');
-  expect(mar?.name).toBe('03-31-2022');
+  const mar = fn('2022-03-31');
+  expect(mar?.name).toBe('2022-03-31');
   expect(mar?.type).toBe('date');
 });
 /**
@@ -240,7 +240,7 @@ test('Code blocks', () => {
   expect(f('otherCodeBlock')?.type).toBe('codeblock');
 
   expect(f('codefield')?.type).toBe('codeblock');
-  expect(f('codefield')?.children?.map(n=>n.uid)).toEqual([])
+  expect(f('codefield')?.children?.map((n) => n.uid)).toEqual([]);
 });
 
 test('Complex / nested node', () => {
@@ -266,7 +266,7 @@ test('Complex / nested node', () => {
   );
   expect(f('fundamentalDistinction')?.name).toBe('fundamental distinction between make and understand');
 
-  expect(f('04-27-2021')?.name).toBe('04-27-2021');
+  expect(f('04-27-2021')?.name).toBe('2021-04-27');
   expect(f('04-27-2021')?.type).toBe('date');
   expect(f('theBigOne')?.name).toBe(
     'Teasing out the design vs. science ([make vs. understand]([[connecting]])) [distinction]([[fundamentalDistinction]]), with implications for [[computationalAnalogy]] - this FEELS IMPORTANT  [[interval32]] [[factor230]] [[date:2021-04-27]]',
@@ -277,7 +277,7 @@ test('Complex / nested node', () => {
     'fundamentalDistinction',
     'interval32',
     'factor230',
-    '04-27-2021',
+    '2021-04-27',
   ]);
 });
 

@@ -176,3 +176,25 @@ test('Date formats', () => {
     expect(f('date2')?.children[0].refs).toEqual([]);
   }
 });
+
+test('Todos', () => {
+  const [file, f] = importLogseqFile('todo.json');
+  expect(file.summary.topLevelNodes).toEqual(1);
+  expect(file.summary.totalNodes).toEqual(8);
+
+  expect(f('child1')?.type).toBe('node');
+  expect(f('child1')?.name).toBe('later task');
+  expect(f('child1')?.todoState).toBe('todo');
+
+  expect(f('child3')?.type).toBe('node');
+  expect(f('child3')?.name).toBe('done task');
+  expect(f('child3')?.todoState).toBe('done');
+
+  expect(f('child4')?.type).toBe('node');
+  expect(f('child4')?.name).toBe('not a task');
+  expect(f('child4')?.todoState).toBe(undefined);
+
+  expect(f('child5')?.type).toBe('node');
+  expect(f('child5')?.name).toBe('todo task');
+  expect(f('child5')?.todoState).toBe('todo');
+});

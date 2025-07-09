@@ -23,8 +23,8 @@ test('Journal pages', () => {
   expect(file.summary.topLevelNodes).toEqual(2);
   expect(file.summary.totalNodes).toEqual(2);
   expect(file.summary.calendarNodes).toEqual(1);
-  expect(f('date1')?.name).toEqual('10-06-2022');
-  expect(f('bad date')?.name).toEqual('Oct 6, 2022');
+  expect(f('date1')?.name).toEqual('2022-10-06');
+  expect(f('bad date')?.name).toEqual('Oct 6st 2022');
 });
 
 test('References', () => {
@@ -98,4 +98,19 @@ test('Fields', () => {
   const blockAttrs = getField('blockAttrs', 'refs', f);
   expect(blockAttrs.type).toBe('field');
   expect(blockAttrs.children?.length).toBe(2);
+});
+
+test('Date formats', () => {
+  for (const filename of ['date_format_MM_dd_yyyy.json', 'date_format_MMM do, yyyy.json']) {
+    const [file, f] = importLogseqFile(filename);
+
+    expect(file.summary.topLevelNodes).toEqual(2);
+    expect(file.summary.totalNodes).toEqual(3);
+    expect(file.summary.calendarNodes).toEqual(2);
+    expect(f('date1')?.name).toEqual('2022-10-06');
+    expect(f('date2')?.name).toEqual('2022-10-07');
+    expect(f('date2')?.children.length).toEqual(1);
+    expect(f('date2')?.children[0].name).toEqual('Link to [[date:2022-10-06]]');
+    expect(f('date2')?.children[0].refs).toEqual([]);
+  }
 });

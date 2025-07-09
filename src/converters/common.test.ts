@@ -1,12 +1,5 @@
 import { expect, test } from 'vitest';
-import {
-  findPreceedingAlias,
-  getAttributeDefinitionsFromName,
-  getValueForAttribute,
-  hasImages,
-  dateStringToUSDateUID,
-  dateStringToYMD,
-} from './common';
+import { findPreceedingAlias, getAttributeDefinitionsFromName, getValueForAttribute, hasImages } from './common';
 
 test('getAttributeDefintions', () => {
   expect(getAttributeDefinitionsFromName('foo::bar')).toEqual(['foo']);
@@ -24,18 +17,6 @@ test('getValueForAttribute', () => {
   expect(getValueForAttribute('foo', 'foo::bar')).toEqual('bar');
   expect(getValueForAttribute('foo', '**foo:** bam')).toEqual(undefined);
   expect(getValueForAttribute('bam', '**foo:**\nbam::bim')).toEqual('bim');
-});
-
-test('dateStringToUSDateUID', () => {
-  expect(dateStringToUSDateUID('June 1st, 2021')).toBe('06-01-2021');
-  expect(dateStringToUSDateUID('August 14th, 2021')).toBe('08-14-2021');
-  expect(dateStringToYMD('February 13th, 2023')).toBe('2023-02-13');
-});
-
-test('dateStringToYMD', () => {
-  expect(dateStringToYMD('June 1st, 2021')).toBe('2021-06-01');
-  expect(dateStringToYMD('August 14th, 2021')).toBe('2021-08-14');
-  expect(dateStringToYMD('February 13th, 2023')).toBe('2023-02-13');
 });
 
 test('hasImages', () => {

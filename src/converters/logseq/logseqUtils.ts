@@ -1,30 +1,38 @@
 import { TanaIntermediateNode } from '../../types/types.js';
 import { LogseqBlock } from './types.js';
 
-// NOW/LATER is the default in logseq
-const TODO_PREFIXES = ['TODO', 'LATER'];
-const DONE_FLAG = 'DONE';
-const TODO_REGEX = new RegExp(`^(${TODO_PREFIXES.join('|')})\\s*`);
+/**
+ * Logseq has two flavors for their terminology for TODOs. The default is
+ * NOW/LATER and the second option is TODO/DONE. These are the mappings:
+ *
+ * LATER = TODO
+ * NOW = DOING
+ * CANCELED = CANCELED
+ * DONE = DONE
+ */
+const TODO_REGEX = new RegExp(`^(TODO|LATER)\\s+`);
+const TODO_OR_DOING_REGEX = new RegExp(`^(TODO|LATER|DOING|NOW)\\s+`);
+const DONE_REGEX = new RegExp(`^DONE\\s+`);
+const DONE_OR_CANCELED_REGEX = new RegExp(`^(DONE|CANCELED)\\s+`);
 
 export function isTodo(name: string) {
-  for (const prefix of TODO_PREFIXES) {
-    if (name.startsWith(prefix)) {
-      return true;
-    }
-  }
-  return false;
+  return TODO_OR_DOING_REGEX.test(name);
 }
 
 export function isDone(name: string) {
-  return name.substring(0, DONE_FLAG.length) === DONE_FLAG;
+  return DONE_OR_CANCELED_REGEX.test(name);
 }
 
 export function setNodeAsTodo(node: TanaIntermediateNode) {
   node.name = node.name.replace(TODO_REGEX, '');
+  // if DOING/NOW treat it as a TODO item but leave the DOING or NOW in the name
+  // so it remains clear to the user that it's an in progressk item
   node.todoState = 'todo';
 }
 export function setNodeAsDone(node: TanaIntermediateNode) {
-  node.name = node.name.substring(DONE_FLAG.length + 1);
+  node.name = node.name.replace(DONE_REGEX, '');
+  // if canceled, leave the name as is so it remains clear that it's a canceled
+  // task to the user, but set todoState to done
   node.todoState = 'done';
 }
 

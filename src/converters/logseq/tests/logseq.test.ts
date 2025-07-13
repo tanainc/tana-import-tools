@@ -176,3 +176,39 @@ test('Date formats', () => {
     expect(f('date2')?.children[0].refs).toEqual([]);
   }
 });
+test('Todos', () => {
+  const [file, f] = importLogseqFile('todo.json');
+  expect(file.summary.topLevelNodes).toEqual(1);
+  expect(file.summary.totalNodes).toEqual(8);
+
+  expect(f('child1')?.type).toBe('node');
+  expect(f('child1')?.name).toBe('later task');
+  expect(f('child1')?.todoState).toBe('todo');
+
+  // NOW (DOING) not yet supported, just a regular TODO in Tana
+  expect(f('child2')?.type).toBe('node');
+  expect(f('child2')?.name).toContain('now task');
+  expect(f('child2')?.todoState).toBe('todo');
+
+  expect(f('child3')?.type).toBe('node');
+  expect(f('child3')?.name).toBe('done task');
+  expect(f('child3')?.todoState).toBe('done');
+
+  expect(f('child4')?.type).toBe('node');
+  expect(f('child4')?.name).toBe('not a task');
+  expect(f('child4')?.todoState).toBe(undefined);
+
+  expect(f('child5')?.type).toBe('node');
+  expect(f('child5')?.name).toBe('todo task');
+  expect(f('child5')?.todoState).toBe('todo');
+
+  // DOING not yet supported, just a regular TODO in Tana
+  expect(f('child6')?.type).toBe('node');
+  expect(f('child6')?.name).toContain('doing task');
+  expect(f('child6')?.todoState).toBe('todo');
+
+  // CANCELED not yet supported, just treat as DONE in Tana prefixed with CANCELED
+  expect(f('child7')?.type).toBe('node');
+  expect(f('child7')?.name).toContain('CANCELED canceled task');
+  expect(f('child7')?.todoState).toBe('done');
+});

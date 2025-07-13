@@ -176,7 +176,6 @@ test('Date formats', () => {
     expect(f('date2')?.children[0].refs).toEqual([]);
   }
 });
-
 test('Todos', () => {
   const [file, f] = importLogseqFile('todo.json');
   expect(file.summary.topLevelNodes).toEqual(1);

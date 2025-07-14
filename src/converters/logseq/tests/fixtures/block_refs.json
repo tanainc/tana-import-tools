@@ -37,6 +37,12 @@
           "format": "markdown",
           "children": [],
           "content": "See ((child2))"
+        },
+        {
+          "id": "child4",
+          "format": "markdown",
+          "children": [],
+          "content": "inline [block reference](((child2))) on arbitrary text"
         }
       ]
     }

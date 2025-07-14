@@ -41,13 +41,16 @@ test('Block references', () => {
   const [file, f] = importLogseqFile('block_refs.json');
 
   expect(file.summary.topLevelNodes).toEqual(3);
-  expect(file.summary.totalNodes).toEqual(6);
+  expect(file.summary.totalNodes).toEqual(7);
   const child2 = f('page2')?.children?.[0];
   expect(child2?.name).toEqual('[[child1]]');
   expect(child2?.refs).toEqual(['child1']);
   const child3 = f('page3')?.children?.[0];
   expect(child3?.name).toEqual('See [[child2]]');
   expect(child3?.refs).toEqual(['child2']);
+  const child4 = f('page3')?.children?.[1];
+  expect(child4?.name).toEqual('inline [block reference]([[child2]]) on arbitrary text');
+  expect(child4?.refs).toEqual(['child2']);
 });
 
 test('Codeblocks', () => {

@@ -552,9 +552,6 @@ export class LogseqConverter implements IConverter {
         nodeForImport.refs.push(refNode.uid);
         continue;
       }
-      if (link === 'roam/js' || link === 'roam/css' || link === '{{[[roam/js]]}}') {
-        continue;
-      }
 
       // Still not found, so we create it in stash.
       refNode = this.createNodeForImport({

@@ -6,7 +6,7 @@ import {
   TanaIntermediateSummary,
 } from '../../types/types.js';
 import {
-  enrichRoam,
+  markdownToHTML,
   findGroups,
   getBracketLinks,
   getCodeIfCodeblock,
@@ -76,7 +76,7 @@ export class RoamConverter implements IConverter {
           // normalize the links
           this.normalizeLinksAndSetAliases(nodeForImport);
 
-          nodeForImport.name = enrichRoam(nodeForImport.name);
+          nodeForImport.name = markdownToHTML(nodeForImport.name);
         }
       }
     } catch (error) {

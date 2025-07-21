@@ -6,7 +6,7 @@ import {
   TanaIntermediateSummary,
 } from '../../types/types.js';
 import {
-  enrichRoam,
+  markdownToHTML,
   findGroups,
   getBracketLinks,
   getCodeIfCodeblock,
@@ -69,7 +69,7 @@ export class LogseqConverter implements IConverter {
           // normalize the links
           this.normalizeLinksAndSetAliases(nodeForImport);
 
-          nodeForImport.name = enrichRoam(nodeForImport.name);
+          nodeForImport.name = markdownToHTML(nodeForImport.name);
         }
       }
     } catch (error) {
@@ -316,7 +316,7 @@ export class LogseqConverter implements IConverter {
     }
 
     const pageName = node['page-name'];
-    // journal pages in Roam-alikes have special UID (MM-DD-YYYY), we flag these as date nodes
+    // journal pages in Logseq-alikes have special UID (MM-DD-YYYY), we flag these as date nodes
     if (pageName?.match(DATE_REGEX)) {
       this.summary.calendarNodes += 1;
       intermediateNode.name = dateStringToUSDateUID(pageName);
@@ -360,7 +360,17 @@ export class LogseqConverter implements IConverter {
   }
 
   private normalizeLinksAndSetAliases(nodeForImport: TanaIntermediateNode) {
-    findGroups(nodeForImport.name, '((', '))').forEach((g) => {
+    // Fix any block refs that are not set
+    findGroups(nodeForImport.name, '(((', ')))').forEach((g: { content: string }) => {
+      if (!nodeForImport.refs || !nodeForImport.refs.includes(g.content)) {
+        if (!nodeForImport.refs) {
+          nodeForImport.refs = [];
+        }
+        nodeForImport.refs.push(g.content);
+      }
+    });
+
+    findGroups(nodeForImport.name, '((', '))').forEach((g: { content: string }) => {
       // make sure we do not insert anything invalid.
       if (!g.content.includes('(')) {
         if (!nodeForImport.refs || !nodeForImport.refs.includes(g.content)) {
@@ -405,7 +415,11 @@ export class LogseqConverter implements IConverter {
       // the node we are replacing might have already been converted already,lets check that last
       const originalRefName = this.originalNodeNames.get(refUID);
 
-      if (nodeForImport.name.includes(`((${refUID}))`)) {
+      if (nodeForImport.name.includes(`(((${refUID})))`)) {
+        const refString = `(((${refUID})))`;
+        startIndex = nodeForImport.name.indexOf(refString);
+        newNodeName = nodeForImport.name.split(refString).join(`([[${refUID}]])`);
+      } else if (nodeForImport.name.includes(`((${refUID}))`)) {
         const refString = `((${refUID}))`;
         startIndex = nodeForImport.name.indexOf(refString);
         newNodeName = nodeForImport.name.split(refString).join(`[[${refUID}]]`);

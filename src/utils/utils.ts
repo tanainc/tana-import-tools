@@ -111,7 +111,7 @@ export function getBracketLinks(text: string, skipIfNotDirect: boolean): string[
 }
 
 // Note: This is a very rudimentary enrichment. We should move to markdown at some point
-export function enrichRoam(nodeContent: string) {
+export function markdownToHTML(nodeContent: string) {
   if (!nodeContent) {
     return nodeContent;
   }

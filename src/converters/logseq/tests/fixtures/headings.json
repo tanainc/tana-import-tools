@@ -3,7 +3,7 @@
 	"blocks": [
 		{
 			"id": "page1",
-			"page-name": "Headers",
+			"page-name": "Headings",
 			"format": "markdown",
 			"children": [
 				{

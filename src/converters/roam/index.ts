@@ -6,7 +6,7 @@ import {
   TanaIntermediateSummary,
 } from '../../types/types.js';
 import {
-  enrichRoam,
+  markdownToHTML,
   findGroups,
   getBracketLinks,
   getCodeIfCodeblock,
@@ -33,6 +33,7 @@ type RoamNode = {
   refs?: { uid: string }[];
   'create-time': number;
   'edit-time': number;
+  heading?: number;
 };
 
 // Roam supports dates in format like "February 8th, 2022" or "March 31st, 2022"
@@ -82,7 +83,7 @@ export class RoamConverter implements IConverter {
           // normalize the links
           this.normalizeLinksAndSetAliases(nodeForImport);
 
-          nodeForImport.name = enrichRoam(nodeForImport.name);
+          nodeForImport.name = markdownToHTML(nodeForImport.name);
         }
       }
     } catch (error) {
@@ -360,6 +361,11 @@ export class RoamConverter implements IConverter {
       type: type,
       mediaUrl: url,
     };
+
+    // Handle headings: if node has heading property, set flags to ['section']
+    if (node.heading && node.heading >= 1) {
+      intermediateNode.flags = ['section'];
+    }
 
     if (!parentNode) {
       this.topLevelMap.set(intermediateNode.name, intermediateNode);

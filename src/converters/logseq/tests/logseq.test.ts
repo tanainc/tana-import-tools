@@ -41,13 +41,16 @@ test('Block references', () => {
   const [file, f] = importLogseqFile('block_refs.json');
 
   expect(file.summary.topLevelNodes).toEqual(3);
-  expect(file.summary.totalNodes).toEqual(6);
+  expect(file.summary.totalNodes).toEqual(7);
   const child2 = f('page2')?.children?.[0];
   expect(child2?.name).toEqual('[[child1]]');
   expect(child2?.refs).toEqual(['child1']);
   const child3 = f('page3')?.children?.[0];
   expect(child3?.name).toEqual('See [[child2]]');
   expect(child3?.refs).toEqual(['child2']);
+  const child4 = f('page3')?.children?.[1];
+  expect(child4?.name).toEqual('inline [block reference]([[child2]]) on arbitrary text');
+  expect(child4?.refs).toEqual(['child2']);
 });
 
 test('Codeblocks', () => {
@@ -86,8 +89,8 @@ test('Images', () => {
   );
 });
 
-test('Headers', () => {
-  const [file, f] = importLogseqFile('headers.json');
+test('Headings', () => {
+  const [file, f] = importLogseqFile('headings.json');
   // Top-level is the page node
   expect(file.summary.topLevelNodes).toEqual(1);
   // All nodes in the fixture
@@ -175,4 +178,40 @@ test('Date formats', () => {
     expect(f('date2')?.children[0].name).toEqual('Link to [[date:2022-10-06]]');
     expect(f('date2')?.children[0].refs).toEqual([]);
   }
+});
+test('Todos', () => {
+  const [file, f] = importLogseqFile('todo.json');
+  expect(file.summary.topLevelNodes).toEqual(1);
+  expect(file.summary.totalNodes).toEqual(8);
+
+  expect(f('child1')?.type).toBe('node');
+  expect(f('child1')?.name).toBe('later task');
+  expect(f('child1')?.todoState).toBe('todo');
+
+  // NOW (DOING) not yet supported, just a regular TODO in Tana
+  expect(f('child2')?.type).toBe('node');
+  expect(f('child2')?.name).toContain('now task');
+  expect(f('child2')?.todoState).toBe('todo');
+
+  expect(f('child3')?.type).toBe('node');
+  expect(f('child3')?.name).toBe('done task');
+  expect(f('child3')?.todoState).toBe('done');
+
+  expect(f('child4')?.type).toBe('node');
+  expect(f('child4')?.name).toBe('not a task');
+  expect(f('child4')?.todoState).toBe(undefined);
+
+  expect(f('child5')?.type).toBe('node');
+  expect(f('child5')?.name).toBe('todo task');
+  expect(f('child5')?.todoState).toBe('todo');
+
+  // DOING not yet supported, just a regular TODO in Tana
+  expect(f('child6')?.type).toBe('node');
+  expect(f('child6')?.name).toContain('doing task');
+  expect(f('child6')?.todoState).toBe('todo');
+
+  // CANCELED not yet supported, just treat as DONE in Tana prefixed with CANCELED
+  expect(f('child7')?.type).toBe('node');
+  expect(f('child7')?.name).toContain('CANCELED canceled task');
+  expect(f('child7')?.todoState).toBe('done');
 });

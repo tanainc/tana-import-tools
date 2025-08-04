@@ -421,3 +421,36 @@ test('Skips {{[[roam/js]]}} etc', () => {
   expect(f('roamjs')).toBeUndefined();
   expect(f('roamcss')).toBeUndefined();
 });
+
+test('Headings', () => {
+  const [file, f] = importRoamFile('headings.json');
+
+  expect(file.summary.topLevelNodes).toEqual(2);
+  expect(file.summary.totalNodes).toEqual(5);
+
+  // Parent Heading h1
+  const parentH1 = f('firstId');
+  expect(parentH1?.flags).toEqual(['section']);
+  expect(parentH1?.name).toBe('Parent Heading h1');
+  expect(parentH1?.children?.length).toBe(3);
+
+  // Child header h1
+  const childH1 = f('childHeading1');
+  expect(childH1?.flags).toEqual(['section']);
+  expect(childH1?.name).toBe('Child header h1');
+
+  // Child header h2
+  const childH2 = f('childHeading2');
+  expect(childH2?.flags).toEqual(['section']);
+  expect(childH2?.name).toBe('Child header h2');
+
+  // Child header h3
+  const childH3 = f('childHeading3');
+  expect(childH3?.flags).toEqual(['section']);
+  expect(childH3?.name).toBe('Child header h3');
+
+  // Parent Heading h2
+  const parentH2 = f('secondId');
+  expect(parentH2?.flags).toEqual(['section']);
+  expect(parentH2?.name).toBe('Parent Heading h2');
+});

@@ -89,8 +89,8 @@ test('Images', () => {
   );
 });
 
-test('Headers', () => {
-  const [file, f] = importLogseqFile('headers.json');
+test('Headings', () => {
+  const [file, f] = importLogseqFile('headings.json');
   // Top-level is the page node
   expect(file.summary.topLevelNodes).toEqual(1);
   // All nodes in the fixture

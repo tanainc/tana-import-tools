@@ -48,7 +48,7 @@ If you are making changes that you think will benefit other users, please create
  - 🟢 journal pages
  - 🟢 references
  - 🔴 headings
- - 🟡 todos (TODO/DONE supported, NOW/LATER/DOING/CANCELED not supported)
+ - 🟡 todos (TODO/LATER/DONE supported, NOW/DOING are made into TODO prefixed with NOW or DOING, and CANCELED is made into DONE prefixed with CANCELED)
  - 🟡 logbook (imported as text)
  - 🟡 images (only remote images without redirect are working. Local images/assets still not working)
  - 🟡 code blocks (no language support)

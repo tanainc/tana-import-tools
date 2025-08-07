@@ -14,26 +14,26 @@
   ],
   "license": "MIT",
   "scripts": {
-    "ci": "yarn lint && yarn test",
+    "ci": "npm run lint && npm test",
     "format": "prettier --write \"src/**/*.ts\"",
     "lint": "eslint --ext .ts src/",
     "prepack": "rm -rf dist/ && ./node_modules/.bin/tsc  --project tsconfig.build.json",
-    "build": "yarn prepack",
-    "convert:roam": "yarn build && node dist/runner.js roam",
-    "convert:workflowy": "yarn build && node dist/runner.js workflowy",
-    "convert:logseq": "yarn build && node dist/runner.js logseq",
+    "build": "npm run prepack",
+    "convert:roam": "npm run build && node dist/runner.js roam",
+    "convert:workflowy": "npm run build && node dist/runner.js workflowy",
+    "convert:logseq": "npm run build && node dist/runner.js logseq",
     "test": "vitest"
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.18.6",
-    "@babel/preset-typescript": "^7.18.6",
+    "@babel/preset-env": "^7.25.0",
+    "@babel/preset-typescript": "^7.25.0",
     "@types/node": "^22.0.0",
-    "@typescript-eslint/eslint-plugin": "^6.3.0",
-    "@typescript-eslint/parser": "^6.3.0",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
     "date-fns": "^4.1.0",
-    "eslint": "^8.21.0",
-    "prettier": "^3.0.1",
-    "typescript": "^5.1.6",
+    "eslint": "^8.57.0",
+    "prettier": "^3.3.3",
+    "typescript": "^5.5.4",
     "vitest": "^1.6.0"
   },
   "eslintConfig": {
@@ -71,7 +71,7 @@
       }
     ]
   },
-  "packageManager": "yarn@4.2.2",
+  "packageManager": "npm@10",
   "volta": {
     "node": "22.0.0"
   }

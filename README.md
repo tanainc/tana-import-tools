@@ -12,11 +12,11 @@ If you are making changes that you think will benefit other users, please create
 
 #### Installing
 1. Install Node.js 22.x https://nodejs.org/en/download/
-2. Install Yarn and follow all instructions here https://yarnpkg.com/getting-started/install
+2. Use npm (comes with Node 22). No Yarn required.
 3. Download or git clone this tana-import-tools (or as-of-yet-unmerged branch you want to test, such as logseq)
-4. In that folder, in terminal, type `yarn install`
+4. In that folder, in terminal, type `npm install`
 5. Export your existing PKM data (roam, logseq) to that folder and name it appropriately, e.g., `logseq.json`
-6. Type the appropriate command for your conversion, e.g., `yarn convert:logseq logseq.json` where convert: can have roam, notion, logseq, or other formats
+6. Type the appropriate command for your conversion, e.g., `npm run convert:logseq logseq.json` where convert: can have roam, notion, logseq, or other formats
 7. In Tana, go to the top right menu and `import`
 8. Hopefully everything worked! If not, report back to [#tana-import-tools](https://tanacommunity.slack.com/archives/C044X2ZC335)
 
@@ -40,7 +40,7 @@ If you are making changes that you think will benefit other users, please create
 
 4. Click "Export All"
 
-5. `yarn convert:roam datasets/my_roam_export.json`
+5. `npm run convert:roam datasets/my_roam_export.json`
 
 ### LogSeq
 
@@ -65,7 +65,7 @@ If you are making changes that you think will benefit other users, please create
 
 3. Click "Export as JSON"
 
-4. `yarn convert:logseq datasets/my_logseq_export.json`
+4. `npm run convert:logseq datasets/my_logseq_export.json`
 
 ### Workflowy
 
@@ -86,7 +86,7 @@ If you are making changes that you think will benefit other users, please create
 
 3. Select "OPML" and click to download
 
-4. `yarn convert:workflowy datasets/my_workflowy_export.opml`
+4. `npm run convert:workflowy datasets/my_workflowy_export.opml`
 
 # 📥 Importing to Tana
 

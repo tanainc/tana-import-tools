@@ -20,11 +20,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - run: corepack enable
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'yarn'
-      - run: yarn install --immutable
-      - run: yarn ci
+          cache: 'npm'
+      - run: npm install
+      - run: npm run ci

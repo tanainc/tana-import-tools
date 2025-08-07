@@ -10,7 +10,7 @@
 - `samples/`: Example datasets for local testing.
 
 ## Build, Test, and Development Commands
-- `yarn install`: Install dependencies (Yarn 4, Node >18).
+- `yarn install`: Install dependencies (Yarn 4, Node 22+).
 - `yarn build`: Compile TS to `dist/` (excludes tests).
 - `yarn test`: Run unit tests with Vitest.
 - `yarn lint`: Lint with ESLint (TS rules enabled).
@@ -39,5 +39,5 @@
 
 ## Security & Configuration Tips
 - Do not commit private datasets; use `samples/` or redact sensitive data.
-- Environment: Node >18, Yarn 4 (Berry), ESM-only.
+- Environment: Node 22+, Yarn 4 (Berry), ESM-only.
 - Generated files in `dist/` are built artifacts—avoid editing by hand.

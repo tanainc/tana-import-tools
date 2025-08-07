@@ -11,7 +11,7 @@ If you need to do some something special with your data before putting it into T
 If you are making changes that you think will benefit other users, please create a pull request.
 
 #### Installing
-1. Install Node.js https://nodejs.org/en/download/
+1. Install Node.js 22.x https://nodejs.org/en/download/
 2. Install Yarn and follow all instructions here https://yarnpkg.com/getting-started/install
 3. Download or git clone this tana-import-tools (or as-of-yet-unmerged branch you want to test, such as logseq)
 4. In that folder, in terminal, type `yarn install`

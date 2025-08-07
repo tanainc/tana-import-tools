@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-
 import { expect, test } from 'vitest';
 import { expectField, expectImage } from '../../../testUtils/testUtils.js';
 import { importRoamFile } from './testUtils.js';
@@ -17,23 +15,11 @@ test('Smoke test import preview ', async () => {
   });
 
   expect(file.attributes).toEqual([
-    {
-      count: 2,
-      name: 'Email',
-      values: ['john@dutton.com', 'jack@black.com'],
-    },
+    { count: 2, name: 'Email', values: ['john@dutton.com', 'jack@black.com'] },
     { name: 'State', count: 2, values: ['Montana', 'California'] },
 
-    {
-      count: 2,
-      name: 'Favorite meal',
-      values: ['Blue steak', 'Pizza'],
-    },
-    {
-      count: 1,
-      name: 'Current City',
-      values: ['Oslo'],
-    },
+    { count: 2, name: 'Favorite meal', values: ['Blue steak', 'Pizza'] },
+    { count: 1, name: 'Current City', values: ['Oslo'] },
   ]);
 });
 
@@ -42,36 +28,12 @@ test('fields', () => {
   // TODO: We do not set fixed values yet
 
   expect(file.attributes).toEqual([
-    {
-      count: 1,
-      name: 'Owner',
-      values: ['[[Jack]]'],
-    },
-    {
-      count: 1,
-      name: 'Contact',
-      values: ['[[Jack]]'],
-    },
-    {
-      count: 1,
-      name: 'definition',
-      values: ['Now an alias for [foo](((someRefId)))'],
-    },
-    {
-      count: 1,
-      name: 'SomeField',
-      values: ['[[Pete]]', '[[Jack]]', '[[Janet]]'],
-    },
-    {
-      count: 1,
-      name: 'Color',
-      values: ['[[Red]]'],
-    },
-    {
-      count: 1,
-      name: 'City',
-      values: ['[[Oslo]]'],
-    },
+    { count: 1, name: 'Owner', values: ['[[Jack]]'] },
+    { count: 1, name: 'Contact', values: ['[[Jack]]'] },
+    { count: 1, name: 'definition', values: ['Now an alias for [foo](((someRefId)))'] },
+    { count: 1, name: 'SomeField', values: ['[[Pete]]', '[[Jack]]', '[[Janet]]'] },
+    { count: 1, name: 'Color', values: ['[[Red]]'] },
+    { count: 1, name: 'City', values: ['[[Oslo]]'] },
   ]);
 
   expectField('fieldHolder', 'definition', ['Now an alias for [foo]([[someRefId]])'], f);
@@ -99,13 +61,7 @@ test('fields', () => {
 
 test('meta node extraction', () => {
   const [file, f, fn] = importRoamFile('meta_extract.json');
-  expect(file.attributes).toEqual([
-    {
-      count: 2,
-      name: 'SomeField',
-      values: ['SomeValue', 'SomeValue'],
-    },
-  ]);
+  expect(file.attributes).toEqual([{ count: 2, name: 'SomeField', values: ['SomeValue', 'SomeValue'] }]);
 
   const fieldAndNode = fn('Testcase: Fields+nodes in meta');
 

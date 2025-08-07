@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-
 import { expect, test } from 'vitest';
 import { expectImage } from '../../../testUtils/testUtils.js';
 import { getField, importLogseqFile, hasHeadingField } from './testUtils.js';

@@ -25,16 +25,16 @@
     "test": "vitest"
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.25.0",
-    "@babel/preset-typescript": "^7.25.0",
-    "@types/node": "^22.0.0",
-    "@typescript-eslint/eslint-plugin": "^6.21.0",
-    "@typescript-eslint/parser": "^6.21.0",
+    "@babel/preset-env": "^7.28.0",
+    "@babel/preset-typescript": "^7.27.1",
+    "@types/node": "^24.2.0",
+    "@typescript-eslint/eslint-plugin": "^8.39.0",
+    "@typescript-eslint/parser": "^8.39.0",
     "date-fns": "^4.1.0",
-    "eslint": "^8.57.0",
-    "prettier": "^3.3.3",
-    "typescript": "^5.5.4",
-    "vitest": "^1.6.0"
+    "eslint": "^9.32.0",
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
   },
   "eslintConfig": {
     "extends": [
@@ -71,7 +71,7 @@
       }
     ]
   },
-  "packageManager": "npm@10",
+  "packageManager": "npm@11",
   "volta": {
     "node": "22.0.0"
   }

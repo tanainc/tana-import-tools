@@ -1,6 +1,7 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
+
 - `src/`: TypeScript source.
   - `converters/{roam,workflowy,logseq}`: Converter implementations with `index.ts`, utils, and `tests/`.
   - `types/`: Tana Intermediate Format types (`types.ts`).
@@ -10,6 +11,7 @@
 - `samples/`: Example datasets for local testing.
 
 ## Build, Test, and Development Commands
+
 - `npm install`: Install dependencies (Node 22+).
 - `npm run build`: Compile TS to `dist/` (excludes tests).
 - `npm test`: Run unit tests with Vitest.
@@ -21,23 +23,27 @@
   - `npm run convert:logseq path/to/export.json`
 
 ## Coding Style & Naming Conventions
+
 - Prettier: 2-space indent, single quotes, trailing commas, width 120, arrow parens always.
 - TypeScript: strict mode, ESM modules, Node typing.
 - File naming: `.ts`; tests as `*.test.ts` (often under `converters/*/tests`).
 - Prefer small, pure functions; named exports from `index.ts`.
 
 ## Testing Guidelines
+
 - Framework: Vitest. Place tests next to converters or under `tests/` folders.
 - Use helpers in `src/testUtils/testUtils.ts` (e.g., `importFileAndGetHelpers`).
 - Add tests for new converters and for bug fixes (see `CONTRIBUTING.md`).
-- Run `yarn test` locally; keep tests independent of network and filesystem side effects.
+- Run `npm run test` locally; keep tests independent of network and filesystem side effects.
 
 ## Commit & Pull Request Guidelines
+
 - Commits: short, imperative, scoped messages (e.g., `logseq: handle NOW/DOING todos`).
 - PRs: include clear description, sample input/output, linked issues, and tests. Update README if user-facing behavior changes.
 - Keep diffs focused; follow existing module layout and naming.
 
 ## Security & Configuration Tips
+
 - Do not commit private datasets; use `samples/` or redact sensitive data.
 - Environment: Node 22+, npm, ESM-only.
 - Generated files in `dist/` are built artifacts—avoid editing by hand.

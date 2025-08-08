@@ -1,0 +1,118 @@
+import { expect, test } from 'vitest';
+import { expectImage } from '../../../testUtils/testUtils.js';
+import { importMarkdownDir } from './testUtils.js';
+
+test('Headings and bullets', () => {
+  const [file, , fn] = importMarkdownDir('headings');
+  // one page per file; page title should come from first heading
+  expect(file.summary.topLevelNodes).toBe(1);
+  const page = file.nodes[0];
+  expect(page.name).toBe('Header 1');
+  // headings flagged as sections
+  const h1 = fn('Header 1');
+  expect(h1?.flags).toEqual(['section']);
+  const h2 = fn('Header 2');
+  expect(h2?.flags).toEqual(['section']);
+  // bullet items under headings
+  const child = h1?.children?.find((c) => c.name === 'First bullet');
+  expect(child).toBeDefined();
+});
+
+test('Todos and fields', () => {
+  const [file, , fn] = importMarkdownDir('todos_fields');
+  const todo = fn('a todo item');
+  expect(todo?.todoState).toBe('todo');
+  const done = fn('done item');
+  expect(done?.todoState).toBe('done');
+  // field created
+  const field = fn('Owner');
+  expect(field?.type).toBe('field');
+  expect(field?.children?.[0].name).toMatch(/^\[\[/); // value is a link
+  expect(file.attributes?.find((a) => a.name === 'Owner')?.count).toBeGreaterThan(0);
+  // paragraph field
+  const pf = fn('Status');
+  expect(pf?.type).toBe('field');
+  expect(pf?.children?.[0].name).toBe('Open');
+});
+
+test('Images and links', () => {
+  const [file, f, fn] = importMarkdownDir('images_links');
+  // single image line
+  const img = fn('image');
+  expect(img?.type).toBe('image');
+  expect(img?.mediaUrl?.startsWith('https://')).toBe(true);
+  // multiple inline images: find a node with two image children
+  const page = file.nodes.find((n) => n.name === 'Media')!;
+  const findHost = (n: any): any | undefined => {
+    if (n.children && n.children.filter((c: any) => c.type === 'image').length === 2) return n;
+    for (const c of n.children || []) {
+      const h = findHost(c);
+      if (h) return h;
+    }
+  };
+  const host: any = findHost(page);
+  expect(host).toBeDefined();
+  expect(host.children.length).toBe(2);
+  expectImage(host.children[0].uid, 'https://tana.inc/photo/1', f);
+  // external link anchor
+  const linkLine = fn('Plain link: <a href="https://www.vg.no">alias</a>');
+  expect(linkLine).toBeDefined();
+});
+
+test('Codeblocks', () => {
+  const [, , fn] = importMarkdownDir('codeblocks');
+  const block = fn('\nconst tana = "cool";\n');
+  expect(block?.type).toBe('codeblock');
+  expect(block?.codeLanguage).toBe('javascript');
+});
+
+test('Local images get file://', () => {
+  const [file] = importMarkdownDir('local_images');
+  const collect: any[] = [];
+  const walk = (n: any) => {
+    if (n.type === 'image' && typeof n.mediaUrl === 'string' && n.mediaUrl.startsWith('file://')) collect.push(n);
+    for (const c of n.children || []) walk(c);
+  };
+  for (const top of file.nodes) walk(top);
+  expect(collect.length).toBeGreaterThan(0);
+});
+
+test('Front matter is converted to fields and first heading used as title', () => {
+  const [file, , fn] = importMarkdownDir('frontmatter');
+  const page = file.nodes[0];
+  expect(page.name).toBe('Frontmatter Title');
+  const author = fn('Author');
+  expect(author?.type).toBe('field');
+  expect(author?.children?.[0].name).toBe('Jane Doe');
+  const tags = fn('Tags');
+  expect(tags?.type).toBe('field');
+  expect(tags?.children?.map((c) => c.name)).toEqual(['project', 'work']);
+});
+
+test('Links to other pages and files', () => {
+  const [file, f, fn] = importMarkdownDir('links/pages');
+  const pageA = file.nodes.find((n) => n.name === 'A');
+  const pageB = file.nodes.find((n) => n.name === 'B');
+  expect(pageA).toBeDefined();
+  expect(pageB).toBeDefined();
+  const uidB = pageB!.uid;
+  const findNode = (n: any): any | undefined => {
+    if (Array.isArray(n.refs) && n.refs.includes(uidB)) return n;
+    for (const c of n.children || []) {
+      const res = findNode(c);
+      if (res) return res;
+    }
+  };
+  const linkNode: any = findNode(pageA!);
+  expect(linkNode).toBeDefined();
+  expect(linkNode.refs).toContain(uidB);
+  const findCsv = (n: any): any | undefined => {
+    if (typeof n.name === 'string' && /<a href="file:\/\/.+\/assets\/data\.csv">CSV<\/a>/.test(n.name)) return n;
+    for (const c of n.children || []) {
+      const res = findCsv(c);
+      if (res) return res;
+    }
+  };
+  const csvNode: any = findCsv(pageA!);
+  expect(csvNode).toBeDefined();
+});

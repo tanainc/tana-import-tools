@@ -21,6 +21,7 @@
     "convert:roam": "npm run build && node dist/runner.js roam",
     "convert:workflowy": "npm run build && node dist/runner.js workflowy",
     "convert:logseq": "npm run build && node dist/runner.js logseq",
+    "convert:markdown": "npm run build && node dist/runner.js markdown",
     "test": "vitest"
   },
   "devDependencies": {

@@ -5,6 +5,7 @@ import { TanaIntermediateFile } from './types/types.js';
 import { RoamConverter } from './converters/roam/index.js';
 import { WorkflowyConverter } from './converters/workflowy/index.js';
 import { LogseqConverter } from './converters/logseq/index.js';
+import { MarkdownConverter } from './converters/markdown/index.js';
 
 const fileType = process.argv[2];
 const file = process.argv[3];
@@ -19,7 +20,7 @@ if (!file) {
   exit(0);
 }
 
-const supportedTypes = ['roam', 'workflowy', 'logseq'];
+const supportedTypes = ['roam', 'workflowy', 'logseq', 'markdown'];
 if (!supportedTypes.includes(fileType)) {
   console.log(`File type: ${fileType} is not supported`);
   exit(0);
@@ -27,8 +28,22 @@ if (!supportedTypes.includes(fileType)) {
 
 console.log(`\n\nReading file: ${file} for import as: ${fileType}`);
 
-const contents = fs.readFileSync(file, 'utf8');
-console.log('File length:', contents.length);
+let contents: string | undefined = undefined;
+// Only pre-read contents for non-directory based types or when not a directory
+try {
+  const stat = fs.statSync(file);
+  const isDir = stat.isDirectory();
+  if (!isDir || fileType !== 'markdown') {
+    contents = fs.readFileSync(file, 'utf8');
+    console.log('File length:', contents.length);
+  }
+} catch (e) {
+  // fallback: attempt reading; may throw later in converters if invalid
+  try {
+    contents = fs.readFileSync(file, 'utf8');
+    console.log('File length:', contents.length);
+  } catch {}
+}
 
 function saveFile(fileName: string, tanaIntermediteNodes: TanaIntermediateFile) {
   const targetFileName = `${fileName}.tif.json`;
@@ -39,14 +54,34 @@ function saveFile(fileName: string, tanaIntermediteNodes: TanaIntermediateFile) 
 let tanaIntermediteFile = undefined;
 switch (fileType) {
   case 'roam':
+    if (!contents) throw new Error('No content to process');
     tanaIntermediteFile = new RoamConverter().convert(contents);
     break;
   case 'workflowy':
+    if (!contents) throw new Error('No content to process');
     tanaIntermediteFile = new WorkflowyConverter().convert(contents);
     break;
   case 'logseq':
+    if (!contents) throw new Error('No content to process');
     tanaIntermediteFile = new LogseqConverter().convert(contents);
     break;
+  case 'markdown': {
+    const md = new MarkdownConverter();
+    try {
+      const stat = fs.statSync(file);
+      if (stat.isDirectory()) {
+        tanaIntermediteFile = md.convertDirectory(file);
+      } else {
+        if (!contents) throw new Error('No content to process');
+        tanaIntermediteFile = md.convert(contents);
+      }
+    } catch (e) {
+      console.error('Unable to process markdown path', e);
+      if (!contents) throw e;
+      tanaIntermediteFile = md.convert(contents);
+    }
+    break;
+  }
   default:
     console.log(`File type ${fileType} is not supported`);
     exit(0);

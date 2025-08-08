@@ -116,3 +116,15 @@ test('Links to other pages and files', () => {
   const csvNode: any = findCsv(pageA!);
   expect(csvNode).toBeDefined();
 });
+
+test('Top-of-page Key: Value lines become fields', () => {
+  const [file, , fn] = importMarkdownDir('csv_pages');
+  const page = file.nodes.find((n) => n.name === 'Call mom');
+  expect(page).toBeDefined();
+  const dateField = fn('Date Created');
+  expect(dateField?.type).toBe('field');
+  expect(dateField?.children?.[0].name).toContain('January');
+  const statusField = fn('Status');
+  expect(statusField?.type).toBe('field');
+  expect(statusField?.children?.[0].name).toBe('Doing');
+});

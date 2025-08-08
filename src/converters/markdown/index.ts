@@ -305,6 +305,46 @@ export class MarkdownConverter implements IConverter {
           while (headingStack.length && headingStack[headingStack.length - 1].level >= level) headingStack.pop();
           headingStack.push({ level, node: pageNode });
           firstHeadingUsedAsTitle = true;
+
+          // Consume optional blank lines then any consecutive "Key: Value" metadata lines as fields
+          let j = i + 1;
+          // allow one or more blank lines after the title
+          while (j < lines.length && lines[j].trim() === '') j++;
+          const kvRegex = /^([A-Za-z0-9 _\-\/#&+']+):\s+(.+)$/;
+          let consumedAny = false;
+          while (j < lines.length) {
+            const m = lines[j].match(kvRegex);
+            if (!m) break;
+            const key = m[1].trim();
+            const val = m[2].trim();
+            const fieldNode = this.createNodeForImport({
+              uid: idgenerator(),
+              name: key,
+              createdAt: pageNode.createdAt,
+              editedAt: pageNode.editedAt,
+            });
+            fieldNode.type = 'field';
+            const valueNode = this.createNodeForImport({
+              uid: idgenerator(),
+              name: val,
+              createdAt: fieldNode.createdAt,
+              editedAt: fieldNode.editedAt,
+              parentNode: fieldNode.uid,
+            });
+            fieldNode.children = [valueNode];
+            if (!pageNode.children) pageNode.children = [];
+            pageNode.children.push(fieldNode);
+            this.summary.fields += 1;
+            this.summary.totalNodes += 1; // field node itself
+            this.ensureAttrMapIsUpdated(fieldNode);
+            consumedAny = true;
+            j++;
+          }
+          if (consumedAny) {
+            i = j;
+            listStack = [];
+            continue;
+          }
         } else {
           const hnode = this.createNodeForImport({
             uid: idgenerator(),

@@ -744,6 +744,12 @@ export class MarkdownConverter implements IConverter {
     }
 
     for (const link of outerLinks) {
+      // If link is already a known UID, just ensure it's in refs and skip creating anything
+      if (this.nodesForImport.has(link)) {
+        if (!nodeForImport.refs) nodeForImport.refs = [];
+        if (!nodeForImport.refs.includes(link)) nodeForImport.refs.push(link);
+        continue;
+      }
       if (nodeForImport.children?.some((c) => c.name === link || c.uid === link)) {
         continue;
       }

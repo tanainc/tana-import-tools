@@ -111,6 +111,10 @@ export class MarkdownConverter implements IConverter {
     // Then fix links + normalize + HTML for non-codeblock nodes
     for (const [, node] of this.nodesForImport) {
       if (node.type === 'codeblock') continue;
+      // Strip leading whitespace from content lines to avoid indented artifacts
+      if (typeof node.name === 'string') {
+        node.name = node.name.replace(/^\s+/, '');
+      }
       const newNodes = this.fixBrokenLinks(node);
       if (newNodes?.length) {
         rootLevelNodes.push(...newNodes);

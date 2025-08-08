@@ -467,6 +467,11 @@ export class MarkdownConverter implements IConverter {
       }
 
       // paragraph line: create a child node under current parent
+      // If we were inside a list and this line is not indented, the list has ended
+      // (Notion/Markdown often put a blank line before a top-level paragraph after a list.)
+      if (listStack.length && /^\S/.test(line)) {
+        listStack = [];
+      }
       let paragraph = line;
       // inline code as text preserved; code detection using getCodeIfCodeblock if wrapped fully
       const code = getCodeIfCodeblock(paragraph);

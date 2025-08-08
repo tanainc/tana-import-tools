@@ -1,6 +1,7 @@
 import { expect, test } from 'vitest';
 import { expectImage } from '../../../testUtils/testUtils.js';
 import { importMarkdownDir } from './testUtils.js';
+import { TanaIntermediateNode } from '../../../types/types.js';
 
 test('Headings and bullets', () => {
   const [file, , fn] = importMarkdownDir('headings');
@@ -127,4 +128,22 @@ test('Top-of-page Key: Value lines become fields', () => {
   const statusField = fn('Status');
   expect(statusField?.type).toBe('field');
   expect(statusField?.children?.[0].name).toBe('Doing');
+});
+
+test('Top-level paragraph after list is not nested', () => {
+  const [file] = importMarkdownDir('notion_gs');
+  const page = file.nodes[0];
+
+  const findByName = (n: TanaIntermediateNode, name: string): TanaIntermediateNode | undefined => {
+    if (n.name === name) return n;
+    for (const c of n.children || []) {
+      const f = findByName(c, name);
+      if (f) return f;
+    }
+  };
+  const bullet = findByName(page, 'Create subpages in byside a page');
+  expect(bullet).toBeDefined();
+
+  const hasQuestionAsChild = (bullet?.children || []).some((c) => c.name.includes('Have a question?'));
+  expect(hasQuestionAsChild).toBe(false);
 });

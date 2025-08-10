@@ -36,6 +36,11 @@
 - Add tests for new converters and for bug fixes (see `CONTRIBUTING.md`).
 - Run `npm run test` locally; keep tests independent of network and filesystem side effects.
 
+## Agent Run Notes
+
+- Node version: ensure Node 22+ (e.g., `nvm use 22`).
+- Sandboxed environments: run Vitest with threads to avoid worker kill errors: `npm test -- --pool=threads`.
+
 ## Commit & Pull Request Guidelines
 
 - Commits: short, imperative, scoped messages (e.g., `logseq: handle NOW/DOING todos`).

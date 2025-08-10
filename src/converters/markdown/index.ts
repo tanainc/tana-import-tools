@@ -50,7 +50,9 @@ export class MarkdownConverter implements IConverter {
   // IConverter — treat input as a single markdown file content
   convert(fileContent: string): TanaIntermediateFile | undefined {
     const pageNode = this.convertSingleFile({ filePath: 'document.md', content: fileContent });
-    if (!pageNode) return undefined;
+    if (!pageNode) {
+      return undefined;
+    }
 
     const rootLevelNodes: TanaIntermediateNode[] = [pageNode];
     this.postProcessAllNodes(rootLevelNodes);
@@ -104,13 +106,17 @@ export class MarkdownConverter implements IConverter {
     // First, convert relative markdown page/file links into internal refs or file:// anchors
     for (const top of rootLevelNodes) {
       const baseDir = this.pageUidToBaseDir.get(top.uid);
-      if (!baseDir) continue;
+      if (!baseDir) {
+        continue;
+      }
       this.convertRelativeLinksRecursively(top, baseDir);
     }
 
     // Then fix links + normalize + HTML for non-codeblock nodes
     for (const [, node] of this.nodesForImport) {
-      if (node.type === 'codeblock') continue;
+      if (node.type === 'codeblock') {
+        continue;
+      }
       // Strip leading whitespace from content lines to avoid indented artifacts
       if (typeof node.name === 'string') {
         node.name = node.name.replace(/^\s+/, '');
@@ -128,14 +134,20 @@ export class MarkdownConverter implements IConverter {
     if (node.type !== 'codeblock' && node.name?.includes('](')) {
       node.name = node.name.replace(/\[([^\]]*)\]\(([^)]+)\)/g, (_full, alias: string, link: string) => {
         // external links left as-is; handled by markdownToHTML later
-        if (/^[a-z]+:\/\//i.test(link) || link.startsWith('mailto:')) return _full;
+        if (/^[a-z]+:\/\//i.test(link) || link.startsWith('mailto:')) {
+          return _full;
+        }
         const decoded = this.safeDecode(link);
         const abs = path.resolve(baseDir, decoded);
         if (abs.toLowerCase().endsWith('.md')) {
           const uid = this.mdPathToPageUid.get(abs);
           if (uid) {
-            if (!node.refs) node.refs = [];
-            if (!node.refs.includes(uid)) node.refs.push(uid);
+            if (!node.refs) {
+              node.refs = [];
+            }
+            if (!node.refs.includes(uid)) {
+              node.refs.push(uid);
+            }
             return `[${alias}]([[${uid}]])`;
           }
           // If not found, fall back to filename as link text
@@ -146,7 +158,9 @@ export class MarkdownConverter implements IConverter {
       });
     }
     if (node.children) {
-      for (const c of node.children) this.convertRelativeLinksRecursively(c, baseDir);
+      for (const c of node.children) {
+        this.convertRelativeLinksRecursively(c, baseDir);
+      }
     }
   }
 
@@ -187,20 +201,24 @@ export class MarkdownConverter implements IConverter {
     const fileDir = path.dirname(file.filePath);
 
     const getCurrentParent = () => {
-      if (listStack.length) return listStack[listStack.length - 1].node;
-      if (headingStack.length) return headingStack[headingStack.length - 1].node;
+      if (listStack.length) {
+        return listStack[listStack.length - 1].node;
+      }
+      if (headingStack.length) {
+        return headingStack[headingStack.length - 1].node;
+      }
       return pageNode;
     };
 
     // Front matter (YAML-like) at file start
     if (lines[i]?.trim() === '---') {
       i++;
-      const fmStart = i;
+      // front matter starts at current index
       const fm: Record<string, string | string[]> = {};
       let currentKey: string | null = null;
       while (i < lines.length && lines[i].trim() !== '---') {
         const l = lines[i];
-        const kv = l.match(/^([A-Za-z0-9_ \-]+):\s*(.*)$/);
+        const kv = l.match(/^([A-Za-z0-9_ -]+):\s*(.*)$/);
         if (kv) {
           currentKey = kv[1].trim();
           const val = kv[2].trim();
@@ -215,7 +233,9 @@ export class MarkdownConverter implements IConverter {
         i++;
       }
       // consume closing ---
-      if (i < lines.length && lines[i].trim() === '---') i++;
+      if (i < lines.length && lines[i].trim() === '---') {
+        i++;
+      }
       // Create fields from fm
       for (const [key, val] of Object.entries(fm)) {
         const fieldNode = this.createNodeForImport({
@@ -225,9 +245,11 @@ export class MarkdownConverter implements IConverter {
           editedAt: pageNode.editedAt,
         });
         fieldNode.type = 'field';
-        if (!pageNode.children) pageNode.children = [];
+        if (!pageNode.children) {
+          pageNode.children = [];
+        }
         pageNode.children.push(fieldNode);
-        let children: TanaIntermediateNode[] = [];
+        const children: TanaIntermediateNode[] = [];
         if (Array.isArray(val)) {
           for (const v of val) {
             children.push(
@@ -278,7 +300,9 @@ export class MarkdownConverter implements IConverter {
           i++;
         }
         // consume closing fence if present
-        if (i < lines.length && /^\s*```\s*$/.test(lines[i])) i++;
+        if (i < lines.length && /^\s*```\s*$/.test(lines[i])) {
+          i++;
+        }
         const content = `\n${codeLines.join('\n')}\n`;
         const cb = this.createNodeForImport({
           uid: idgenerator(),
@@ -287,9 +311,13 @@ export class MarkdownConverter implements IConverter {
           editedAt: Date.now(),
           type: 'codeblock',
         });
-        if (lang) cb.codeLanguage = lang;
+        if (lang) {
+          cb.codeLanguage = lang;
+        }
         const parent = getCurrentParent();
-        if (!parent.children) parent.children = [];
+        if (!parent.children) {
+          parent.children = [];
+        }
         parent.children.push(cb);
         this.summary.totalNodes += 1;
         this.summary.leafNodes += 1;
@@ -306,19 +334,25 @@ export class MarkdownConverter implements IConverter {
           pageNode.name = title;
           pageNode.flags = ['section'];
           // Treat page node as the heading node at this level
-          while (headingStack.length && headingStack[headingStack.length - 1].level >= level) headingStack.pop();
+          while (headingStack.length && headingStack[headingStack.length - 1].level >= level) {
+            headingStack.pop();
+          }
           headingStack.push({ level, node: pageNode });
           firstHeadingUsedAsTitle = true;
 
           // Consume optional blank lines then any consecutive "Key: Value" metadata lines as fields
           let j = i + 1;
           // allow one or more blank lines after the title
-          while (j < lines.length && lines[j].trim() === '') j++;
-          const kvRegex = /^([A-Za-z0-9 _\-\/#&+']+):\s+(.+)$/;
+          while (j < lines.length && lines[j].trim() === '') {
+            j++;
+          }
+          const kvRegex = /^([A-Za-z0-9 _/#&+'-]+):\s+(.+)$/;
           let consumedAny = false;
           while (j < lines.length) {
             const m = lines[j].match(kvRegex);
-            if (!m) break;
+            if (!m) {
+              break;
+            }
             const key = m[1].trim();
             const val = m[2].trim();
             const fieldNode = this.createNodeForImport({
@@ -335,8 +369,13 @@ export class MarkdownConverter implements IConverter {
               editedAt: fieldNode.editedAt,
               parentNode: fieldNode.uid,
             });
+            if (this.isStandaloneDate(val) || this.isInlineDateValue(val)) {
+              valueNode.type = 'date';
+            }
             fieldNode.children = [valueNode];
-            if (!pageNode.children) pageNode.children = [];
+            if (!pageNode.children) {
+              pageNode.children = [];
+            }
             pageNode.children.push(fieldNode);
             this.summary.fields += 1;
             this.summary.totalNodes += 1; // field node itself
@@ -367,10 +406,14 @@ export class MarkdownConverter implements IConverter {
               }
             }
           }
-          if (!parent.children) parent.children = [];
+          if (!parent.children) {
+            parent.children = [];
+          }
           parent.children.push(hnode);
           // adjust stack
-          while (headingStack.length && headingStack[headingStack.length - 1].level >= level) headingStack.pop();
+          while (headingStack.length && headingStack[headingStack.length - 1].level >= level) {
+            headingStack.pop();
+          }
           headingStack.push({ level, node: hnode });
           this.summary.totalNodes += 1;
           this.summary.leafNodes += 1; // heading as leaf until it gets children
@@ -430,6 +473,11 @@ export class MarkdownConverter implements IConverter {
           }
         }
 
+        // If content is a standalone date string, mark as date node
+        if (this.isStandaloneDate(content.trim())) {
+          nodeType = 'date';
+        }
+
         // field lines (Foo:: Bar)
         const node = this.createNodeForImport({
           uid: idgenerator(),
@@ -439,7 +487,9 @@ export class MarkdownConverter implements IConverter {
           type: nodeType,
           url: mediaUrl,
         });
-        if (todoState) node.todoState = todoState;
+        if (todoState) {
+          node.todoState = todoState;
+        }
         if (createdChildren.length) {
           node.children = createdChildren;
           // also add refs to inline images
@@ -447,9 +497,13 @@ export class MarkdownConverter implements IConverter {
         }
 
         // place into correct parent based on indent
-        while (listStack.length && listStack[listStack.length - 1].indent >= indent) listStack.pop();
+        while (listStack.length && listStack[listStack.length - 1].indent >= indent) {
+          listStack.pop();
+        }
         const parent = listStack.length ? listStack[listStack.length - 1].node : getCurrentParent();
-        if (!parent.children) parent.children = [];
+        if (!parent.children) {
+          parent.children = [];
+        }
         parent.children.push(node);
         listStack.push({ indent, node });
 
@@ -485,7 +539,9 @@ export class MarkdownConverter implements IConverter {
       const imageRegex = /!\[[^\]]*\]\(([^)]+)\)/g;
       const imgs: string[] = [];
       let rm: RegExpExecArray | null;
-      while ((rm = imageRegex.exec(paragraph)) !== null) imgs.push(rm[1]);
+      while ((rm = imageRegex.exec(paragraph)) !== null) {
+        imgs.push(rm[1]);
+      }
       const childNodes: TanaIntermediateNode[] = [];
       if (type !== 'codeblock' && imgs.length) {
         for (const img of imgs) {
@@ -503,6 +559,11 @@ export class MarkdownConverter implements IConverter {
         }
       }
 
+      // Standalone dates become date-type nodes
+      if (type !== 'codeblock' && this.isStandaloneDate(paragraph.trim())) {
+        type = 'date';
+      }
+
       const pnode = this.createNodeForImport({
         uid: idgenerator(),
         name: paragraph,
@@ -515,7 +576,9 @@ export class MarkdownConverter implements IConverter {
         pnode.refs = childNodes.map((c) => c.uid);
       }
       const parent = getCurrentParent();
-      if (!parent.children) parent.children = [];
+      if (!parent.children) {
+        parent.children = [];
+      }
       parent.children.push(pnode);
       this.summary.totalNodes += 1;
       this.summary.leafNodes += 1;
@@ -532,7 +595,9 @@ export class MarkdownConverter implements IConverter {
   }
 
   private normalizeImageUrl(link: string, baseDir: string): string {
-    if (/^https?:\/\//i.test(link)) return link;
+    if (/^https?:\/\//i.test(link)) {
+      return link;
+    }
     // Assume local file path; resolve and prefix with file://
     const abs = path.resolve(baseDir, link);
     return `file://${abs}`;
@@ -540,6 +605,31 @@ export class MarkdownConverter implements IConverter {
 
   private escapeRegExp(s: string) {
     return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  private isStandaloneDate(text: string): boolean {
+    // ISO date YYYY-MM-DD
+    const iso = /^\d{4}-\d{2}-\d{2}$/;
+    // US date MM-DD-YYYY
+    const mdy = /^(0?[1-9]|1[0-2])-(0?[1-9]|[12]\d|3[01])-\d{4}$/;
+    return iso.test(text) || mdy.test(text);
+  }
+
+  // Detect inline date values like "January 7, 2020 10:11 PM" or "Jan 7, 2020"
+  private isInlineDateValue(text: string): boolean {
+    const t = text.trim();
+    // Full month names
+    const fullMonth =
+      /^(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},\s*\d{4}(?:\s+\d{1,2}:\d{2}(?::\d{2})?\s*(?:AM|PM)?)?$/i;
+    // Abbreviated month names
+    const shortMonth =
+      /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\.?\s+\d{1,2},\s*\d{4}(?:\s+\d{1,2}:\d{2}(?::\d{2})?\s*(?:AM|PM)?)?$/i;
+    if (fullMonth.test(t) || shortMonth.test(t)) {
+      return true;
+    }
+    // Fallback: Date.parse for common variants with month names
+    const parsed = Date.parse(t);
+    return !Number.isNaN(parsed);
   }
 
   private createNodeForImport(n: {
@@ -566,14 +656,18 @@ export class MarkdownConverter implements IConverter {
     // collect refs from ((id)) and (((id))) patterns
     findGroups(nodeForImport.name, '(((', ')))').forEach((g) => {
       if (!nodeForImport.refs || !nodeForImport.refs.includes(g.content)) {
-        if (!nodeForImport.refs) nodeForImport.refs = [];
+        if (!nodeForImport.refs) {
+          nodeForImport.refs = [];
+        }
         nodeForImport.refs.push(g.content);
       }
     });
     findGroups(nodeForImport.name, '((', '))').forEach((g) => {
       if (!g.content.includes('(')) {
         if (!nodeForImport.refs || !nodeForImport.refs.includes(g.content)) {
-          if (!nodeForImport.refs) nodeForImport.refs = [];
+          if (!nodeForImport.refs) {
+            nodeForImport.refs = [];
+          }
           nodeForImport.refs.push(g.content);
         }
       }
@@ -594,9 +688,13 @@ export class MarkdownConverter implements IConverter {
     const fieldDefs: string[] = [];
     for (const line of full.split('\n')) {
       const m = line.match(/^(.+?)::/);
-      if (m) fieldDefs.push(m[1].replace('[[', '').replace(']]', ''));
+      if (m) {
+        fieldDefs.push(m[1].replace('[[', '').replace(']]', ''));
+      }
     }
-    if (!fieldDefs.length) return;
+    if (!fieldDefs.length) {
+      return;
+    }
 
     let currentFieldNode: TanaIntermediateNode | undefined = nodeWithField;
     for (const field of fieldDefs) {
@@ -608,7 +706,9 @@ export class MarkdownConverter implements IConverter {
           createdAt: nodeWithField.createdAt,
           editedAt: nodeWithField.editedAt,
         });
-        if (parentNode.children) parentNode.children.push(currentFieldNode);
+        if (parentNode.children) {
+          parentNode.children.push(currentFieldNode);
+        }
       } else {
         currentFieldNode.name = field;
       }
@@ -616,7 +716,9 @@ export class MarkdownConverter implements IConverter {
 
       const links = getBracketLinks(value, false);
       let remaining = value;
-      for (const l of links) remaining = remaining.replace(`[[${l}]]`, '').trim();
+      for (const l of links) {
+        remaining = remaining.replace(`[[${l}]]`, '').trim();
+      }
       const values: TanaIntermediateNode[] = [];
       if (remaining.length === 0) {
         for (const l of links) {
@@ -641,15 +743,27 @@ export class MarkdownConverter implements IConverter {
           }),
         );
       }
-      if (!currentFieldNode.children) currentFieldNode.children = [];
-      for (const v of values) currentFieldNode.children.push(v);
+      // Tag value nodes that look like dates
+      for (const v of values) {
+        if (this.isStandaloneDate(v.name) || this.isInlineDateValue(v.name)) {
+          v.type = 'date';
+        }
+      }
+      if (!currentFieldNode.children) {
+        currentFieldNode.children = [];
+      }
+      for (const v of values) {
+        currentFieldNode.children.push(v);
+      }
       this.ensureAttrMapIsUpdated(currentFieldNode);
       currentFieldNode = undefined;
     }
   }
 
   private getValueForAttribute(fieldName: string, node: string): string | undefined {
-    if (!node.includes('::')) return undefined;
+    if (!node.includes('::')) {
+      return undefined;
+    }
     for (const line of node.split('\n')) {
       if (line.startsWith(`${fieldName}::`)) {
         return line.split(`${fieldName}::`)[1].trim();
@@ -660,7 +774,9 @@ export class MarkdownConverter implements IConverter {
   }
 
   private ensureAttrMapIsUpdated(node: TanaIntermediateNode): void {
-    if (!node.name || node.type !== 'field') return;
+    if (!node.name || node.type !== 'field') {
+      return;
+    }
     let intermediateAttr: TanaIntermediateAttribute | undefined = this.attrMap.get(node.name);
     if (!intermediateAttr) {
       intermediateAttr = { name: node.name, values: [], count: 0 };
@@ -679,25 +795,33 @@ export class MarkdownConverter implements IConverter {
     // block refs
     findGroups(nodeForImport.name, '(((', ')))').forEach((g: { content: string }) => {
       if (!nodeForImport.refs || !nodeForImport.refs.includes(g.content)) {
-        if (!nodeForImport.refs) nodeForImport.refs = [];
+        if (!nodeForImport.refs) {
+          nodeForImport.refs = [];
+        }
         nodeForImport.refs.push(g.content);
       }
     });
     findGroups(nodeForImport.name, '((', '))').forEach((g: { content: string }) => {
       if (!g.content.includes('(')) {
         if (!nodeForImport.refs || !nodeForImport.refs.includes(g.content)) {
-          if (!nodeForImport.refs) nodeForImport.refs = [];
+          if (!nodeForImport.refs) {
+            nodeForImport.refs = [];
+          }
           nodeForImport.refs.push(g.content);
         }
       }
     });
 
-    if (!nodeForImport.refs) return;
+    if (!nodeForImport.refs) {
+      return;
+    }
 
     const refsToParse = [...nodeForImport.refs]
       .map((uid) => {
         const n = this.nodesForImport.get(uid);
-        if (!n) this.summary.brokenRefs += 1;
+        if (!n) {
+          this.summary.brokenRefs += 1;
+        }
         return n;
       })
       .filter((r) => !!r) as TanaIntermediateNode[];
@@ -733,7 +857,9 @@ export class MarkdownConverter implements IConverter {
       }
       if (startIndex !== undefined && startIndex !== -1) {
         if (!isIndexWithinBackticks(startIndex, newNodeName)) {
-          if (newNodeName !== undefined) nodeForImport.name = newNodeName;
+          if (newNodeName !== undefined) {
+            nodeForImport.name = newNodeName;
+          }
         }
       }
     }
@@ -747,28 +873,44 @@ export class MarkdownConverter implements IConverter {
 
     for (const link of linksInsideOtherLinks) {
       const refNode = this.findRefByName(link, nodeForImport);
-      if (!refNode) continue;
+      if (!refNode) {
+        continue;
+      }
       const index = nodeForImport.refs?.indexOf(refNode.uid) || -1;
-      if (nodeForImport.refs && index > -1) nodeForImport.refs.splice(index, 1);
+      if (nodeForImport.refs && index > -1) {
+        nodeForImport.refs.splice(index, 1);
+      }
     }
 
     for (const link of outerLinks) {
+      // Treat [[date:...]] as inline TIF date links — do not create nodes
+      if (/^date:/i.test(link)) {
+        continue;
+      }
       // If link is already a known UID, just ensure it's in refs and skip creating anything
       if (this.nodesForImport.has(link)) {
-        if (!nodeForImport.refs) nodeForImport.refs = [];
-        if (!nodeForImport.refs.includes(link)) nodeForImport.refs.push(link);
+        if (!nodeForImport.refs) {
+          nodeForImport.refs = [];
+        }
+        if (!nodeForImport.refs.includes(link)) {
+          nodeForImport.refs.push(link);
+        }
         continue;
       }
       if (nodeForImport.children?.some((c) => c.name === link || c.uid === link)) {
         continue;
       }
       let refNode = this.findRefByName(link, nodeForImport);
-      if (refNode) continue;
+      if (refNode) {
+        continue;
+      }
 
       // check existing top-level nodes by name
       refNode = this.topLevelMap.get(link);
       if (refNode) {
-        if (!nodeForImport.refs) nodeForImport.refs = [];
+        if (!nodeForImport.refs) {
+          nodeForImport.refs = [];
+        }
         nodeForImport.refs.push(refNode.uid);
         continue;
       }
@@ -782,7 +924,9 @@ export class MarkdownConverter implements IConverter {
         parentNode: undefined,
         refs: nodeForImport.refs,
       });
-      if (!nodeForImport.refs) nodeForImport.refs = [];
+      if (!nodeForImport.refs) {
+        nodeForImport.refs = [];
+      }
       nodeForImport.refs.push(refNode.uid);
       createdNodes.push(refNode);
     }
@@ -791,14 +935,20 @@ export class MarkdownConverter implements IConverter {
     if (nodeForImport.name.includes('#')) {
       const re = /#\S+/g;
       const allTags = [...nodeForImport.name.matchAll(re)].filter((t) => {
-        if (t.index === undefined) return false;
-        if (isIndexWithinBackticks(t.index, nodeForImport.name)) return false;
+        if (t.index === undefined) {
+          return false;
+        }
+        if (isIndexWithinBackticks(t.index, nodeForImport.name)) {
+          return false;
+        }
         const signBeforeHash = nodeForImport.name.substring(t.index - 1, t.index);
         return !signBeforeHash || signBeforeHash === ' ';
       });
       for (const tag of allTags) {
         const onlyTagName = tag[0].substring(1).replace('?', '');
-        if (tag[0].startsWith('#[[') || onlyTagName === '#' || onlyTagName === '>') continue;
+        if (tag[0].startsWith('#[[') || onlyTagName === '#' || onlyTagName === '>') {
+          continue;
+        }
         let refNode = this.topLevelMap.get(onlyTagName);
         if (!refNode) {
           refNode = this.createNodeForImport({
@@ -810,7 +960,9 @@ export class MarkdownConverter implements IConverter {
           createdNodes.push(refNode);
         }
         if (!nodeForImport.refs?.includes(refNode.uid)) {
-          if (!nodeForImport.refs) nodeForImport.refs = [];
+          if (!nodeForImport.refs) {
+            nodeForImport.refs = [];
+          }
           nodeForImport.refs.push(refNode.uid);
         }
         nodeForImport.name = nodeForImport.name.replace('#' + onlyTagName, `[#${onlyTagName}]([[${refNode.uid}]])`);
@@ -820,13 +972,21 @@ export class MarkdownConverter implements IConverter {
   }
 
   private findRefByName(refName: string, node: TanaIntermediateNode): TanaIntermediateNode | undefined {
-    if (!node.refs) return;
+    if (!node.refs) {
+      return;
+    }
     for (const uid of node.refs) {
       const refNode = this.nodesForImport.get(uid);
-      if (!refNode) continue;
-      if (refNode.name === refName) return refNode;
+      if (!refNode) {
+        continue;
+      }
+      if (refNode.name === refName) {
+        return refNode;
+      }
       const originalName = this.originalNodeNames.get(refNode.uid);
-      if (originalName === refName) return refNode;
+      if (originalName === refName) {
+        return refNode;
+      }
     }
     return undefined;
   }

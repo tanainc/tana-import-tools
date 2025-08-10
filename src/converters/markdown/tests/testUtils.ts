@@ -6,17 +6,25 @@ export type NameLookupHelper = (_name: string | undefined) => TanaIntermediateNo
 
 function findNodeById(nodes: TanaIntermediateNode[], id: string): TanaIntermediateNode | undefined {
   for (const n of nodes) {
-    if (n.uid === id) return n;
+    if (n.uid === id) {
+      return n;
+    }
     const c = findNodeById(n.children || [], id);
-    if (c) return c;
+    if (c) {
+      return c;
+    }
   }
 }
 
 function findNodeByName(nodes: TanaIntermediateNode[], name: string): TanaIntermediateNode | undefined {
   for (const n of nodes) {
-    if (n.name === name) return n;
+    if (n.name === name) {
+      return n;
+    }
     const c = findNodeByName(n.children || [], name);
-    if (c) return c;
+    if (c) {
+      return c;
+    }
   }
 }
 
@@ -31,4 +39,3 @@ export function importMarkdownDir(dir: string): [TanaIntermediateFile, IdLookupH
     (name: string | undefined) => (name ? findNodeByName(file.nodes, name) : undefined),
   ];
 }
-

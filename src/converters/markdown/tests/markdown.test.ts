@@ -45,10 +45,14 @@ test('Images and links', () => {
   // multiple inline images: find a node with two image children
   const page = file.nodes.find((n) => n.name === 'Media')!;
   const findHost = (n: any): any | undefined => {
-    if (n.children && n.children.filter((c: any) => c.type === 'image').length === 2) return n;
+    if (n.children && n.children.filter((c: any) => c.type === 'image').length === 2) {
+      return n;
+    }
     for (const c of n.children || []) {
       const h = findHost(c);
-      if (h) return h;
+      if (h) {
+        return h;
+      }
     }
   };
   const host: any = findHost(page);
@@ -71,10 +75,16 @@ test('Local images get file://', () => {
   const [file] = importMarkdownDir('local_images');
   const collect: any[] = [];
   const walk = (n: any) => {
-    if (n.type === 'image' && typeof n.mediaUrl === 'string' && n.mediaUrl.startsWith('file://')) collect.push(n);
-    for (const c of n.children || []) walk(c);
+    if (n.type === 'image' && typeof n.mediaUrl === 'string' && n.mediaUrl.startsWith('file://')) {
+      collect.push(n);
+    }
+    for (const c of n.children || []) {
+      walk(c);
+    }
   };
-  for (const top of file.nodes) walk(top);
+  for (const top of file.nodes) {
+    walk(top);
+  }
   expect(collect.length).toBeGreaterThan(0);
 });
 
@@ -91,27 +101,35 @@ test('Front matter is converted to fields and first heading used as title', () =
 });
 
 test('Links to other pages and files', () => {
-  const [file, f, fn] = importMarkdownDir('links/pages');
+  const [file] = importMarkdownDir('links/pages');
   const pageA = file.nodes.find((n) => n.name === 'A');
   const pageB = file.nodes.find((n) => n.name === 'B');
   expect(pageA).toBeDefined();
   expect(pageB).toBeDefined();
   const uidB = pageB!.uid;
   const findNode = (n: any): any | undefined => {
-    if (Array.isArray(n.refs) && n.refs.includes(uidB)) return n;
+    if (Array.isArray(n.refs) && n.refs.includes(uidB)) {
+      return n;
+    }
     for (const c of n.children || []) {
       const res = findNode(c);
-      if (res) return res;
+      if (res) {
+        return res;
+      }
     }
   };
   const linkNode: any = findNode(pageA!);
   expect(linkNode).toBeDefined();
   expect(linkNode.refs).toContain(uidB);
   const findCsv = (n: any): any | undefined => {
-    if (typeof n.name === 'string' && /<a href="file:\/\/.+\/assets\/data\.csv">CSV<\/a>/.test(n.name)) return n;
+    if (typeof n.name === 'string' && /<a href="file:\/\/.+\/assets\/data\.csv">CSV<\/a>/.test(n.name)) {
+      return n;
+    }
     for (const c of n.children || []) {
       const res = findCsv(c);
-      if (res) return res;
+      if (res) {
+        return res;
+      }
     }
   };
   const csvNode: any = findCsv(pageA!);
@@ -125,9 +143,24 @@ test('Top-of-page Key: Value lines become fields', () => {
   const dateField = fn('Date Created');
   expect(dateField?.type).toBe('field');
   expect(dateField?.children?.[0].name).toContain('January');
+  expect(dateField?.children?.[0].type).toBe('date');
   const statusField = fn('Status');
   expect(statusField?.type).toBe('field');
   expect(statusField?.children?.[0].name).toBe('Doing');
+});
+
+test('Inline date fields and standalone date nodes', () => {
+  const [, , fn] = importMarkdownDir('inline_dates');
+
+  const dateField = fn('Date Created');
+  expect(dateField?.type).toBe('field');
+  expect(dateField?.children?.[0].type).toBe('date');
+
+  const isoDate = fn('2022-02-10');
+  expect(isoDate?.type).toBe('date');
+
+  const mdyDate = fn('02-09-2022');
+  expect(mdyDate?.type).toBe('date');
 });
 
 test('Top-level paragraph after list is not nested', () => {
@@ -135,10 +168,14 @@ test('Top-level paragraph after list is not nested', () => {
   const page = file.nodes[0];
 
   const findByName = (n: TanaIntermediateNode, name: string): TanaIntermediateNode | undefined => {
-    if (n.name === name) return n;
+    if (n.name === name) {
+      return n;
+    }
     for (const c of n.children || []) {
       const f = findByName(c, name);
-      if (f) return f;
+      if (f) {
+        return f;
+      }
     }
   };
   const bullet = findByName(page, 'Create subpages in byside a page');

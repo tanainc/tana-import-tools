@@ -37,12 +37,14 @@ try {
     contents = fs.readFileSync(file, 'utf8');
     console.log('File length:', contents.length);
   }
-} catch (e) {
+} catch {
   // fallback: attempt reading; may throw later in converters if invalid
   try {
     contents = fs.readFileSync(file, 'utf8');
     console.log('File length:', contents.length);
-  } catch {}
+  } catch {
+    void 0;
+  }
 }
 
 function saveFile(fileName: string, tanaIntermediteNodes: TanaIntermediateFile) {
@@ -54,15 +56,21 @@ function saveFile(fileName: string, tanaIntermediteNodes: TanaIntermediateFile) 
 let tanaIntermediteFile = undefined;
 switch (fileType) {
   case 'roam':
-    if (!contents) throw new Error('No content to process');
+    if (!contents) {
+      throw new Error('No content to process');
+    }
     tanaIntermediteFile = new RoamConverter().convert(contents);
     break;
   case 'workflowy':
-    if (!contents) throw new Error('No content to process');
+    if (!contents) {
+      throw new Error('No content to process');
+    }
     tanaIntermediteFile = new WorkflowyConverter().convert(contents);
     break;
   case 'logseq':
-    if (!contents) throw new Error('No content to process');
+    if (!contents) {
+      throw new Error('No content to process');
+    }
     tanaIntermediteFile = new LogseqConverter().convert(contents);
     break;
   case 'markdown': {
@@ -72,12 +80,16 @@ switch (fileType) {
       if (stat.isDirectory()) {
         tanaIntermediteFile = md.convertDirectory(file);
       } else {
-        if (!contents) throw new Error('No content to process');
+        if (!contents) {
+          throw new Error('No content to process');
+        }
         tanaIntermediteFile = md.convert(contents);
       }
     } catch (e) {
       console.error('Unable to process markdown path', e);
-      if (!contents) throw e;
+      if (!contents) {
+        throw e;
+      }
       tanaIntermediteFile = md.convert(contents);
     }
     break;

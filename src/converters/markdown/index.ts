@@ -14,7 +14,7 @@ import {
   markdownToHTML,
 } from '../../utils/utils.js';
 import { IConverter } from '../IConverter.js';
-import * as fs from 'fs';
+import type * as fs from 'fs';
 import * as path from 'path';
 
 // Simple Markdown converter that supports multiple .md files in a directory.
@@ -29,6 +29,7 @@ import * as path from 'path';
 // - Links converted to HTML anchors; bracket-links [[...]] normalized and broken refs created
 
 type ParsedFile = { filePath: string; content: string };
+export type FileSystem = typeof fs;
 
 export class MarkdownConverter implements IConverter {
   private nodesForImport: Map<string, TanaIntermediateNode> = new Map();
@@ -46,6 +47,12 @@ export class MarkdownConverter implements IConverter {
     fields: 0,
     brokenRefs: 0,
   };
+
+  private fileSystem: FileSystem;
+
+  constructor (fileSystem: FileSystem) {
+    this.fileSystem = fileSystem;
+  }
 
   // IConverter — treat input as a single markdown file content
   convert(fileContent: string): TanaIntermediateFile | undefined {
@@ -66,18 +73,18 @@ export class MarkdownConverter implements IConverter {
 
   // Directory mode — build a single TIF from all .md files under dir
   convertDirectory(dirPath: string): TanaIntermediateFile | undefined {
-    if (!fs.existsSync(dirPath) || !fs.statSync(dirPath).isDirectory()) {
+    if (!this.fileSystem.existsSync(dirPath) || !this.fileSystem.statSync(dirPath).isDirectory()) {
       return undefined;
     }
     const files: ParsedFile[] = [];
     const walk = (p: string) => {
-      const entries = fs.readdirSync(p, { withFileTypes: true });
+      const entries = this.fileSystem.readdirSync(p, { withFileTypes: true });
       for (const e of entries) {
         const fp = path.join(p, e.name);
         if (e.isDirectory()) {
           walk(fp);
         } else if (e.isFile() && e.name.toLowerCase().endsWith('.md')) {
-          files.push({ filePath: fp, content: fs.readFileSync(fp, 'utf8') });
+          files.push({ filePath: fp, content: this.fileSystem.readFileSync(fp, 'utf8') });
         }
       }
     };

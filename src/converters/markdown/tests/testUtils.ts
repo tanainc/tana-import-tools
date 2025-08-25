@@ -1,5 +1,6 @@
 import { MarkdownConverter } from '..';
 import { TanaIntermediateFile, TanaIntermediateNode } from '../../../types/types.js';
+import * as fs from 'fs';
 
 export type IdLookupHelper = (_id: string | undefined) => TanaIntermediateNode | undefined;
 export type NameLookupHelper = (_name: string | undefined) => TanaIntermediateNode | undefined;
@@ -29,7 +30,7 @@ function findNodeByName(nodes: TanaIntermediateNode[], name: string): TanaInterm
 }
 
 export function importMarkdownDir(dir: string): [TanaIntermediateFile, IdLookupHelper, NameLookupHelper] {
-  const file = new MarkdownConverter().convertDirectory(`./src/converters/markdown/tests/fixtures/${dir}`);
+  const file = new MarkdownConverter(fs).convertDirectory(`./src/converters/markdown/tests/fixtures/${dir}`);
   if (!file) {
     throw new Error('No file produced from markdown dir');
   }

@@ -15,7 +15,6 @@ import {
 } from '../../utils/utils.js';
 import { IConverter } from '../IConverter.js';
 import type * as fs from 'fs';
-import * as path from 'path';
 
 // Simple Markdown converter that supports multiple .md files in a directory.
 // Each file becomes a top-level "page" node named after the file (without extension).
@@ -29,7 +28,24 @@ import * as path from 'path';
 // - Links converted to HTML anchors; bracket-links [[...]] normalized and broken refs created
 
 type ParsedFile = { filePath: string; content: string };
-export type FileSystem = typeof fs;
+export type FileSystem = {
+  existsSync: typeof fs.existsSync;
+  statSync: (path: string) => fs.Stats;
+  readdirSync: (path: string, options: { withFileTypes: true } ) => fs.Dirent[];
+  readFileSync: (path: string, options:
+    | {
+    encoding: BufferEncoding;
+    flag?: string | undefined;
+  }
+    | BufferEncoding) => string;
+};
+
+export type PathIsh = {
+  dirname: (path: string) => string;
+  basename: (path: string) => string;
+  resolve: (...paths:string[]) => string;
+  join: (path: string, name: string) => string;
+};
 
 export class MarkdownConverter implements IConverter {
   private nodesForImport: Map<string, TanaIntermediateNode> = new Map();
@@ -49,9 +65,13 @@ export class MarkdownConverter implements IConverter {
   };
 
   private fileSystem: FileSystem;
+  private path: PathIsh;
+  private fileToUrlMap?: Map<string, string>;
 
-  constructor (fileSystem: FileSystem) {
+  constructor (fileSystem: FileSystem, pathIsh: PathIsh, fileToUrlMap?: Map<string, string>) {
     this.fileSystem = fileSystem;
+    this.path = pathIsh;
+    this.fileToUrlMap = fileToUrlMap;
   }
 
   // IConverter — treat input as a single markdown file content
@@ -80,7 +100,7 @@ export class MarkdownConverter implements IConverter {
     const walk = (p: string) => {
       const entries = this.fileSystem.readdirSync(p, { withFileTypes: true });
       for (const e of entries) {
-        const fp = path.join(p, e.name);
+        const fp = this.path.join(p, e.name);
         if (e.isDirectory()) {
           walk(fp);
         } else if (e.isFile() && e.name.toLowerCase().endsWith('.md')) {
@@ -94,12 +114,13 @@ export class MarkdownConverter implements IConverter {
     for (const f of files) {
       const page = this.convertSingleFile(f);
       if (page) {
-        const abs = path.resolve(f.filePath);
+        const abs = this.path.resolve(f.filePath);
         this.mdPathToPageUid.set(abs, page.uid);
-        this.pageUidToBaseDir.set(page.uid, path.dirname(abs));
+        this.pageUidToBaseDir.set(page.uid, this.path.dirname(abs));
         rootLevelNodes.push(page);
       }
     }
+
     this.postProcessAllNodes(rootLevelNodes);
     return {
       version: 'TanaIntermediateFile V0.1',
@@ -145,7 +166,7 @@ export class MarkdownConverter implements IConverter {
           return _full;
         }
         const decoded = this.safeDecode(link);
-        const abs = path.resolve(baseDir, decoded);
+        const abs = this.path.resolve(baseDir, decoded);
         if (abs.toLowerCase().endsWith('.md')) {
           const uid = this.mdPathToPageUid.get(abs);
           if (uid) {
@@ -160,8 +181,10 @@ export class MarkdownConverter implements IConverter {
           // If not found, fall back to filename as link text
           return `[${alias}](${this.asFileUrl(abs)})`;
         }
+        const mappedUrl = this.fileToUrlMap?.get(abs);
         // other files => make file:// link
-        return `<a href="${this.asFileUrl(abs)}">${alias}</a>`;
+        const url = mappedUrl || this.asFileUrl(abs);
+        return `<a href="${url}">${alias}</a>`;
       });
     }
     if (node.children) {
@@ -184,7 +207,7 @@ export class MarkdownConverter implements IConverter {
   }
 
   private convertSingleFile(file: ParsedFile): TanaIntermediateNode | undefined {
-    const baseName = path.basename(file.filePath, path.extname(file.filePath));
+    const baseName = this.path.basename(file.filePath);
     const pageNode = this.createNodeForImport({
       uid: idgenerator(),
       name: baseName,
@@ -205,7 +228,7 @@ export class MarkdownConverter implements IConverter {
     // list stack tracks indentation based on leading spaces count
     let listStack: { indent: number; node: TanaIntermediateNode }[] = [];
 
-    const fileDir = path.dirname(file.filePath);
+    const fileDir = this.path.dirname(file.filePath);
 
     const getCurrentParent = () => {
       if (listStack.length) {
@@ -605,9 +628,13 @@ export class MarkdownConverter implements IConverter {
     if (/^https?:\/\//i.test(link)) {
       return link;
     }
-    // Assume local file path; resolve and prefix with file://
-    const abs = path.resolve(baseDir, link);
-    return `file://${abs}`;
+    const decoded = this.safeDecode(link);
+    const absDecoded = this.path.resolve(baseDir, decoded);
+    const abs = this.path.resolve(baseDir, link);
+    const mappedUrl = this.fileToUrlMap?.get(absDecoded);
+    const url = mappedUrl ? mappedUrl : this.asFileUrl(abs);
+
+    return url;
   }
 
   private escapeRegExp(s: string) {

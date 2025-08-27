@@ -6,6 +6,7 @@ import { RoamConverter } from './converters/roam/index.js';
 import { WorkflowyConverter } from './converters/workflowy/index.js';
 import { LogseqConverter } from './converters/logseq/index.js';
 import { MarkdownConverter } from './converters/markdown/index.js';
+import * as path from 'node:path';
 
 const fileType = process.argv[2];
 const file = process.argv[3];
@@ -74,7 +75,7 @@ switch (fileType) {
     tanaIntermediteFile = new LogseqConverter().convert(contents);
     break;
   case 'markdown': {
-    const md = new MarkdownConverter();
+    const md = new MarkdownConverter(fs, path);
     try {
       const stat = fs.statSync(file);
       if (stat.isDirectory()) {

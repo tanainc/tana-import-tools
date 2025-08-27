@@ -2,6 +2,7 @@ import { expect, test } from 'vitest';
 import { expectImage } from '../../../testUtils/testUtils.js';
 import { importMarkdownDir } from './testUtils.js';
 import { TanaIntermediateNode } from '../../../types/types.js';
+import * as path from 'node:path';
 
 test('Headings and bullets', () => {
   const [file, , fn] = importMarkdownDir('headings');
@@ -88,6 +89,24 @@ test('Local images get file://', () => {
   expect(collect.length).toBeGreaterThan(0);
 });
 
+test('Mapped images get replaced URL', () => {
+  const image = path.resolve(__dirname, 'fixtures/local_images/img.png');
+  const [file] = importMarkdownDir('local_images', new Map<string, string>([[image, "http://localhost/img.png"]]));
+  const collect: any[] = [];
+  const walk = (n: any) => {
+    if (n.type === 'image' && typeof n.mediaUrl === 'string' && n.mediaUrl.startsWith('http://localhost')) {
+      collect.push(n);
+    }
+    for (const c of n.children || []) {
+      walk(c);
+    }
+  };
+  for (const top of file.nodes) {
+    walk(top);
+  }
+  expect(collect.length).toBeGreaterThan(0);
+});
+
 test('Front matter is converted to fields and first heading used as title', () => {
   const [file, , fn] = importMarkdownDir('frontmatter');
   const page = file.nodes[0];
@@ -123,6 +142,43 @@ test('Links to other pages and files', () => {
   expect(linkNode.refs).toContain(uidB);
   const findCsv = (n: any): any | undefined => {
     if (typeof n.name === 'string' && /<a href="file:\/\/.+\/assets\/data\.csv">CSV<\/a>/.test(n.name)) {
+      return n;
+    }
+    for (const c of n.children || []) {
+      const res = findCsv(c);
+      if (res) {
+        return res;
+      }
+    }
+  };
+  const csvNode: any = findCsv(pageA!);
+  expect(csvNode).toBeDefined();
+});
+
+test('Links to other pages and external files', () => {
+  const abs = path.resolve(__dirname, 'fixtures/links/pages/assets/data.csv');
+  const [file] = importMarkdownDir('links/pages', new Map([[abs, "http://localhost/assets/data.csv"]]));
+  const pageA = file.nodes.find((n) => n.name === 'A');
+  const pageB = file.nodes.find((n) => n.name === 'B');
+  expect(pageA).toBeDefined();
+  expect(pageB).toBeDefined();
+  const uidB = pageB!.uid;
+  const findNode = (n: any): any | undefined => {
+    if (Array.isArray(n.refs) && n.refs.includes(uidB)) {
+      return n;
+    }
+    for (const c of n.children || []) {
+      const res = findNode(c);
+      if (res) {
+        return res;
+      }
+    }
+  };
+  const linkNode: any = findNode(pageA!);
+  expect(linkNode).toBeDefined();
+  expect(linkNode.refs).toContain(uidB);
+  const findCsv = (n: any): any | undefined => {
+    if (typeof n.name === 'string' && /<a href="http:\/\/localhost\/assets\/data\.csv">CSV<\/a>/.test(n.name)) {
       return n;
     }
     for (const c of n.children || []) {

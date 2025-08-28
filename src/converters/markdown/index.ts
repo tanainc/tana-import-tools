@@ -488,20 +488,20 @@ export class MarkdownConverter implements IConverter {
             i++;
           }
 
-          // Build table node structure: parent "Table" -> row nodes -> field nodes with value child
-          const tableNode = this.createNodeForImport({
-            uid: idgenerator(),
-            name: 'Table',
-            createdAt: Date.now(),
-            editedAt: Date.now(),
-            type: 'node',
-          });
-          tableNode.children = [];
+          // Build table node structure: create a wrapper node named after the current parent (previous node)
           const parent = getCurrentParent();
           if (!parent.children) {
             parent.children = [];
           }
-          parent.children.push(tableNode);
+          const tableWrapper = this.createNodeForImport({
+            uid: idgenerator(),
+            name: parent.name, // keep the name from the previous node
+            createdAt: Date.now(),
+            editedAt: Date.now(),
+            type: 'node',
+          });
+          tableWrapper.children = [];
+          parent.children.push(tableWrapper);
           this.summary.totalNodes += 1;
           this.summary.leafNodes += 1;
 
@@ -514,7 +514,7 @@ export class MarkdownConverter implements IConverter {
               type: 'node',
             });
             rowNode.children = [];
-            tableNode.children.push(rowNode);
+            tableWrapper.children.push(rowNode);
             this.summary.totalNodes += 1;
             this.summary.leafNodes += 1;
 

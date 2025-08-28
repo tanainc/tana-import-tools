@@ -261,13 +261,13 @@ test('Converts tables', () => {
   // Page title
   expect(page.name).toBe('Tables');
 
-  // Find the Table node
-  const tableNode = findByName(page, 'Table');
-  expect(tableNode).toBeDefined();
+  // Find the container node (previous heading before the table)
+  const containerNode = findByName(page, 'People');
+  expect(containerNode).toBeDefined();
 
   // Should have rows named by the first column
-  const aliceRow = findByName(tableNode!, 'Alice');
-  const bobRow = findByName(tableNode!, 'Bob');
+  const aliceRow = findByName(containerNode!, 'Alice');
+  const bobRow = findByName(containerNode!, 'Bob');
   expect(aliceRow).toBeDefined();
   expect(bobRow).toBeDefined();
 

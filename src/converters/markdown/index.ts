@@ -661,6 +661,93 @@ export class MarkdownConverter implements IConverter {
         type = 'codeblock';
       }
 
+      // Special case: a standalone CSV link should be parsed as a table
+      if (type !== 'codeblock') {
+        const csvLinkMatch = paragraph.trim().match(/^\[([^\]]*)\]\(([^)]+\.csv)\)$/i);
+        if (csvLinkMatch) {
+          const alias = csvLinkMatch[1];
+          const link = csvLinkMatch[2];
+          const decoded = this.safeDecode(link);
+          let abs = this.path.resolve(fileDir, decoded);
+          // eslint-disable-next-line no-console
+          console.log('[DEBUG_LOG] CSV link detected:', { paragraph, fileDir, decoded, abs });
+          try {
+            if (!this.fileSystem.existsSync(abs)) {
+              const alt = this.findFileByBasename(fileDir, this.path.basename(decoded));
+              if (alt) {
+                abs = alt;
+                // eslint-disable-next-line no-console
+                console.log('[DEBUG_LOG] CSV fallback resolved to:', abs);
+              }
+            }
+            const csvContent = this.fileSystem.readFileSync(abs, 'utf8');
+            const { headers, rows } = this.parseCsv(csvContent);
+            const parent = getCurrentParent();
+            if (!parent.children) {
+              parent.children = [];
+            }
+            const tableWrapper = this.createNodeForImport({
+              uid: idgenerator(),
+              name: parent.name,
+              createdAt: Date.now(),
+              editedAt: Date.now(),
+              type: 'node',
+            });
+            tableWrapper.children = [];
+            parent.children.push(tableWrapper);
+            // eslint-disable-next-line no-console
+            console.log('[DEBUG_LOG] Created table wrapper under', parent.name, 'now childCount=', (parent.children || []).length);
+            this.summary.totalNodes += 1;
+            this.summary.leafNodes += 1;
+
+            for (const r of rows) {
+              const rowNode = this.createNodeForImport({
+                uid: idgenerator(),
+                name: r[0] || (alias || 'Row'),
+                createdAt: Date.now(),
+                editedAt: Date.now(),
+                type: 'node',
+              });
+              rowNode.children = [];
+              tableWrapper.children.push(rowNode);
+              this.summary.totalNodes += 1;
+              this.summary.leafNodes += 1;
+
+              headers.forEach((h, idx) => {
+                if (idx === 0) {
+                  return;
+                }
+                const fieldNode = this.createNodeForImport({
+                  uid: idgenerator(),
+                  name: h,
+                  createdAt: Date.now(),
+                  editedAt: Date.now(),
+                });
+                fieldNode.type = 'field';
+                const valueNode = this.createNodeForImport({
+                  uid: idgenerator(),
+                  name: r[idx] || '',
+                  createdAt: Date.now(),
+                  editedAt: Date.now(),
+                  parentNode: fieldNode.uid,
+                });
+                fieldNode.children = [valueNode];
+                rowNode.children!.push(fieldNode);
+                this.summary.fields += 1;
+                this.summary.totalNodes += 1;
+                this.ensureAttrMapIsUpdated(fieldNode);
+              });
+            }
+            i++;
+            continue;
+          } catch (err) {
+            // eslint-disable-next-line no-console
+            console.log('[DEBUG_LOG] CSV handling failed:', err);
+            // if reading/parsing fails, fall back to normal paragraph handling
+          }
+        }
+      }
+
       // handle images in paragraph
       const imageRegex = /!\[[^\]]*\]\(([^)]+)\)/g;
       const imgs: string[] = [];
@@ -733,8 +820,76 @@ export class MarkdownConverter implements IConverter {
     return url;
   }
 
+  // Minimal CSV parser supporting quoted fields and commas
+  private parseCsv(csv: string): { headers: string[]; rows: string[][] } {
+    const lines: string[] = csv.split(/\r?\n/).filter((l) => l.length > 0);
+    const parseLine = (line: string): string[] => {
+      const out: string[] = [];
+      let cur = '';
+      let inQuotes = false;
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (inQuotes) {
+          if (ch === '"') {
+            if (i + 1 < line.length && line[i + 1] === '"') {
+              cur += '"';
+              i++;
+            } else {
+              inQuotes = false;
+            }
+          } else {
+            cur += ch;
+          }
+        } else {
+          if (ch === '"') {
+            inQuotes = true;
+          } else if (ch === ',') {
+            out.push(cur);
+            cur = '';
+          } else {
+            cur += ch;
+          }
+        }
+      }
+      out.push(cur);
+      return out.map((s) => s.trim());
+    };
+    if (!lines.length) {
+      return { headers: [], rows: [] };
+    }
+    const headers = parseLine(lines[0]);
+    const rows: string[][] = [];
+    for (let i = 1; i < lines.length; i++) {
+      const row = parseLine(lines[i]);
+      const normalized = headers.map((_, idx) => (idx < row.length ? row[idx] : ''));
+      rows.push(normalized);
+    }
+    return { headers, rows };
+  }
+
   private escapeRegExp(s: string) {
     return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  // Recursively search for a file by basename under a directory
+  private findFileByBasename(dir: string, base: string): string | undefined {
+    try {
+      const entries = this.fileSystem.readdirSync(dir, { withFileTypes: true });
+      for (const e of entries) {
+        const p = this.path.join(dir, e.name);
+        if (e.isFile() && e.name === base) {
+          return this.path.resolve(p);
+        } else if (e.isDirectory()) {
+          const found = this.findFileByBasename(p, base);
+          if (found) {
+            return found;
+          }
+        }
+      }
+    } catch {
+      // ignore
+    }
+    return undefined;
   }
 
   private isStandaloneDate(text: string): boolean {

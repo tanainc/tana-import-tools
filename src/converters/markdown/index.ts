@@ -454,6 +454,102 @@ export class MarkdownConverter implements IConverter {
         continue;
       }
 
+      // markdown table
+      // Detect a table when current line looks like header with pipes and next line is a separator (---|:---: etc.)
+      if (line.includes('|') && i + 1 < lines.length) {
+        const headerLine = line.trim();
+        const sepLine = lines[i + 1].trim();
+        const isSep = /^\|?\s*[:\- ]+\|[\s:\-| ]+$/.test(sepLine) || (/^[\s:\-|]+$/.test(sepLine) && /-/.test(sepLine));
+        if (isSep) {
+          // parse header cells
+          const splitCells = (ln: string) => {
+            const raw = ln.trim();
+            const inner = raw.startsWith('|') && raw.endsWith('|') ? raw.slice(1, -1) : raw.replace(/^\|/, '').replace(/\|$/, '');
+            return inner.split('|').map((c) => c.trim());
+          };
+          const headers = splitCells(headerLine);
+          // consume separator line
+          i += 2;
+          const rows: string[][] = [];
+          while (i < lines.length) {
+            const l = lines[i].trim();
+            if (!l || !l.includes('|')) {
+              break;
+            }
+            // stop if it looks like another separator (end of this table)
+            const isAnotherSep = /^\|?\s*[:\- ]+\|[\s:\-| ]+$/.test(l) || (/^[\s:\-|]+$/.test(l) && /-/.test(l));
+            if (isAnotherSep) {
+              break;
+            }
+            const cells = splitCells(l);
+            // If row has fewer cells, pad with empty strings; if more, slice
+            const normalized = headers.map((_, idx) => (idx < cells.length ? cells[idx] : ''));
+            rows.push(normalized);
+            i++;
+          }
+
+          // Build table node structure: parent "Table" -> row nodes -> field nodes with value child
+          const tableNode = this.createNodeForImport({
+            uid: idgenerator(),
+            name: 'Table',
+            createdAt: Date.now(),
+            editedAt: Date.now(),
+            type: 'node',
+          });
+          tableNode.children = [];
+          const parent = getCurrentParent();
+          if (!parent.children) {
+            parent.children = [];
+          }
+          parent.children.push(tableNode);
+          this.summary.totalNodes += 1;
+          this.summary.leafNodes += 1;
+
+          for (const r of rows) {
+            const rowNode = this.createNodeForImport({
+              uid: idgenerator(),
+              name: r[0] || 'Row',
+              createdAt: Date.now(),
+              editedAt: Date.now(),
+              type: 'node',
+            });
+            rowNode.children = [];
+            tableNode.children.push(rowNode);
+            this.summary.totalNodes += 1;
+            this.summary.leafNodes += 1;
+
+            headers.forEach((h, idx) => {
+              if (idx === 0) {
+                // First column is used as the row node name; skip creating a field for it
+                return;
+              }
+              const fieldNode = this.createNodeForImport({
+                uid: idgenerator(),
+                name: h,
+                createdAt: Date.now(),
+                editedAt: Date.now(),
+              });
+              fieldNode.type = 'field';
+              const valueNode = this.createNodeForImport({
+                uid: idgenerator(),
+                name: r[idx] || '',
+                createdAt: Date.now(),
+                editedAt: Date.now(),
+                parentNode: fieldNode.uid,
+              });
+              fieldNode.children = [valueNode];
+              rowNode.children!.push(fieldNode);
+              this.summary.fields += 1;
+              this.summary.totalNodes += 1; // field node itself
+              this.ensureAttrMapIsUpdated(fieldNode);
+            });
+          }
+
+          // After consuming table, continue the loop without advancing i here (we already moved i)
+          continue;
+        }
+      }
+
       // list item
       const listMatch = line.match(/^(\s*)[-*]\s+(.*)$/);
       if (listMatch) {

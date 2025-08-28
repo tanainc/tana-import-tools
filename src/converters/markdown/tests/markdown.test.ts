@@ -285,7 +285,7 @@ test('Converts tables', () => {
 
 
 test('Standalone CSV link is converted into a table', () => {
-  const [file] = importMarkdownDir('csv_pages');
+  const [file, findById] = importMarkdownDir('csv_pages');
   // The page title should be set to the first heading
   const page = file.nodes.find((n) => n.name === 'Routines');
   expect(page).toBeDefined();
@@ -318,8 +318,14 @@ test('Standalone CSV link is converted into a table', () => {
   // Rows expected from the CSV (first column "Name")
   const expectedRows = ['Skincare', 'Morning routine', 'Night time routine', 'Workout', 'Sunday routine'];
   for (const rowName of expectedRows) {
-    const rowNode = (wrapper!.children || []).find((c) => c.name === rowName);
+    // Find each row by resolving its refs to the target page named rowName
+    const rowNode = (wrapper!.children || []).find((c) => (c.refs || []).some((uid) => findById(uid)?.name === rowName));
     expect(rowNode, `Row ${rowName} should exist`).toBeDefined();
+
+    // The title should now be only the UID reference: [[<uid>]]
+    expect((rowNode?.refs || []).length, `Row ${rowName} should have at least one ref`).toBeGreaterThan(0);
+    const rowRefUid = rowNode!.refs![0];
+    expect(rowNode!.name).toBe(`[[${rowRefUid}]]`);
 
     // Check that Created field exists and is populated (from CSV second column)
     const created = findField(rowNode, 'Created');
@@ -328,5 +334,9 @@ test('Standalone CSV link is converted into a table', () => {
     // Tags header exists in CSV but values are empty in fixture
     const tags = findField(rowNode, 'Tags');
     expect(tags?.children?.[0].name).toBe('');
+
+    // The row node itself should reference the corresponding page
+    const rowRefTarget = findById(rowRefUid);
+    expect(rowRefTarget?.name, `Row ${rowName} ref should resolve to a page named ${rowName}`).toBe(rowName);
   }
 });

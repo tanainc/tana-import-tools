@@ -700,10 +700,15 @@ export class MarkdownConverter implements IConverter {
             this.summary.totalNodes += 1;
             this.summary.leafNodes += 1;
 
+            // Determine potential directory with MD pages matching CSV rows
+            const csvBaseName = this.path.basename(abs).replace(/\.csv$/i, '');
+            const mdSiblingDir = this.path.join(this.path.dirname(abs), csvBaseName);
+
             for (const r of rows) {
+              const rowDisplayName = r[0] || (alias || 'Row');
               const rowNode = this.createNodeForImport({
                 uid: idgenerator(),
-                name: r[0] || (alias || 'Row'),
+                name: rowDisplayName,
                 createdAt: Date.now(),
                 editedAt: Date.now(),
                 type: 'node',
@@ -737,6 +742,37 @@ export class MarkdownConverter implements IConverter {
                 this.summary.totalNodes += 1;
                 this.ensureAttrMapIsUpdated(fieldNode);
               });
+
+              // Use parsed pages map (mdPathToPageUid) to find a matching MD page for this row.
+              // We match MD files that live in the sibling directory named after the CSV basename
+              // and whose filename (without .md) equals the row name or starts with "<Row Name> ".
+              {
+                let targetUid: string | undefined;
+                for (const [absPath, uid] of this.mdPathToPageUid.entries()) {
+                  const dir = this.path.dirname(absPath);
+                  if (dir !== mdSiblingDir) {
+                    continue;
+                  }
+                  const base = this.path.basename(absPath);
+                  const nameNoExt = base.endsWith('.md') ? base.slice(0, -3) : base;
+                  if (nameNoExt === rowDisplayName || nameNoExt.startsWith(rowDisplayName + ' ')) {
+                    targetUid = uid;
+                    break;
+                  }
+                }
+                if (targetUid) {
+                  // Set the row title to only the UID reference so later resolvers don't convert it to file:// links
+                  rowNode.name = `[[${targetUid}]]`;
+                  // Also attach a ref on the row node itself so the row directly references the parsed MD page
+                  if (!rowNode.refs) {
+                    rowNode.refs = [];
+                  }
+                  if (!rowNode.refs.includes(targetUid)) {
+                    rowNode.refs.push(targetUid);
+                  }
+                  // No extra Content field is created anymore
+                }
+              }
             }
             i++;
             continue;

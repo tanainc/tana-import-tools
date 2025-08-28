@@ -281,3 +281,52 @@ test('Converts tables', () => {
   expect(aliceAge?.children?.[0].name).toBe('30');
   expect(bobAge?.children?.[0].name).toBe('25');
 });
+
+
+
+test('Standalone CSV link is converted into a table', () => {
+  const [file] = importMarkdownDir('csv_pages');
+  // The page title should be set to the first heading
+  const page = file.nodes.find((n) => n.name === 'Routines');
+  expect(page).toBeDefined();
+
+  // Find the container node (section) named Routines
+  const findByName = (n: TanaIntermediateNode, name: string): TanaIntermediateNode | undefined => {
+    if (n.name === name) {
+      return n;
+    }
+    for (const c of n.children || []) {
+      const f = findByName(c, name);
+      if (f) {
+        return f;
+      }
+    }
+  };
+
+  const containerNode = findByName(page!, 'Routines');
+  expect(containerNode).toBeDefined();
+
+  // The converter creates a table wrapper node under the current parent with the same name as the parent
+  const wrapper = (containerNode?.children || []).find((c) => c.name === containerNode!.name && (c.children || []).length);
+  expect(wrapper).toBeDefined();
+
+  // Helper to find a field by name
+  const findField = (n: TanaIntermediateNode | undefined, fieldName: string): TanaIntermediateNode | undefined => {
+    return (n?.children || []).find((c) => c.type === 'field' && c.name === fieldName);
+  };
+
+  // Rows expected from the CSV (first column "Name")
+  const expectedRows = ['Skincare', 'Morning routine', 'Night time routine', 'Workout', 'Sunday routine'];
+  for (const rowName of expectedRows) {
+    const rowNode = (wrapper!.children || []).find((c) => c.name === rowName);
+    expect(rowNode, `Row ${rowName} should exist`).toBeDefined();
+
+    // Check that Created field exists and is populated (from CSV second column)
+    const created = findField(rowNode, 'Created');
+    expect(created?.children?.[0].name).toContain('August 8, 2025 9:13 AM');
+
+    // Tags header exists in CSV but values are empty in fixture
+    const tags = findField(rowNode, 'Tags');
+    expect(tags?.children?.[0].name).toBe('');
+  }
+});

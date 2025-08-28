@@ -1,5 +1,7 @@
 # Tables
 
+# People
+
 | Name | Age |
 | --- | --- |
 | Alice | 30 |

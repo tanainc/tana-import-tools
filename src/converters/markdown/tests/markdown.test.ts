@@ -240,3 +240,44 @@ test('Top-level paragraph after list is not nested', () => {
   const hasQuestionAsChild = (bullet?.children || []).some((c) => c.name.includes('Have a question?'));
   expect(hasQuestionAsChild).toBe(false);
 });
+
+
+test('Converts tables', () => {
+  const [file] = importMarkdownDir('tables');
+  const page = file.nodes[0];
+
+  const findByName = (n: TanaIntermediateNode, name: string): TanaIntermediateNode | undefined => {
+    if (n.name === name) {
+      return n;
+    }
+    for (const c of n.children || []) {
+      const f = findByName(c, name);
+      if (f) {
+        return f;
+      }
+    }
+  };
+
+  // Page title
+  expect(page.name).toBe('Tables');
+
+  // Find the Table node
+  const tableNode = findByName(page, 'Table');
+  expect(tableNode).toBeDefined();
+
+  // Should have rows named by the first column
+  const aliceRow = findByName(tableNode!, 'Alice');
+  const bobRow = findByName(tableNode!, 'Bob');
+  expect(aliceRow).toBeDefined();
+  expect(bobRow).toBeDefined();
+
+  // Each row should have Age as a field with proper values
+  const findField = (n: TanaIntermediateNode | undefined, fieldName: string): TanaIntermediateNode | undefined => {
+    return (n?.children || []).find((c) => c.type === 'field' && c.name === fieldName);
+  };
+
+  const aliceAge = findField(aliceRow, 'Age');
+  const bobAge = findField(bobRow, 'Age');
+  expect(aliceAge?.children?.[0].name).toBe('30');
+  expect(bobAge?.children?.[0].name).toBe('25');
+});

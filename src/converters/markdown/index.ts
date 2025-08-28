@@ -182,7 +182,7 @@ export class MarkdownConverter implements IConverter {
           return `[${alias}](${this.asFileUrl(abs)})`;
         }
         const mappedUrl = this.fileToUrlMap?.get(abs);
-        // other files => make file:// link
+        // other files => make file:// link if not pre-mapped
         const url = mappedUrl || this.asFileUrl(abs);
         return `<a href="${url}">${alias}</a>`;
       });

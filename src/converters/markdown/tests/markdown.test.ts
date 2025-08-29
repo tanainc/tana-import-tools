@@ -65,6 +65,49 @@ test('Images and links', () => {
   expect(linkLine).toBeDefined();
 });
 
+test('Image conversion: standalone image tokens become image nodes (list and paragraph), inline remains child', () => {
+  const [file] = importMarkdownDir('images_links');
+  const page = file.nodes.find((n) => n.name === 'Media')!;
+
+  // Collect all image nodes and map by URL
+  const images: Record<string, any[]> = {};
+  const hosts: any[] = [];
+  const walk = (n: any) => {
+    if (n.type === 'image' && typeof n.mediaUrl === 'string') {
+      images[n.mediaUrl] = images[n.mediaUrl] || [];
+      images[n.mediaUrl].push(n);
+    }
+    if (Array.isArray(n.children) && n.children.some((c: any) => c.type === 'image')) {
+      hosts.push(n);
+    }
+    for (const c of n.children || []) {
+      walk(c);
+    }
+  };
+  walk(page);
+
+  // 1) List item that is exactly one image with alt should be an image node itself
+  const listImage = (images['https://tana.inc/photo/3'] || [])[0];
+  expect(listImage, 'Expected a direct image node for list item with alt').toBeDefined();
+  expect(listImage.type).toBe('image');
+
+  // 2) Paragraph that is exactly one image should produce an image node directly (no wrapping text node)
+  const paraImage = (images['https://tana.inc/photo/4'] || [])[0];
+  expect(paraImage, 'Expected a direct image node for standalone paragraph image').toBeDefined();
+  expect(paraImage.type).toBe('image');
+
+  // 3) Inline image with surrounding text should remain a child image, not convert the host to image
+  // Find a host node that references https://tana.inc/photo/5
+  const hostWithInline = hosts.find((h) => (h.children || []).some((c: any) => c.type === 'image' && c.mediaUrl === 'https://tana.inc/photo/5'));
+  expect(hostWithInline, 'Expected a text node hosting an inline image child').toBeDefined();
+  expect(hostWithInline.type).not.toBe('image');
+  const inlineChild = (hostWithInline.children || []).find((c: any) => c.type === 'image' && c.mediaUrl === 'https://tana.inc/photo/5');
+  expect(inlineChild).toBeDefined();
+  // And the host should keep the textual content (contains the phrase "Inline with text before")
+  expect(typeof hostWithInline.name).toBe('string');
+  expect(String(hostWithInline.name)).toContain('Inline with text before');
+});
+
 test('Codeblocks', () => {
   const [, , fn] = importMarkdownDir('codeblocks');
   const block = fn('\nconst tana = "cool";\n');

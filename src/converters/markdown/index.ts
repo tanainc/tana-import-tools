@@ -585,18 +585,18 @@ export class MarkdownConverter implements IConverter {
 
         // images: match all ![alt](...)
         const imageRegex = /!\[[^\]]*\]\(([^)]+)\)/g;
-        const images: string[] = [];
+        const images: { full: string; url: string }[] = [];
         let m: RegExpExecArray | null;
         while ((m = imageRegex.exec(content)) !== null) {
-          images.push(m[1]);
+          images.push({ full: m[0], url: m[1] });
         }
-        if (images.length === 1 && content.trim() === `![](${images[0]})`) {
+        if (images.length === 1 && content.trim() === images[0].full) {
           nodeType = 'image';
-          mediaUrl = this.normalizeImageUrl(images[0], fileDir);
+          mediaUrl = this.normalizeImageUrl(images[0].url, fileDir);
           content = 'image';
         } else if (images.length > 0) {
           for (const img of images) {
-            const url = this.normalizeImageUrl(img, fileDir);
+            const url = this.normalizeImageUrl(img.url, fileDir);
             const imgNode = this.createNodeForImport({
               uid: idgenerator(),
               name: 'image',
@@ -606,7 +606,7 @@ export class MarkdownConverter implements IConverter {
               url,
             });
             createdChildren.push(imgNode);
-            content = content.replace(new RegExp(this.escapeRegExp(`![](${img})`), 'g'), `[[${imgNode.uid}]]`);
+            content = content.replace(new RegExp(this.escapeRegExp(img.full), 'g'), `[[${imgNode.uid}]]`);
           }
         }
 
@@ -797,15 +797,20 @@ export class MarkdownConverter implements IConverter {
 
       // handle images in paragraph
       const imageRegex = /!\[[^\]]*\]\(([^)]+)\)/g;
-      const imgs: string[] = [];
+      const imgs: { full: string; url: string }[] = [];
       let rm: RegExpExecArray | null;
       while ((rm = imageRegex.exec(paragraph)) !== null) {
-        imgs.push(rm[1]);
+        imgs.push({ full: rm[0], url: rm[1] });
       }
       const childNodes: TanaIntermediateNode[] = [];
       if (type !== 'codeblock' && imgs.length) {
-        for (const img of imgs) {
-          const url = this.normalizeImageUrl(img, fileDir);
+        // If the entire paragraph is exactly one image, convert paragraph into an image node directly
+        if (imgs.length === 1 && paragraph.trim() === imgs[0].full) {
+          const url = this.normalizeImageUrl(imgs[0].url, fileDir);
+          const parent = getCurrentParent();
+          if (!parent.children) {
+            parent.children = [];
+          }
           const imgNode = this.createNodeForImport({
             uid: idgenerator(),
             name: 'image',
@@ -814,7 +819,24 @@ export class MarkdownConverter implements IConverter {
             type: 'image',
             url,
           });
-          paragraph = paragraph.replace(new RegExp(this.escapeRegExp(`![](${img})`), 'g'), `[[${imgNode.uid}]]`);
+          parent.children.push(imgNode);
+          this.summary.totalNodes += 1;
+          this.summary.leafNodes += 1;
+          i++;
+          continue; // skip normal paragraph creation
+        }
+        // Otherwise, treat inline images as children and replace with refs
+        for (const img of imgs) {
+          const url = this.normalizeImageUrl(img.url, fileDir);
+          const imgNode = this.createNodeForImport({
+            uid: idgenerator(),
+            name: 'image',
+            createdAt: Date.now(),
+            editedAt: Date.now(),
+            type: 'image',
+            url,
+          });
+          paragraph = paragraph.replace(new RegExp(this.escapeRegExp(img.full), 'g'), `[[${imgNode.uid}]]`);
           childNodes.push(imgNode);
         }
       }

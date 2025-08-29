@@ -22,7 +22,8 @@
     "convert:workflowy": "npm run build && node dist/runner.js workflowy",
     "convert:logseq": "npm run build && node dist/runner.js logseq",
     "convert:markdown": "npm run build && node dist/runner.js markdown",
-    "test": "vitest"
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.28.0",

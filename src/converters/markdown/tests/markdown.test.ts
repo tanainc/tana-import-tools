@@ -244,7 +244,7 @@ test('Top-level paragraph after list is not nested', () => {
 
 test('Converts tables', () => {
   const [file] = importMarkdownDir('tables');
-  const page = file.nodes[0];
+  const page = file.nodes.find((n) => n.name === 'Tables')!;
 
   const findByName = (n: TanaIntermediateNode, name: string): TanaIntermediateNode | undefined => {
     if (n.name === name) {
@@ -282,6 +282,39 @@ test('Converts tables', () => {
   expect(bobAge?.children?.[0].name).toBe('25');
 });
 
+test('Empty tables produce a single wrapper with empty rows, not repeated tables', () => {
+  const [file] = importMarkdownDir('tables');
+  const page = file.nodes.find((n) => n.name === 'Empty Table');
+  expect(page).toBeDefined();
+
+  // Find the container node (section)
+  const findByName = (n: TanaIntermediateNode, name: string): TanaIntermediateNode | undefined => {
+    if (n.name === name) {
+      return n;
+    }
+    for (const c of n.children || []) {
+      const f = findByName(c, name);
+      if (f) { return f; }
+    }
+  };
+  const container = findByName(page!, 'Schedule');
+  expect(container).toBeDefined();
+
+  // There should be exactly one table wrapper under the container having same name
+  const wrappers = (container?.children || []).filter((c) => c.name === container!.name);
+  expect(wrappers.length).toBe(1);
+
+  const wrapper = wrappers[0];
+  // It should have exactly 5 row nodes (one per empty row)
+  const rows = wrapper.children || [];
+  expect(rows.length).toBe(5);
+  // Each row should have two columns: first column forms the row name (empty => 'Row'),
+  // and second column is a field named 'To-do' with empty value
+  for (const r of rows) {
+    expect(typeof r.name).toBe('string');
+    expect(r.children?.some((c) => c.type === 'field' && c.name === 'To-do')).toBe(true);
+  }
+});
 
 
 test('Standalone CSV link is converted into a table', () => {

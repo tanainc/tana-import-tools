@@ -459,7 +459,18 @@ export class MarkdownConverter implements IConverter {
       if (line.includes('|') && i + 1 < lines.length) {
         const headerLine = line.trim();
         const sepLine = lines[i + 1].trim();
-        const isSep = /^\|?\s*[:\- ]+\|[\s:\-| ]+$/.test(sepLine) || (/^[\s:\-|]+$/.test(sepLine) && /-/.test(sepLine));
+        const isSeparatorLine = (ln: string) => {
+          const raw = ln.trim();
+          if (!raw.includes('-')) {
+            return false;
+          }
+          // Strip one leading/trailing pipe if present
+          const inner = raw.replace(/^\|/, '').replace(/\|$/, '');
+          const segments = inner.split('|');
+          // Each segment must be dashes with optional leading/trailing colon and spaces
+          return segments.every((seg) => /^\s*:?-{3,}:?\s*$/.test(seg));
+        };
+        const isSep = isSeparatorLine(sepLine);
         if (isSep) {
           // parse header cells
           const splitCells = (ln: string) => {
@@ -477,7 +488,7 @@ export class MarkdownConverter implements IConverter {
               break;
             }
             // stop if it looks like another separator (end of this table)
-            const isAnotherSep = /^\|?\s*[:\- ]+\|[\s:\-| ]+$/.test(l) || (/^[\s:\-|]+$/.test(l) && /-/.test(l));
+            const isAnotherSep = isSeparatorLine(l);
             if (isAnotherSep) {
               break;
             }
@@ -489,7 +500,7 @@ export class MarkdownConverter implements IConverter {
           }
 
           // Build table node structure: create a wrapper node named after the current parent (previous node)
-          const parent = getCurrentParent();
+                              const parent = getCurrentParent();
           if (!parent.children) {
             parent.children = [];
           }

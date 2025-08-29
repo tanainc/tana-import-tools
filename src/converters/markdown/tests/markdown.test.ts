@@ -492,3 +492,30 @@ test('Notion CSV and MD inline references are resolved to inline refs and multi-
     expect(expectedTaskNames.has(String(target!.name)), `Unexpected task name: ${target?.name}`).toBe(true);
   }
 });
+
+
+
+test('Markdown links with parentheses in URL are handled without breaking text', () => {
+  const [file] = importMarkdownDir('links/parentheses');
+  const page = file.nodes.find((n) => n.name === 'Parentheses Links');
+  expect(page).toBeDefined();
+
+  const findByContent = (n: TanaIntermediateNode, needle: string): TanaIntermediateNode | undefined => {
+    if (typeof n.name === 'string' && n.name.includes(needle)) {
+      return n;
+    }
+    for (const c of n.children || []) {
+      const r = findByContent(c, needle);
+      if (r) { return r; }
+    }
+  };
+
+  const para = findByContent(page!, 'Vision, Mission, Values');
+  expect(para).toBeDefined();
+  const name = String(para!.name);
+  // Should be a single proper anchor covering the full markdown link with parentheses in URL
+  expect(name).toMatch(/<a href="file:\/\/.+Vision,%20Mission,%20Values\.md">Vision, Mission, Values<\/a>/);
+  // And it should end with the anchor (no trailing plaintext like ")" or leftover URL-encoded bits)
+  expect(name.trim().endsWith('</a>')).toBe(true);
+  expect(name).not.toContain('md)');
+});

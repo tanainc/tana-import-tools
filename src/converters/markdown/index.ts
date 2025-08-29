@@ -189,7 +189,7 @@ export class MarkdownConverter implements IConverter {
     if (node.type !== 'codeblock' && typeof node.name === 'string') {
       // 1) Convert standard markdown links [alias](relative)
       if (node.name.includes('](')) {
-        node.name = node.name.replace(/\[([^\]]*)\]\(([^)]+)\)/g, (_full, alias: string, link: string) => {
+        node.name = node.name.replace(/\[([^\]]*)\]\(((?:[^()]+|\([^()]*\))*)\)/g, (_full, alias: string, link: string) => {
           // external links left as-is; handled by markdownToHTML later
           if (/^[a-z]+:\/\//i.test(link) || link.startsWith('mailto:')) {
             return _full;

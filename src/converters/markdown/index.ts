@@ -140,7 +140,7 @@ export class MarkdownConverter implements IConverter {
       this.convertRelativeLinksRecursively(top, baseDir);
     }
 
-    // Then fix links + normalize + HTML for non-codeblock nodes
+    // Then split multi-ref field values, fix links + normalize + HTML for non-codeblock nodes
     for (const [, node] of this.nodesForImport) {
       if (node.type === 'codeblock') {
         continue;
@@ -154,20 +154,81 @@ export class MarkdownConverter implements IConverter {
         rootLevelNodes.push(...newNodes);
       }
       this.normalizeLinksAndSetAliases(node);
+      // After link normalization, split top-of-page KV fields that contain only [[uid]] refs into multiple value nodes
+      if (node.type === 'field' && Array.isArray(node.children) && node.children.length === 1) {
+        const child = node.children[0];
+        if (typeof child.name === 'string') {
+          const links = getBracketLinks(child.name, false);
+          if (links.length > 0) {
+            let remaining = child.name;
+            for (const l of links) {
+              remaining = remaining.replace(`[[${l}]]`, '').trim();
+            }
+            const onlySeparatorsLeft = remaining.replace(/[\s,]+/g, '') === '';
+            if (onlySeparatorsLeft) {
+              // Replace single value with one per ref
+              const newChildren: TanaIntermediateNode[] = links.map((l) =>
+                this.createNodeForImport({
+                  uid: idgenerator(),
+                  name: `[[${l}]]`,
+                  createdAt: child.createdAt,
+                  editedAt: child.editedAt,
+                  parentNode: node.uid,
+                }),
+              );
+              node.children = newChildren;
+            }
+          }
+        }
+      }
       node.name = markdownToHTML(node.name);
     }
   }
 
   private convertRelativeLinksRecursively(node: TanaIntermediateNode, baseDir: string) {
-    if (node.type !== 'codeblock' && node.name?.includes('](')) {
-      node.name = node.name.replace(/\[([^\]]*)\]\(([^)]+)\)/g, (_full, alias: string, link: string) => {
-        // external links left as-is; handled by markdownToHTML later
-        if (/^[a-z]+:\/\//i.test(link) || link.startsWith('mailto:')) {
-          return _full;
-        }
-        const decoded = this.safeDecode(link);
-        const abs = this.path.resolve(baseDir, decoded);
-        if (abs.toLowerCase().endsWith('.md')) {
+    if (node.type !== 'codeblock' && typeof node.name === 'string') {
+      // 1) Convert standard markdown links [alias](relative)
+      if (node.name.includes('](')) {
+        node.name = node.name.replace(/\[([^\]]*)\]\(([^)]+)\)/g, (_full, alias: string, link: string) => {
+          // external links left as-is; handled by markdownToHTML later
+          if (/^[a-z]+:\/\//i.test(link) || link.startsWith('mailto:')) {
+            return _full;
+          }
+          const decoded = this.safeDecode(link);
+          const abs = this.path.resolve(baseDir, decoded);
+          if (abs.toLowerCase().endsWith('.md')) {
+            const uid = this.mdPathToPageUid.get(abs);
+            if (uid) {
+              if (!node.refs) {
+                node.refs = [];
+              }
+              if (!node.refs.includes(uid)) {
+                node.refs.push(uid);
+              }
+              return `[${alias}]([[${uid}]])`;
+            }
+            // If not found, fall back to filename as link text
+            return `[${alias}](${this.asFileUrl(abs)})`;
+          }
+          const mappedUrl = this.fileToUrlMap?.get(abs);
+          // other files => make file:// link if not pre-mapped
+          const url = mappedUrl || this.asFileUrl(abs);
+          return `<a href="${url}">${alias}</a>`;
+        });
+      }
+
+      // 2) Convert Notion-style inline references: "Text (relative/path.md)"
+      //    May occur multiple times in a single value, separated by commas, etc.
+      //    We only convert .md references that resolve to a known page in this import.
+      if (node.name.includes('(') && node.name.includes('.md')) {
+        const re = /([^\s()[\]](?:[^()[\]]*?[^\s()[\]])?)\s*\(([^)]+\.md)\)/g;
+        node.name = node.name.replace(re, (full: string, aliasText: string, link: string) => {
+          // Skip if link looks external
+          if (/^[a-z]+:\/\//i.test(link) || link.startsWith('mailto:')) {
+            return full;
+          }
+          const decoded = this.safeDecode(link);
+          const abs = this.path.resolve(baseDir, decoded);
           const uid = this.mdPathToPageUid.get(abs);
           if (uid) {
             if (!node.refs) {
@@ -176,16 +237,12 @@ export class MarkdownConverter implements IConverter {
             if (!node.refs.includes(uid)) {
               node.refs.push(uid);
             }
-            return `[${alias}]([[${uid}]])`;
+            return `[[${uid}]]`;
           }
-          // If not found, fall back to filename as link text
-          return `[${alias}](${this.asFileUrl(abs)})`;
-        }
-        const mappedUrl = this.fileToUrlMap?.get(abs);
-        // other files => make file:// link if not pre-mapped
-        const url = mappedUrl || this.asFileUrl(abs);
-        return `<a href="${url}">${alias}</a>`;
-      });
+          // If we cannot resolve, keep original text
+          return full;
+        });
+      }
     }
     if (node.children) {
       for (const c of node.children) {
@@ -1074,7 +1131,10 @@ export class MarkdownConverter implements IConverter {
         remaining = remaining.replace(`[[${l}]]`, '').trim();
       }
       const values: TanaIntermediateNode[] = [];
-      if (remaining.length === 0) {
+      // If value consists solely of bracket refs (possibly separated by commas/spaces),
+      // create one value node per link
+      const onlySeparatorsLeft = remaining.replace(/[\s,]+/g, '') === '';
+      if (links.length > 0 && onlySeparatorsLeft) {
         for (const l of links) {
           values.push(
             this.createNodeForImport({

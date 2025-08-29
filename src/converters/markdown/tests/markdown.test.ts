@@ -416,3 +416,79 @@ test('Standalone CSV link is converted into a table', () => {
     expect(rowRefTarget?.name, `Row ${rowName} ref should resolve to a page named ${rowName}`).toBe(rowName);
   }
 });
+
+
+// NEW: Notion CSV and MD inline references resolution
+
+test('Notion CSV and MD inline references are resolved to inline refs and multi-refs create separate nodes', () => {
+  const [file, findById] = importMarkdownDir('notion_references');
+
+  // Find the PARA Dashboard page
+  const para = file.nodes.find((n) => typeof n.name === 'string' && String(n.name).includes('PARA Dashboard'))!;
+  expect(para).toBeDefined();
+
+  // Helper to find node by name recursively
+  const findByName = (n: TanaIntermediateNode, name: string): TanaIntermediateNode | undefined => {
+    if (n.name === name) { return n; }
+    for (const c of n.children || []) { const f = findByName(c, name); if (f) { return f; } }
+  };
+
+  // NOTES table wrapper under # Notes section
+  const notesSection = findByName(para, 'Notes');
+  expect(notesSection).toBeDefined();
+  const notesWrapper = (notesSection?.children || []).find((c) => c.name === 'Notes');
+  expect(notesWrapper, 'Notes wrapper should exist').toBeDefined();
+
+  // Find a row that has Area/Resource field (e.g., Flylighter row) and assert inline ref conversion
+  const findField = (n: TanaIntermediateNode | undefined, fieldName: string): TanaIntermediateNode | undefined => {
+    return (n?.children || []).find((c) => c.type === 'field' && c.name === fieldName);
+  };
+  const candidateRow = (notesWrapper!.children || []).find((r) => !!findField(r as any, 'Area/Resource')) as TanaIntermediateNode | undefined;
+  expect(candidateRow, 'Expected at least one row with Area/Resource field').toBeDefined();
+  const areaField = findField(candidateRow, 'Area/Resource');
+  expect(areaField).toBeDefined();
+  const areaValue = areaField!.children?.[0];
+  expect(areaValue).toBeDefined();
+  // Expect value to be exactly an inline [[uid]] reference
+  const areaName = String(areaValue!.name);
+  expect(areaName).toMatch(/^\[\[[a-z0-9]+\]\]$/);
+  const areaUid = (areaValue!.name.match(/\[\[([a-z0-9]+)\]\]/) || [])[1];
+  const areaTarget = findById(areaUid);
+  expect(areaTarget).toBeDefined();
+  // The referenced page should look like an Area/Resource page
+  expect(String(areaTarget!.name)).toMatch(/Productivity|Business|Streaming/);
+
+  // Also verify a Task page with inline Project (../...md) gets resolved
+  const tasksSection = findByName(para, 'Tasks');
+  expect(tasksSection).toBeDefined();
+  // Find a task page under the tasks database directory — those pages are separate top-level nodes; pick one
+  const someTask = file.nodes.find((n) => typeof n.name === 'string' && String(n.name).startsWith('Set up overhead camera'));
+  expect(someTask).toBeDefined();
+  const projectField = findField(someTask, 'Project');
+  expect(projectField).toBeDefined();
+  const projectVal = projectField!.children?.[0];
+  expect(String(projectVal!.name)).toMatch(/^\[\[[a-z0-9]+\]\]$/);
+
+  // And verify multi-reference field splits into separate nodes with only [[uid]]
+  const buildStreaming = file.nodes.find((n) => typeof n.name === 'string' && String(n.name).startsWith('Build Streaming Setup')) as TanaIntermediateNode | undefined;
+  expect(buildStreaming, 'Expected Build Streaming Setup project page').toBeDefined();
+  const tasksField = findField(buildStreaming, 'Tasks');
+  expect(tasksField, 'Tasks field should exist on Build Streaming Setup').toBeDefined();
+  const taskValues = tasksField!.children || [];
+  expect(taskValues.length, 'Should create one value node per referenced task').toBe(4);
+  const expectedTaskNames = new Set([
+    'Set up overhead camera',
+    'Install multi-stream plugin',
+    'Figure out vertical stream layout',
+    'Fix audio clipping issues',
+  ]);
+  // All values must be [[uid]] only and resolve to the expected task pages
+  for (const v of taskValues) {
+    const nm = String(v.name);
+    expect(nm).toMatch(/^\[\[[a-z0-9]+\]\]$/);
+    const uid = (nm.match(/\[\[([a-z0-9]+)\]\]/) || [])[1];
+    const target = findById(uid);
+    expect(target, 'Value ref should resolve').toBeDefined();
+    expect(expectedTaskNames.has(String(target!.name)), `Unexpected task name: ${target?.name}`).toBe(true);
+  }
+});

@@ -514,7 +514,7 @@ test('Markdown links with parentheses in URL are handled without breaking text',
   expect(para).toBeDefined();
   const name = String(para!.name);
   // Should be a single proper anchor covering the full markdown link with parentheses in URL
-  expect(name).toMatch(/<a href="file:\/\/.+Vision,%20Mission,%20Values\.md">Vision, Mission, Values<\/a>/);
+  expect(name).toMatch(/<a href="file:\/\/.+Whereby \(1\) \/Vision, Mission, Values\.md">Vision, Mission, Values<\/a>/);
   // And it should end with the anchor (no trailing plaintext like ")" or leftover URL-encoded bits)
   expect(name.trim().endsWith('</a>')).toBe(true);
   expect(name).not.toContain('md)');

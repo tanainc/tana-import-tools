@@ -1,0 +1,69 @@
+import { TanaIntermediateFile } from '../../types/types.js';
+import { IConverter } from '../IConverter.js';
+import type * as fs from 'fs';
+export type FileSystem = {
+    existsSync: typeof fs.existsSync;
+    statSync: (path: string) => fs.Stats;
+    readdirSync: (path: string, options: {
+        withFileTypes: true;
+    }) => fs.Dirent[];
+    readFileSync: (path: string, options: {
+        encoding: BufferEncoding;
+        flag?: string | undefined;
+    } | BufferEncoding) => string;
+};
+export type PathIsh = {
+    dirname: (path: string) => string;
+    basename: (path: string) => string;
+    resolve: (...paths: string[]) => string;
+    join: (path: string, name: string) => string;
+};
+export declare class MarkdownConverter implements IConverter {
+    private nodesForImport;
+    private originalNodeNames;
+    private attrMap;
+    private topLevelMap;
+    private mdPathToPageUid;
+    private normalizedPathToUid;
+    private dirToBasenameToUid;
+    private pageUidToBaseDir;
+    private pageUidToMarkdownLinkNodeUids;
+    private csvTablesByParentAndPath;
+    private pendingCsvCellResolutions;
+    private summary;
+    private fileSystem;
+    private path;
+    private fileToUrlMap?;
+    constructor(fileSystem: FileSystem, pathIsh: PathIsh, fileToUrlMap?: Map<string, string>);
+    convert(fileContent: string): TanaIntermediateFile | undefined;
+    convertDirectory(dirPath: string): TanaIntermediateFile | undefined;
+    private postProcessAllNodes;
+    private recordMarkdownLinkOccurrence;
+    private convertRelativeLinksRecursively;
+    private inlineSinglyLinkedMarkdownPages;
+    private safeDecode;
+    private asFileUrl;
+    private ensureCsvTableForLink;
+    private convertSingleFile;
+    private normalizeImageUrl;
+    private parseCsv;
+    private normalizeCsvCellValue;
+    private resolveUidForLinkedPath;
+    private findExistingPageUidForCsvRow;
+    private stripQueryAndFragment;
+    private ensureMarkdownExtension;
+    private normalizePathForComparison;
+    private resolvePendingCsvCellReferences;
+    private registerPagePath;
+    private escapeRegExp;
+    private findFileByBasename;
+    private isStandaloneDate;
+    private isInlineDateValue;
+    private createNodeForImport;
+    private convertFieldLine;
+    private getValueForAttribute;
+    private ensureAttrMapIsUpdated;
+    private normalizeLinksAndSetAliases;
+    private fixBrokenLinks;
+    private findRefByName;
+}

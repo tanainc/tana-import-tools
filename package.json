@@ -25,13 +25,15 @@
     "test": "vitest run",
     "test:watch": "vitest"
   },
+  "dependencies": {
+    "date-fns": "^4.1.0"
+  },
   "devDependencies": {
     "@babel/preset-env": "^7.28.0",
     "@babel/preset-typescript": "^7.27.1",
     "@types/node": "^24.2.0",
     "@typescript-eslint/eslint-plugin": "^8.39.0",
     "@typescript-eslint/parser": "^8.39.0",
-    "date-fns": "^4.1.0",
     "eslint": "^9.32.0",
     "prettier": "^3.6.2",
     "typescript": "^5.9.2",

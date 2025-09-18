@@ -27,7 +27,7 @@ import type * as fs from 'fs';
 // - Fenced code blocks ```lang ... ``` become type=codeblock (with codeLanguage)
 // - Links converted to HTML anchors; bracket-links [[...]] normalized and broken refs created
 
-type ParsedFile = { filePath: string; content: string };
+type ParsedFile = { filePath: string; content: string; depth: number };
 export type FileSystem = {
   existsSync: typeof fs.existsSync;
   statSync: (path: string) => fs.Stats;
@@ -76,7 +76,7 @@ export class MarkdownConverter implements IConverter {
 
   // IConverter — treat input as a single markdown file content
   convert(fileContent: string): TanaIntermediateFile | undefined {
-    const pageNode = this.convertSingleFile({ filePath: 'document.md', content: fileContent });
+    const pageNode = this.convertSingleFile({ filePath: 'document.md', content: fileContent, depth: 0 });
     if (!pageNode) {
       return undefined;
     }
@@ -100,20 +100,22 @@ export class MarkdownConverter implements IConverter {
       return undefined;
     }
     const files: ParsedFile[] = [];
-    const walk = (p: string) => {
+    const walk = (p: string, depth: number) => {
       const entries = this.fileSystem.readdirSync(p, { withFileTypes: true });
       for (const e of entries) {
         const fp = this.path.join(p, e.name);
         if (e.isDirectory()) {
-          walk(fp);
+          walk(fp, depth + 1);
         } else if (e.isFile() && e.name.toLowerCase().endsWith('.md')) {
-          files.push({ filePath: fp, content: this.fileSystem.readFileSync(fp, 'utf8') });
+          files.push({ filePath: fp, content: this.fileSystem.readFileSync(fp, 'utf8'), depth });
         }
       }
     };
-    walk(dirPath);
+    walk(dirPath, 0);
 
     const rootLevelNodes: TanaIntermediateNode[] = [];
+    const pageNodesByDepth: Map<number, TanaIntermediateNode[]> = new Map();
+    let shallowestDepth = Number.POSITIVE_INFINITY;
     for (const f of files) {
       const page = this.convertSingleFile(f);
       if (page) {
@@ -121,11 +123,22 @@ export class MarkdownConverter implements IConverter {
         this.mdPathToPageUid.set(abs, page.uid);
         this.pageUidToBaseDir.set(page.uid, this.path.dirname(abs));
         rootLevelNodes.push(page);
+        const depthForFile = f.depth ?? 0;
+        if (depthForFile < shallowestDepth) {
+          shallowestDepth = depthForFile;
+        }
+        const existing = pageNodesByDepth.get(depthForFile);
+        if (existing) {
+          existing.push(page);
+        } else {
+          pageNodesByDepth.set(depthForFile, [page]);
+        }
       }
     }
 
     this.postProcessAllNodes(rootLevelNodes);
-    const home = Array.from(new Set(rootLevelNodes.map((node) => node.uid)));
+    const homeSourceNodes = shallowestDepth === Number.POSITIVE_INFINITY ? rootLevelNodes : pageNodesByDepth.get(shallowestDepth) || [];
+    const home = Array.from(new Set(homeSourceNodes.map((node) => node.uid)));
     return {
       version: 'TanaIntermediateFile V0.1',
       summary: this.summary,

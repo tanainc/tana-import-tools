@@ -14,7 +14,6 @@
   ],
   "license": "MIT",
   "scripts": {
-    "ci": "npm run lint && npm test",
     "format": "prettier --write \"src/**/*.ts\"",
     "lint": "eslint --ext .ts src/",
     "prepack": "rm -rf dist/ && ./node_modules/.bin/tsc  --project tsconfig.build.json",

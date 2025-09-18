@@ -13,6 +13,8 @@ test('Summary smoketest', async () => {
     totalNodes: 25,
     calendarNodes: 3,
   });
+
+  expect(file.home).toEqual(file.nodes.map((node) => node.uid));
 });
 
 test('Journal pages', () => {

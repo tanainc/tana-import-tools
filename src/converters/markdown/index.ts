@@ -83,10 +83,13 @@ export class MarkdownConverter implements IConverter {
 
     const rootLevelNodes: TanaIntermediateNode[] = [pageNode];
     this.postProcessAllNodes(rootLevelNodes);
+    const home = Array.from(new Set(rootLevelNodes.map((node) => node.uid)));
+
     return {
       version: 'TanaIntermediateFile V0.1',
       summary: this.summary,
       nodes: rootLevelNodes,
+      home,
       attributes: [...this.attrMap.values()],
     };
   }
@@ -122,10 +125,12 @@ export class MarkdownConverter implements IConverter {
     }
 
     this.postProcessAllNodes(rootLevelNodes);
+    const home = Array.from(new Set(rootLevelNodes.map((node) => node.uid)));
     return {
       version: 'TanaIntermediateFile V0.1',
       summary: this.summary,
       nodes: rootLevelNodes,
+      home,
       attributes: [...this.attrMap.values()],
     };
   }

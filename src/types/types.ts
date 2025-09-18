@@ -8,6 +8,9 @@ export type TanaIntermediateFile = {
   // all nodes
   nodes: TanaIntermediateNode[];
 
+  // root-level node ids that should be referenced from the user's home
+  home: string[];
+
   // all attributes
   attributes?: TanaIntermediateAttribute[];
 

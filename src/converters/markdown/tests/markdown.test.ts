@@ -9,6 +9,7 @@ test('Headings and bullets', () => {
   // one page per file; page title should come from first heading
   expect(file.summary.topLevelNodes).toBe(1);
   const page = file.nodes[0];
+  expect(file.home).toEqual([page.uid]);
   expect(page.name).toBe('Header 1');
   // headings flagged as sections
   const h1 = fn('Header 1');
@@ -22,6 +23,7 @@ test('Headings and bullets', () => {
 
 test('Todos and fields', () => {
   const [file, , fn] = importMarkdownDir('todos_fields');
+  expect(new Set(file.home)).toEqual(new Set(file.nodes.map((node) => node.uid)));
   const todo = fn('a todo item');
   expect(todo?.todoState).toBe('todo');
   const done = fn('done item');
@@ -39,6 +41,7 @@ test('Todos and fields', () => {
 
 test('Images and links', () => {
   const [file, f, fn] = importMarkdownDir('images_links');
+  expect(new Set(file.home)).toEqual(new Set(file.nodes.map((node) => node.uid)));
   // single image line
   const img = fn('image');
   expect(img?.type).toBe('image');
@@ -68,6 +71,7 @@ test('Images and links', () => {
 test('Image conversion: standalone image tokens become image nodes (list and paragraph), inline remains child', () => {
   const [file] = importMarkdownDir('images_links');
   const page = file.nodes.find((n) => n.name === 'Media')!;
+  expect(file.home).toContain(page.uid);
 
   // Collect all image nodes and map by URL
   const images: Record<string, any[]> = {};
@@ -117,6 +121,7 @@ test('Codeblocks', () => {
 
 test('Local images get file://', () => {
   const [file] = importMarkdownDir('local_images');
+  expect(file.home.length).toBe(file.nodes.length);
   const collect: any[] = [];
   const walk = (n: any) => {
     if (n.type === 'image' && typeof n.mediaUrl === 'string' && n.mediaUrl.startsWith('file://')) {
@@ -135,6 +140,7 @@ test('Local images get file://', () => {
 test('Mapped images get replaced URL', () => {
   const image = path.resolve(__dirname, 'fixtures/local_images/img.png');
   const [file] = importMarkdownDir('local_images', new Map<string, string>([[image, "http://localhost/img.png"]]));
+  expect(file.home.length).toBe(file.nodes.length);
   const collect: any[] = [];
   const walk = (n: any) => {
     if (n.type === 'image' && typeof n.mediaUrl === 'string' && n.mediaUrl.startsWith('http://localhost')) {
@@ -152,6 +158,7 @@ test('Mapped images get replaced URL', () => {
 
 test('Front matter is converted to fields and first heading used as title', () => {
   const [file, , fn] = importMarkdownDir('frontmatter');
+  expect(file.home).toContain(file.nodes[0].uid);
   const page = file.nodes[0];
   expect(page.name).toBe('Frontmatter Title');
   const author = fn('Author');
@@ -164,6 +171,7 @@ test('Front matter is converted to fields and first heading used as title', () =
 
 test('Links to other pages and files', () => {
   const [file] = importMarkdownDir('links/pages');
+  expect(new Set(file.home)).toEqual(new Set(file.nodes.map((node) => node.uid)));
   const pageA = file.nodes.find((n) => n.name === 'A');
   const pageB = file.nodes.find((n) => n.name === 'B');
   expect(pageA).toBeDefined();
@@ -201,6 +209,7 @@ test('Links to other pages and files', () => {
 test('Links to other pages and external files', () => {
   const abs = path.resolve(__dirname, 'fixtures/links/pages/assets/data.csv');
   const [file] = importMarkdownDir('links/pages', new Map([[abs, "http://localhost/assets/data.csv"]]));
+  expect(new Set(file.home)).toEqual(new Set(file.nodes.map((node) => node.uid)));
   const pageA = file.nodes.find((n) => n.name === 'A');
   const pageB = file.nodes.find((n) => n.name === 'B');
   expect(pageA).toBeDefined();

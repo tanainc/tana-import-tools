@@ -755,15 +755,11 @@ export class MarkdownConverter implements IConverter {
           const link = csvLinkMatch[2];
           const decoded = this.safeDecode(link);
           let abs = this.path.resolve(fileDir, decoded);
-          // eslint-disable-next-line no-console
-          console.log('[DEBUG_LOG] CSV link detected:', { paragraph, fileDir, decoded, abs });
           try {
             if (!this.fileSystem.existsSync(abs)) {
               const alt = this.findFileByBasename(fileDir, this.path.basename(decoded));
               if (alt) {
                 abs = alt;
-                // eslint-disable-next-line no-console
-                console.log('[DEBUG_LOG] CSV fallback resolved to:', abs);
               }
             }
             const csvContent = this.fileSystem.readFileSync(abs, 'utf8');
@@ -781,8 +777,6 @@ export class MarkdownConverter implements IConverter {
             });
             tableWrapper.children = [];
             parent.children.push(tableWrapper);
-            // eslint-disable-next-line no-console
-            console.log('[DEBUG_LOG] Created table wrapper under', parent.name, 'now childCount=', (parent.children || []).length);
             this.summary.totalNodes += 1;
             this.summary.leafNodes += 1;
 
@@ -863,8 +857,6 @@ export class MarkdownConverter implements IConverter {
             i++;
             continue;
           } catch (err) {
-            // eslint-disable-next-line no-console
-            console.log('[DEBUG_LOG] CSV handling failed:', err);
             // if reading/parsing fails, fall back to normal paragraph handling
           }
         }

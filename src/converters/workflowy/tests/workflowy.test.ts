@@ -13,6 +13,8 @@ test('Smoke test import preview ', async () => {
     calendarNodes: 0,
   });
 
+  expect(file.home).toEqual(file.nodes.map((node) => node.uid));
+
   expect(file.attributes).toBeUndefined();
 
   expect(fn('Hello how are you')?.children!.length).toBe(2);

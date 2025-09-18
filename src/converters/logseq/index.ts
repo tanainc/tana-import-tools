@@ -108,10 +108,13 @@ export class LogseqConverter implements IConverter {
       return undefined;
     }
 
+    const rootNodeUids = Array.from(new Set(rootLevelNodes.map((node) => node.uid)));
+
     const file: TanaIntermediateFile = {
       version: 'TanaIntermediateFile V0.1',
       summary: this.summary,
       nodes: rootLevelNodes,
+      home: rootNodeUids,
       attributes: [...this.attrMap.values()],
     };
 

@@ -23,7 +23,9 @@ test('Headings and bullets', () => {
 
 test('Todos and fields', () => {
   const [file, , fn] = importMarkdownDir('todos_fields');
-  expect(new Set(file.home)).toEqual(new Set(file.nodes.map((node) => node.uid)));
+  const page = fn('Tasks');
+  expect(page).toBeDefined();
+  expect(file.home).toContain(page!.uid);
   const todo = fn('a todo item');
   expect(todo?.todoState).toBe('todo');
   const done = fn('done item');
@@ -39,15 +41,34 @@ test('Todos and fields', () => {
   expect(pf?.children?.[0].name).toBe('Open');
 });
 
+test('Directory conversion sets home nodes from shallowest markdown files', () => {
+  const [file, , findByName] = importMarkdownDir('notion_references');
+  const dashboardNode = findByName('PARA Dashboard');
+  const businessNode = findByName('Business');
+  const gardeningNode = findByName('Gardening');
+
+  expect(dashboardNode).toBeDefined();
+  expect(businessNode).toBeDefined();
+  expect(gardeningNode).toBeDefined();
+
+  const homeIds = new Set(file.home);
+  expect(homeIds.has(dashboardNode!.uid)).toBe(true);
+  expect(homeIds.has(businessNode!.uid)).toBe(false);
+  expect(homeIds.has(gardeningNode!.uid)).toBe(false);
+  expect(homeIds.size).toBe(1);
+});
+
 test('Images and links', () => {
   const [file, f, fn] = importMarkdownDir('images_links');
-  expect(new Set(file.home)).toEqual(new Set(file.nodes.map((node) => node.uid)));
+  const mediaPage = file.nodes.find((n) => n.name === 'Media');
+  expect(mediaPage).toBeDefined();
+  expect(file.home).toContain(mediaPage!.uid);
   // single image line
   const img = fn('image');
   expect(img?.type).toBe('image');
   expect(img?.mediaUrl?.startsWith('https://')).toBe(true);
   // multiple inline images: find a node with two image children
-  const page = file.nodes.find((n) => n.name === 'Media')!;
+  const page = mediaPage!;
   const findHost = (n: any): any | undefined => {
     if (n.children && n.children.filter((c: any) => c.type === 'image').length === 2) {
       return n;
@@ -121,7 +142,10 @@ test('Codeblocks', () => {
 
 test('Local images get file://', () => {
   const [file] = importMarkdownDir('local_images');
-  expect(file.home.length).toBe(file.nodes.length);
+  const page = file.nodes.find((n) => n.name === 'Local');
+  expect(page).toBeDefined();
+  expect(file.home).toContain(page!.uid);
+  expect(file.home.length).toBe(1);
   const collect: any[] = [];
   const walk = (n: any) => {
     if (n.type === 'image' && typeof n.mediaUrl === 'string' && n.mediaUrl.startsWith('file://')) {
@@ -140,7 +164,10 @@ test('Local images get file://', () => {
 test('Mapped images get replaced URL', () => {
   const image = path.resolve(__dirname, 'fixtures/local_images/img.png');
   const [file] = importMarkdownDir('local_images', new Map<string, string>([[image, "http://localhost/img.png"]]));
-  expect(file.home.length).toBe(file.nodes.length);
+  const page = file.nodes.find((n) => n.name === 'Local');
+  expect(page).toBeDefined();
+  expect(file.home).toContain(page!.uid);
+  expect(file.home.length).toBe(1);
   const collect: any[] = [];
   const walk = (n: any) => {
     if (n.type === 'image' && typeof n.mediaUrl === 'string' && n.mediaUrl.startsWith('http://localhost')) {
@@ -171,11 +198,12 @@ test('Front matter is converted to fields and first heading used as title', () =
 
 test('Links to other pages and files', () => {
   const [file] = importMarkdownDir('links/pages');
-  expect(new Set(file.home)).toEqual(new Set(file.nodes.map((node) => node.uid)));
   const pageA = file.nodes.find((n) => n.name === 'A');
   const pageB = file.nodes.find((n) => n.name === 'B');
   expect(pageA).toBeDefined();
   expect(pageB).toBeDefined();
+  expect(file.home).toContain(pageA!.uid);
+  expect(file.home).not.toContain(pageB!.uid);
   const uidB = pageB!.uid;
   const findNode = (n: any): any | undefined => {
     if (Array.isArray(n.refs) && n.refs.includes(uidB)) {
@@ -209,11 +237,12 @@ test('Links to other pages and files', () => {
 test('Links to other pages and external files', () => {
   const abs = path.resolve(__dirname, 'fixtures/links/pages/assets/data.csv');
   const [file] = importMarkdownDir('links/pages', new Map([[abs, "http://localhost/assets/data.csv"]]));
-  expect(new Set(file.home)).toEqual(new Set(file.nodes.map((node) => node.uid)));
   const pageA = file.nodes.find((n) => n.name === 'A');
   const pageB = file.nodes.find((n) => n.name === 'B');
   expect(pageA).toBeDefined();
   expect(pageB).toBeDefined();
+  expect(file.home).toContain(pageA!.uid);
+  expect(file.home).not.toContain(pageB!.uid);
   const uidB = pageB!.uid;
   const findNode = (n: any): any | undefined => {
     if (Array.isArray(n.refs) && n.refs.includes(uidB)) {

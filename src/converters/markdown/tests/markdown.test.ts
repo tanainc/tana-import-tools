@@ -9,7 +9,7 @@ test('Headings and bullets', () => {
   // one page per file; page title should come from first heading
   expect(file.summary.topLevelNodes).toBe(1);
   const page = file.nodes[0];
-  expect(file.home).toEqual([page.uid]);
+  expect(file.homeRefIds).toEqual([page.uid]);
   expect(page.name).toBe('Header 1');
   // headings flagged as sections
   const h1 = fn('Header 1');
@@ -25,7 +25,7 @@ test('Todos and fields', () => {
   const [file, , fn] = importMarkdownDir('todos_fields');
   const page = fn('Tasks');
   expect(page).toBeDefined();
-  expect(file.home).toContain(page!.uid);
+  expect(file.homeRefIds).toContain(page!.uid);
   const todo = fn('a todo item');
   expect(todo?.todoState).toBe('todo');
   const done = fn('done item');
@@ -51,7 +51,7 @@ test('Directory conversion sets home nodes from shallowest markdown files', () =
   expect(businessNode).toBeDefined();
   expect(gardeningNode).toBeDefined();
 
-  const homeIds = new Set(file.home);
+  const homeIds = new Set(file.homeRefIds);
   expect(homeIds.has(dashboardNode!.uid)).toBe(true);
   expect(homeIds.has(businessNode!.uid)).toBe(false);
   expect(homeIds.has(gardeningNode!.uid)).toBe(false);
@@ -62,7 +62,7 @@ test('Images and links', () => {
   const [file, f, fn] = importMarkdownDir('images_links');
   const mediaPage = file.nodes.find((n) => n.name === 'Media');
   expect(mediaPage).toBeDefined();
-  expect(file.home).toContain(mediaPage!.uid);
+  expect(file.homeRefIds).toContain(mediaPage!.uid);
   // single image line
   const img = fn('image');
   expect(img?.type).toBe('image');
@@ -92,7 +92,7 @@ test('Images and links', () => {
 test('Image conversion: standalone image tokens become image nodes (list and paragraph), inline remains child', () => {
   const [file] = importMarkdownDir('images_links');
   const page = file.nodes.find((n) => n.name === 'Media')!;
-  expect(file.home).toContain(page.uid);
+  expect(file.homeRefIds).toContain(page.uid);
 
   // Collect all image nodes and map by URL
   const images: Record<string, any[]> = {};
@@ -144,8 +144,8 @@ test('Local images get file://', () => {
   const [file] = importMarkdownDir('local_images');
   const page = file.nodes.find((n) => n.name === 'Local');
   expect(page).toBeDefined();
-  expect(file.home).toContain(page!.uid);
-  expect(file.home.length).toBe(1);
+  expect(file.homeRefIds).toContain(page!.uid);
+  expect(file.homeRefIds.length).toBe(1);
   const collect: any[] = [];
   const walk = (n: any) => {
     if (n.type === 'image' && typeof n.mediaUrl === 'string' && n.mediaUrl.startsWith('file://')) {
@@ -166,8 +166,8 @@ test('Mapped images get replaced URL', () => {
   const [file] = importMarkdownDir('local_images', new Map<string, string>([[image, "http://localhost/img.png"]]));
   const page = file.nodes.find((n) => n.name === 'Local');
   expect(page).toBeDefined();
-  expect(file.home).toContain(page!.uid);
-  expect(file.home.length).toBe(1);
+  expect(file.homeRefIds).toContain(page!.uid);
+  expect(file.homeRefIds.length).toBe(1);
   const collect: any[] = [];
   const walk = (n: any) => {
     if (n.type === 'image' && typeof n.mediaUrl === 'string' && n.mediaUrl.startsWith('http://localhost')) {
@@ -185,7 +185,7 @@ test('Mapped images get replaced URL', () => {
 
 test('Front matter is converted to fields and first heading used as title', () => {
   const [file, , fn] = importMarkdownDir('frontmatter');
-  expect(file.home).toContain(file.nodes[0].uid);
+  expect(file.homeRefIds).toContain(file.nodes[0].uid);
   const page = file.nodes[0];
   expect(page.name).toBe('Frontmatter Title');
   const author = fn('Author');
@@ -202,8 +202,8 @@ test('Links to other pages and files', () => {
   const pageB = file.nodes.find((n) => n.name === 'B');
   expect(pageA).toBeDefined();
   expect(pageB).toBeDefined();
-  expect(file.home).toContain(pageA!.uid);
-  expect(file.home).not.toContain(pageB!.uid);
+  expect(file.homeRefIds).toContain(pageA!.uid);
+  expect(file.homeRefIds).not.toContain(pageB!.uid);
   const uidB = pageB!.uid;
   const findNode = (n: any): any | undefined => {
     if (Array.isArray(n.refs) && n.refs.includes(uidB)) {
@@ -241,8 +241,8 @@ test('Links to other pages and external files', () => {
   const pageB = file.nodes.find((n) => n.name === 'B');
   expect(pageA).toBeDefined();
   expect(pageB).toBeDefined();
-  expect(file.home).toContain(pageA!.uid);
-  expect(file.home).not.toContain(pageB!.uid);
+  expect(file.homeRefIds).toContain(pageA!.uid);
+  expect(file.homeRefIds).not.toContain(pageB!.uid);
   const uidB = pageB!.uid;
   const findNode = (n: any): any | undefined => {
     if (Array.isArray(n.refs) && n.refs.includes(uidB)) {

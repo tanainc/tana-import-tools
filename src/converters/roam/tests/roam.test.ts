@@ -14,7 +14,7 @@ test('Smoke test import preview ', async () => {
     calendarNodes: 13,
   });
 
-  expect(file.home).toEqual(file.nodes.map((node) => node.uid));
+  expect(file.homeRefIds).toEqual(file.nodes.map((node) => node.uid));
 
   expect(file.attributes).toEqual([
     { count: 2, name: 'Email', values: ['john@dutton.com', 'jack@black.com'] },

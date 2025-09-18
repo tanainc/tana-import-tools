@@ -13,7 +13,7 @@ test('Smoke test import preview ', async () => {
     calendarNodes: 0,
   });
 
-  expect(file.home).toEqual(file.nodes.map((node) => node.uid));
+  expect(file.homeRefIds).toEqual(file.nodes.map((node) => node.uid));
 
   expect(file.attributes).toBeUndefined();
 

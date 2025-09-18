@@ -89,7 +89,7 @@ export class MarkdownConverter implements IConverter {
       version: 'TanaIntermediateFile V0.1',
       summary: this.summary,
       nodes: rootLevelNodes,
-      home,
+      homeRefIds: home,
       attributes: [...this.attrMap.values()],
     };
   }
@@ -143,7 +143,7 @@ export class MarkdownConverter implements IConverter {
       version: 'TanaIntermediateFile V0.1',
       summary: this.summary,
       nodes: rootLevelNodes,
-      home,
+      homeRefIds: home,
       attributes: [...this.attrMap.values()],
     };
   }

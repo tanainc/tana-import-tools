@@ -114,7 +114,7 @@ export class LogseqConverter implements IConverter {
       version: 'TanaIntermediateFile V0.1',
       summary: this.summary,
       nodes: rootLevelNodes,
-      home: rootNodeUids,
+      homeRefIds: rootNodeUids,
       attributes: [...this.attrMap.values()],
     };
 

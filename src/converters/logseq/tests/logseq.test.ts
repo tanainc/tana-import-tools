@@ -14,7 +14,7 @@ test('Summary smoketest', async () => {
     calendarNodes: 3,
   });
 
-  expect(file.home).toEqual(file.nodes.map((node) => node.uid));
+  expect(file.homeRefIds).toEqual(file.nodes.map((node) => node.uid));
 });
 
 test('Journal pages', () => {

@@ -55,6 +55,11 @@ export class MarkdownConverter implements IConverter {
   private mdPathToPageUid: Map<string, string> = new Map();
   private pageUidToBaseDir: Map<string, string> = new Map();
   private csvTablesByParentAndPath: Map<string, TanaIntermediateNode> = new Map();
+  private pendingCsvCellResolutions: {
+    nodeUid: string;
+    rawValue: string;
+    sourceDir: string;
+  }[] = [];
 
   private summary: TanaIntermediateSummary = {
     leafNodes: 0,
@@ -83,6 +88,7 @@ export class MarkdownConverter implements IConverter {
     }
 
     const rootLevelNodes: TanaIntermediateNode[] = [pageNode];
+    this.resolvePendingCsvCellReferences();
     this.postProcessAllNodes(rootLevelNodes);
     const home = Array.from(new Set(rootLevelNodes.map((node) => node.uid)));
 
@@ -137,6 +143,7 @@ export class MarkdownConverter implements IConverter {
       }
     }
 
+    this.resolvePendingCsvCellReferences();
     this.postProcessAllNodes(rootLevelNodes);
     const homeSourceNodes = shallowestDepth === Number.POSITIVE_INFINITY ? rootLevelNodes : pageNodesByDepth.get(shallowestDepth) || [];
     const home = Array.from(new Set(homeSourceNodes.map((node) => node.uid)));
@@ -193,6 +200,7 @@ export class MarkdownConverter implements IConverter {
                   createdAt: child.createdAt,
                   editedAt: child.editedAt,
                   parentNode: node.uid,
+                  refs: [l],
                 }),
               );
               node.children = newChildren;
@@ -246,9 +254,7 @@ export class MarkdownConverter implements IConverter {
           if (/^[a-z]+:\/\//i.test(link) || link.startsWith('mailto:')) {
             return full;
           }
-          const decoded = this.safeDecode(link);
-          const abs = this.path.resolve(baseDir, decoded);
-          const uid = this.mdPathToPageUid.get(abs);
+          const uid = this.resolveUidForLinkedPath(link, baseDir);
           if (uid) {
             if (!node.refs) {
               node.refs = [];
@@ -261,6 +267,22 @@ export class MarkdownConverter implements IConverter {
           // If we cannot resolve, keep original text
           return full;
         });
+      }
+      if (node.name.includes('(') && (node.name.includes('.csv') || node.name.includes('.md'))) {
+        const normalized = this.normalizeCsvCellValue(node.name, baseDir);
+        if (normalized.text !== node.name) {
+          node.name = normalized.text;
+        }
+        if (normalized.refs.length) {
+          if (!node.refs) {
+            node.refs = [];
+          }
+          for (const ref of normalized.refs) {
+            if (!node.refs.includes(ref)) {
+              node.refs.push(ref);
+            }
+          }
+        }
       }
     }
     if (node.children) {
@@ -309,6 +331,7 @@ export class MarkdownConverter implements IConverter {
 
       const csvContent = this.fileSystem.readFileSync(abs, 'utf8');
       const { headers, rows } = this.parseCsv(csvContent);
+      const csvDir = this.path.dirname(abs);
       if (!parent.children) {
         parent.children = [];
       }
@@ -341,6 +364,18 @@ export class MarkdownConverter implements IConverter {
         this.summary.totalNodes += 1;
         this.summary.leafNodes += 1;
 
+        const targetUid = this.findExistingPageUidForCsvRow(rowDisplayName, mdSiblingDir);
+        if (targetUid) {
+          rowNode.name = `[[${targetUid}]]`;
+          if (!rowNode.refs) {
+            rowNode.refs = [];
+          }
+          if (!rowNode.refs.includes(targetUid)) {
+            rowNode.refs.push(targetUid);
+          }
+          continue;
+        }
+
         headers.forEach((h, idx) => {
           if (idx === 0) {
             return;
@@ -352,42 +387,29 @@ export class MarkdownConverter implements IConverter {
             editedAt: Date.now(),
           });
           fieldNode.type = 'field';
+          const rawValue = r[idx] || '';
+          const normalizedCell = this.normalizeCsvCellValue(rawValue, csvDir);
           const valueNode = this.createNodeForImport({
             uid: idgenerator(),
-            name: r[idx] || '',
+            name: normalizedCell.text,
             createdAt: Date.now(),
             editedAt: Date.now(),
             parentNode: fieldNode.uid,
+            refs: normalizedCell.refs.length ? normalizedCell.refs : undefined,
           });
+          if (normalizedCell.unresolvedTargets.length) {
+            this.pendingCsvCellResolutions.push({
+              nodeUid: valueNode.uid,
+              rawValue,
+              sourceDir: csvDir,
+            });
+          }
           fieldNode.children = [valueNode];
           rowNode.children!.push(fieldNode);
           this.summary.fields += 1;
           this.summary.totalNodes += 1;
           this.ensureAttrMapIsUpdated(fieldNode);
         });
-
-        let targetUid: string | undefined;
-        for (const [absPath, uid] of this.mdPathToPageUid.entries()) {
-          const dir = this.path.dirname(absPath);
-          if (dir !== mdSiblingDir) {
-            continue;
-          }
-          const base = this.path.basename(absPath);
-          const nameNoExt = base.endsWith('.md') ? base.slice(0, -3) : base;
-          if (nameNoExt === rowDisplayName || nameNoExt.startsWith(rowDisplayName + ' ')) {
-            targetUid = uid;
-            break;
-          }
-        }
-        if (targetUid) {
-          rowNode.name = `[[${targetUid}]]`;
-          if (!rowNode.refs) {
-            rowNode.refs = [];
-          }
-          if (!rowNode.refs.includes(targetUid)) {
-            rowNode.refs.push(targetUid);
-          }
-        }
       }
 
       this.csvTablesByParentAndPath.set(cacheKey, tableWrapper);
@@ -1057,6 +1079,149 @@ export class MarkdownConverter implements IConverter {
       rows.push(normalized);
     }
     return { headers, rows };
+  }
+
+  private normalizeCsvCellValue(
+    value: string,
+    sourceDir: string,
+  ): { text: string; refs: string[]; unresolvedTargets: string[] } {
+    if (!value || !value.includes('(') || (!value.includes('.csv') && !value.includes('.md'))) {
+      return { text: value, refs: [], unresolvedTargets: [] };
+    }
+
+    const refs: string[] = [];
+    const unresolvedTargets: string[] = [];
+    const csvLinkLikeRegex = /([^()]+?)\s*\(((?:[^()]|\([^()]*\))+?\.(?:csv|md)(?:[?#][^)]*)?)\)/g;
+
+    const text = value.replace(csvLinkLikeRegex, (full: string, _alias: string, target: string) => {
+      const uid = this.resolveUidForLinkedPath(target, sourceDir);
+      if (!uid) {
+        unresolvedTargets.push(target);
+        return full;
+      }
+      if (!refs.includes(uid)) {
+        refs.push(uid);
+      }
+      return `[[${uid}]]`;
+    });
+
+    return { text, refs, unresolvedTargets };
+  }
+
+  private resolveUidForLinkedPath(linkTarget: string, sourceDir: string): string | undefined {
+    const decodedTarget = this.safeDecode(linkTarget.trim());
+    if (!decodedTarget) {
+      return undefined;
+    }
+    const sanitizedTarget = this.stripQueryAndFragment(decodedTarget);
+    if (!sanitizedTarget) {
+      return undefined;
+    }
+
+    const absoluteTarget = this.path.resolve(sourceDir, sanitizedTarget);
+    const candidatePaths = new Set<string>();
+
+    candidatePaths.add(this.ensureMarkdownExtension(absoluteTarget));
+
+    const baseName = this.path.basename(sanitizedTarget);
+    if (baseName) {
+      candidatePaths.add(this.ensureMarkdownExtension(this.path.resolve(sourceDir, baseName)));
+      const mdBase = this.ensureMarkdownExtension(baseName);
+      const foundByBasename = this.findFileByBasename(sourceDir, this.path.basename(mdBase));
+      if (foundByBasename) {
+        candidatePaths.add(this.ensureMarkdownExtension(foundByBasename));
+      }
+    }
+
+    for (const candidate of candidatePaths) {
+      const resolvedCandidate = this.path.resolve(candidate);
+      const uid = this.mdPathToPageUid.get(resolvedCandidate);
+      if (uid) {
+        return uid;
+      }
+    }
+
+    const normalizedSuffix = this.normalizePathForComparison(this.ensureMarkdownExtension(sanitizedTarget));
+    if (normalizedSuffix) {
+      for (const [mdPath, uid] of this.mdPathToPageUid.entries()) {
+        if (this.normalizePathForComparison(mdPath).endsWith(normalizedSuffix)) {
+          return uid;
+        }
+      }
+    }
+
+    if (baseName) {
+      const normalizedBase = this.normalizePathForComparison(this.path.basename(this.ensureMarkdownExtension(baseName)));
+      for (const [mdPath, uid] of this.mdPathToPageUid.entries()) {
+        if (this.normalizePathForComparison(this.path.basename(mdPath)) === normalizedBase) {
+          return uid;
+        }
+      }
+    }
+
+    return undefined;
+  }
+
+  private findExistingPageUidForCsvRow(rowDisplayName: string, mdSiblingDir: string): string | undefined {
+    for (const [absPath, uid] of this.mdPathToPageUid.entries()) {
+      const dir = this.path.dirname(absPath);
+      if (dir !== mdSiblingDir) {
+        continue;
+      }
+      const base = this.path.basename(absPath);
+      const nameNoExt = base.endsWith('.md') ? base.slice(0, -3) : base;
+      if (nameNoExt === rowDisplayName || nameNoExt.startsWith(`${rowDisplayName} `)) {
+        return uid;
+      }
+    }
+    return undefined;
+  }
+
+  private stripQueryAndFragment(pathLike: string): string {
+    return pathLike.replace(/[?#].*$/, '');
+  }
+
+  private ensureMarkdownExtension(pathLike: string): string {
+    const stripped = this.stripQueryAndFragment(pathLike);
+    if (/\.md$/i.test(stripped)) {
+      return stripped;
+    }
+    if (/\.csv$/i.test(stripped)) {
+      return stripped.replace(/\.csv$/i, '.md');
+    }
+    return stripped;
+  }
+
+  private normalizePathForComparison(pathLike: string): string {
+    const withoutQuery = this.stripQueryAndFragment(pathLike)
+      .replace(/\\/g, '/')
+      .replace(/\/+/g, '/');
+    const stripDotSegments = withoutQuery
+      .replace(/^(?:\.\/)+/, '')
+      .replace(/^(?:\.\.\/)+/, '');
+    return stripDotSegments.toLowerCase();
+  }
+
+  private resolvePendingCsvCellReferences() {
+    if (!this.pendingCsvCellResolutions.length) {
+      return;
+    }
+
+    for (const pending of this.pendingCsvCellResolutions) {
+      const node = this.nodesForImport.get(pending.nodeUid);
+      if (!node) {
+        continue;
+      }
+      const normalizedCell = this.normalizeCsvCellValue(pending.rawValue, pending.sourceDir);
+      node.name = normalizedCell.text;
+      node.refs = normalizedCell.refs;
+      this.originalNodeNames.set(node.uid, node.name);
+      if (normalizedCell.unresolvedTargets.length) {
+        this.summary.brokenRefs += normalizedCell.unresolvedTargets.length;
+      }
+    }
+
+    this.pendingCsvCellResolutions = [];
   }
 
   private escapeRegExp(s: string) {

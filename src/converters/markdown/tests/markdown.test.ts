@@ -300,6 +300,61 @@ test('Links to other pages and external files', () => {
   expect(nameField!.children?.[0].name).toBe('alpha');
 });
 
+test('CSV cell references resolve to markdown pages', () => {
+  const [file, , findByName] = importMarkdownDir('csv_pages_links');
+  const indy = file.nodes.find((n) => n.name === 'indyRIOT');
+  expect(indy).toBeDefined();
+
+  const csvWrappers = (indy!.children || []).filter((child) =>
+    Array.isArray(child.children) && child.children.length > 0,
+  );
+  expect(csvWrappers.length).toBeGreaterThanOrEqual(2);
+
+  const notionNode = findByName('Notion import tool');
+  const offlineNode = findByName('Offline');
+  expect(notionNode).toBeDefined();
+  expect(offlineNode).toBeDefined();
+
+  const eirikNode = findByName('Eirik Hoem');
+  const ingridNode = findByName('Ingrid Ødegaard');
+  expect(eirikNode).toBeDefined();
+  expect(ingridNode).toBeDefined();
+
+  const teamMembersWrapper = csvWrappers.find((wrapper) =>
+    (wrapper.children || []).some((row) => (row.refs || []).includes(eirikNode!.uid)),
+  );
+  expect(teamMembersWrapper).toBeDefined();
+
+  const eirikRow = (teamMembersWrapper!.children || []).find((row) => (row.refs || []).includes(eirikNode!.uid));
+  expect(eirikRow).toBeDefined();
+  expect((eirikRow!.children || []).length).toBe(0);
+
+  const roadMapWrapper = csvWrappers.find((wrapper) =>
+    (wrapper.children || []).some((row) => (row.refs || []).includes(notionNode!.uid)),
+  );
+  expect(roadMapWrapper).toBeDefined();
+
+  const notionRow = (roadMapWrapper!.children || []).find((row) => (row.refs || []).includes(notionNode!.uid));
+  expect(notionRow).toBeDefined();
+  expect((notionRow!.children || []).length).toBe(0);
+
+  const notionPageTeamField = (notionNode!.children || []).find(
+    (child) => child.type === 'field' && child.name.trim() === 'Team members',
+  );
+  expect(notionPageTeamField).toBeDefined();
+  const notionPageValues = notionPageTeamField!.children || [];
+  expect(notionPageValues.length).toBeGreaterThan(0);
+  expect(notionPageValues.some((child) => child.refs?.includes(eirikNode!.uid))).toBe(true);
+  expect(notionPageValues.some((child) => child.refs?.includes(ingridNode!.uid))).toBe(true);
+
+  const workingOnFieldOnMember = (eirikNode!.children || []).find(
+    (child) => child.type === 'field' && child.name.trim() === 'Working on',
+  );
+  expect(workingOnFieldOnMember).toBeDefined();
+  const memberWorkingRefs = (workingOnFieldOnMember!.children || []).flatMap((val) => val.refs || []);
+  expect(memberWorkingRefs).toEqual(expect.arrayContaining([notionNode!.uid]));
+});
+
 test('Top-of-page Key: Value lines become fields', () => {
   const [file, , fn] = importMarkdownDir('csv_pages');
   const page = file.nodes.find((n) => n.name === 'Call mom');
@@ -468,17 +523,19 @@ test('Standalone CSV link is converted into a table', () => {
     const rowRefUid = rowNode!.refs![0];
     expect(rowNode!.name).toBe(`[[${rowRefUid}]]`);
 
+    // Rows that resolve to markdown pages should no longer duplicate the CSV fields
+    expect((rowNode!.children || []).length).toBe(0);
+
     // Check that Created field exists and is populated (from CSV second column)
-    const created = findField(rowNode, 'Created');
+    const rowRefTarget = findById(rowRefUid);
+    expect(rowRefTarget?.name, `Row ${rowName} ref should resolve to a page named ${rowName}`).toBe(rowName);
+
+    const created = findField(rowRefTarget, 'Created');
     expect(created?.children?.[0].name).toContain('August 8, 2025 9:13 AM');
 
     // Tags header exists in CSV but values are empty in fixture
-    const tags = findField(rowNode, 'Tags');
-    expect(tags?.children?.[0].name).toBe('');
-
-    // The row node itself should reference the corresponding page
-    const rowRefTarget = findById(rowRefUid);
-    expect(rowRefTarget?.name, `Row ${rowName} ref should resolve to a page named ${rowName}`).toBe(rowName);
+    const tags = findField(rowRefTarget, 'Tags');
+    expect(tags?.children?.[0].name || '').toBe('');
   }
 });
 

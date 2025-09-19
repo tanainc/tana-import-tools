@@ -3,7 +3,7 @@
 ## Project Structure & Module Organization
 
 - `src/`: TypeScript source.
-  - `converters/{roam,workflowy,logseq}`: Converter implementations with `index.ts`, utils, and `tests/`.
+  - `converters/{roam,workflowy,logseq,markdown}`: Converter implementations with `index.ts`, utils, and `tests/`.
   - `types/`: Tana Intermediate Format types (`types.ts`).
   - `utils/`, `testUtils/`: Shared helpers and test utilities.
   - `runner.ts`: CLI entry used by convert scripts.
@@ -35,6 +35,11 @@
 - Use helpers in `src/testUtils/testUtils.ts` (e.g., `importFileAndGetHelpers`).
 - Add tests for new converters and for bug fixes (see `CONTRIBUTING.md`).
 - Run `npm run test` locally; keep tests independent of network and filesystem side effects.
+
+## Agent Run Notes
+
+- Node version: ensure Node 22+ (e.g., `nvm use 22`).
+- Sandboxed environments: run Vitest with threads to avoid worker kill errors: `npm test -- --pool=threads`.
 
 ## Commit & Pull Request Guidelines
 

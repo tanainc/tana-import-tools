@@ -145,7 +145,7 @@ test('Local images get file://', () => {
   const page = file.nodes.find((n) => n.name === 'Local');
   expect(page).toBeDefined();
   expect(file.homeRefIds).toContain(page!.uid);
-  expect(file.homeRefIds.length).toBe(1);
+  expect(file.homeRefIds?.length).toBe(1);
   const collect: any[] = [];
   const walk = (n: any) => {
     if (n.type === 'image' && typeof n.mediaUrl === 'string' && n.mediaUrl.startsWith('file://')) {
@@ -167,7 +167,7 @@ test('Mapped images get replaced URL', () => {
   const page = file.nodes.find((n) => n.name === 'Local');
   expect(page).toBeDefined();
   expect(file.homeRefIds).toContain(page!.uid);
-  expect(file.homeRefIds.length).toBe(1);
+  expect(file.homeRefIds?.length).toBe(1);
   const collect: any[] = [];
   const walk = (n: any) => {
     if (n.type === 'image' && typeof n.mediaUrl === 'string' && n.mediaUrl.startsWith('http://localhost')) {
@@ -219,19 +219,33 @@ test('Links to other pages and files', () => {
   const linkNode: any = findNode(pageA!);
   expect(linkNode).toBeDefined();
   expect(linkNode.refs).toContain(uidB);
-  const findCsv = (n: any): any | undefined => {
-    if (typeof n.name === 'string' && /<a href="file:\/\/.+\/assets\/data\.csv">CSV<\/a>/.test(n.name)) {
-      return n;
-    }
-    for (const c of n.children || []) {
-      const res = findCsv(c);
-      if (res) {
-        return res;
-      }
-    }
-  };
-  const csvNode: any = findCsv(pageA!);
-  expect(csvNode).toBeDefined();
+  const csvWrapper = pageA?.children?.find((n: any) =>
+    (n.children || []).some((row: any) => (row.children || []).some((field: any) => field.type === 'field')),
+  );
+  expect(csvWrapper, 'Expected CSV table wrapper under page A').toBeDefined();
+  const csvUid = csvWrapper!.uid;
+
+  const findChildByPrefix = (prefix: string) =>
+    (pageA?.children || []).find((child: any) => typeof child.name === 'string' && child.name.startsWith(prefix));
+
+  const inlineCsv = findChildByPrefix('Also a file');
+  expect(inlineCsv, 'Expected inline CSV reference node').toBeDefined();
+  expect(typeof inlineCsv!.name).toBe('string');
+  expect(inlineCsv!.name).toMatch(/^Also a file: \[\[[a-z0-9]+\]\]$/);
+  expect(inlineCsv!.refs).toContain(csvUid);
+
+  const inlineCsvWithAlias = findChildByPrefix('Another file link to file');
+  expect(inlineCsvWithAlias, 'Expected inline CSV reference node with alias').toBeDefined();
+  expect(inlineCsvWithAlias!.name).toContain(`[[${csvUid}]]`);
+  expect(inlineCsvWithAlias!.refs).toContain(csvUid);
+
+  const tableRows = csvWrapper!.children || [];
+  expect(tableRows.length).toBeGreaterThan(0);
+  const firstRow = tableRows[0];
+  expect(firstRow.name).toBe('1');
+  const nameField = (firstRow.children || []).find((c: any) => c.type === 'field' && c.name === 'name');
+  expect(nameField, 'Expected name field from CSV header').toBeDefined();
+  expect(nameField!.children?.[0].name).toBe('alpha');
 });
 
 test('Links to other pages and external files', () => {
@@ -258,19 +272,32 @@ test('Links to other pages and external files', () => {
   const linkNode: any = findNode(pageA!);
   expect(linkNode).toBeDefined();
   expect(linkNode.refs).toContain(uidB);
-  const findCsv = (n: any): any | undefined => {
-    if (typeof n.name === 'string' && /<a href="http:\/\/localhost\/assets\/data\.csv">CSV<\/a>/.test(n.name)) {
-      return n;
-    }
-    for (const c of n.children || []) {
-      const res = findCsv(c);
-      if (res) {
-        return res;
-      }
-    }
-  };
-  const csvNode: any = findCsv(pageA!);
-  expect(csvNode).toBeDefined();
+  const csvWrapper = pageA?.children?.find((n: any) =>
+    (n.children || []).some((row: any) => (row.children || []).some((field: any) => field.type === 'field')),
+  );
+  expect(csvWrapper).toBeDefined();
+  const csvUid = csvWrapper!.uid;
+
+  const findChildByPrefix = (prefix: string) =>
+    (pageA?.children || []).find((child: any) => typeof child.name === 'string' && child.name.startsWith(prefix));
+
+  const inlineCsv = findChildByPrefix('Also a file');
+  expect(inlineCsv).toBeDefined();
+  expect(inlineCsv!.name).toMatch(/^Also a file: \[\[[a-z0-9]+\]\]$/);
+  expect(inlineCsv!.refs).toContain(csvUid);
+
+  const inlineCsvWithAlias = findChildByPrefix('Another file link to file');
+  expect(inlineCsvWithAlias).toBeDefined();
+  expect(inlineCsvWithAlias!.name).toContain(`[[${csvUid}]]`);
+  expect(inlineCsvWithAlias!.refs).toContain(csvUid);
+
+  const tableRows = csvWrapper!.children || [];
+  expect(tableRows.length).toBeGreaterThan(0);
+  const firstRow = tableRows[0];
+  expect(firstRow.name).toBe('1');
+  const nameField = (firstRow.children || []).find((c: any) => c.type === 'field' && c.name === 'name');
+  expect(nameField).toBeDefined();
+  expect(nameField!.children?.[0].name).toBe('alpha');
 });
 
 test('Top-of-page Key: Value lines become fields', () => {

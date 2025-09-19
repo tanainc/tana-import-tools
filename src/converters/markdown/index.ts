@@ -54,6 +54,7 @@ export class MarkdownConverter implements IConverter {
   private topLevelMap: Map<string, TanaIntermediateNode> = new Map();
   private mdPathToPageUid: Map<string, string> = new Map();
   private pageUidToBaseDir: Map<string, string> = new Map();
+  private csvTablesByParentAndPath: Map<string, TanaIntermediateNode> = new Map();
 
   private summary: TanaIntermediateSummary = {
     leafNodes: 0,
@@ -279,6 +280,121 @@ export class MarkdownConverter implements IConverter {
 
   private asFileUrl(abs: string) {
     return `file://${abs}`;
+  }
+
+  private ensureCsvTableForLink(
+    parent: TanaIntermediateNode,
+    fileDir: string,
+    link: string,
+    alias?: string,
+  ): TanaIntermediateNode | undefined {
+    try {
+      const decoded = this.safeDecode(link);
+      let abs = this.path.resolve(fileDir, decoded);
+      if (!this.fileSystem.existsSync(abs)) {
+        const alt = this.findFileByBasename(fileDir, this.path.basename(decoded));
+        if (alt) {
+          abs = alt;
+        }
+      }
+      if (!this.fileSystem.existsSync(abs)) {
+        return undefined;
+      }
+      abs = this.path.resolve(abs);
+      const cacheKey = `${parent.uid}::${abs}`;
+      const existing = this.csvTablesByParentAndPath.get(cacheKey);
+      if (existing) {
+        return existing;
+      }
+
+      const csvContent = this.fileSystem.readFileSync(abs, 'utf8');
+      const { headers, rows } = this.parseCsv(csvContent);
+      if (!parent.children) {
+        parent.children = [];
+      }
+      const tableWrapper = this.createNodeForImport({
+        uid: idgenerator(),
+        name: parent.name,
+        createdAt: Date.now(),
+        editedAt: Date.now(),
+        type: 'node',
+      });
+      tableWrapper.children = [];
+      parent.children.push(tableWrapper);
+      this.summary.totalNodes += 1;
+      this.summary.leafNodes += 1;
+
+      const csvBaseName = this.path.basename(abs).replace(/\.csv$/i, '');
+      const mdSiblingDir = this.path.join(this.path.dirname(abs), csvBaseName);
+
+      for (const r of rows) {
+        const rowDisplayName = r[0] || alias || 'Row';
+        const rowNode = this.createNodeForImport({
+          uid: idgenerator(),
+          name: rowDisplayName,
+          createdAt: Date.now(),
+          editedAt: Date.now(),
+          type: 'node',
+        });
+        rowNode.children = [];
+        tableWrapper.children.push(rowNode);
+        this.summary.totalNodes += 1;
+        this.summary.leafNodes += 1;
+
+        headers.forEach((h, idx) => {
+          if (idx === 0) {
+            return;
+          }
+          const fieldNode = this.createNodeForImport({
+            uid: idgenerator(),
+            name: h,
+            createdAt: Date.now(),
+            editedAt: Date.now(),
+          });
+          fieldNode.type = 'field';
+          const valueNode = this.createNodeForImport({
+            uid: idgenerator(),
+            name: r[idx] || '',
+            createdAt: Date.now(),
+            editedAt: Date.now(),
+            parentNode: fieldNode.uid,
+          });
+          fieldNode.children = [valueNode];
+          rowNode.children!.push(fieldNode);
+          this.summary.fields += 1;
+          this.summary.totalNodes += 1;
+          this.ensureAttrMapIsUpdated(fieldNode);
+        });
+
+        let targetUid: string | undefined;
+        for (const [absPath, uid] of this.mdPathToPageUid.entries()) {
+          const dir = this.path.dirname(absPath);
+          if (dir !== mdSiblingDir) {
+            continue;
+          }
+          const base = this.path.basename(absPath);
+          const nameNoExt = base.endsWith('.md') ? base.slice(0, -3) : base;
+          if (nameNoExt === rowDisplayName || nameNoExt.startsWith(rowDisplayName + ' ')) {
+            targetUid = uid;
+            break;
+          }
+        }
+        if (targetUid) {
+          rowNode.name = `[[${targetUid}]]`;
+          if (!rowNode.refs) {
+            rowNode.refs = [];
+          }
+          if (!rowNode.refs.includes(targetUid)) {
+            rowNode.refs.push(targetUid);
+          }
+        }
+      }
+
+      this.csvTablesByParentAndPath.set(cacheKey, tableWrapper);
+      return tableWrapper;
+    } catch {
+      return undefined;
+    }
   }
 
   private convertSingleFile(file: ParsedFile): TanaIntermediateNode | undefined {
@@ -747,119 +863,37 @@ export class MarkdownConverter implements IConverter {
         type = 'codeblock';
       }
 
-      // Special case: a standalone CSV link should be parsed as a table
+      let csvWrappersForParagraph: TanaIntermediateNode[] = [];
       if (type !== 'codeblock') {
-        const csvLinkMatch = paragraph.trim().match(/^\[([^\]]*)\]\(([^)]+\.csv)\)$/i);
-        if (csvLinkMatch) {
-          const alias = csvLinkMatch[1];
-          const link = csvLinkMatch[2];
-          const decoded = this.safeDecode(link);
-          let abs = this.path.resolve(fileDir, decoded);
-          try {
-            if (!this.fileSystem.existsSync(abs)) {
-              const alt = this.findFileByBasename(fileDir, this.path.basename(decoded));
-              if (alt) {
-                abs = alt;
-              }
-            }
-            const csvContent = this.fileSystem.readFileSync(abs, 'utf8');
-            const { headers, rows } = this.parseCsv(csvContent);
-            const parent = getCurrentParent();
-            if (!parent.children) {
-              parent.children = [];
-            }
-            const tableWrapper = this.createNodeForImport({
-              uid: idgenerator(),
-              name: parent.name,
-              createdAt: Date.now(),
-              editedAt: Date.now(),
-              type: 'node',
-            });
-            tableWrapper.children = [];
-            parent.children.push(tableWrapper);
-            this.summary.totalNodes += 1;
-            this.summary.leafNodes += 1;
-
-            // Determine potential directory with MD pages matching CSV rows
-            const csvBaseName = this.path.basename(abs).replace(/\.csv$/i, '');
-            const mdSiblingDir = this.path.join(this.path.dirname(abs), csvBaseName);
-
-            for (const r of rows) {
-              const rowDisplayName = r[0] || (alias || 'Row');
-              const rowNode = this.createNodeForImport({
-                uid: idgenerator(),
-                name: rowDisplayName,
-                createdAt: Date.now(),
-                editedAt: Date.now(),
-                type: 'node',
-              });
-              rowNode.children = [];
-              tableWrapper.children.push(rowNode);
-              this.summary.totalNodes += 1;
-              this.summary.leafNodes += 1;
-
-              headers.forEach((h, idx) => {
-                if (idx === 0) {
-                  return;
-                }
-                const fieldNode = this.createNodeForImport({
-                  uid: idgenerator(),
-                  name: h,
-                  createdAt: Date.now(),
-                  editedAt: Date.now(),
-                });
-                fieldNode.type = 'field';
-                const valueNode = this.createNodeForImport({
-                  uid: idgenerator(),
-                  name: r[idx] || '',
-                  createdAt: Date.now(),
-                  editedAt: Date.now(),
-                  parentNode: fieldNode.uid,
-                });
-                fieldNode.children = [valueNode];
-                rowNode.children!.push(fieldNode);
-                this.summary.fields += 1;
-                this.summary.totalNodes += 1;
-                this.ensureAttrMapIsUpdated(fieldNode);
-              });
-
-              // Use parsed pages map (mdPathToPageUid) to find a matching MD page for this row.
-              // We match MD files that live in the sibling directory named after the CSV basename
-              // and whose filename (without .md) equals the row name or starts with "<Row Name> ".
-              {
-                let targetUid: string | undefined;
-                for (const [absPath, uid] of this.mdPathToPageUid.entries()) {
-                  const dir = this.path.dirname(absPath);
-                  if (dir !== mdSiblingDir) {
-                    continue;
-                  }
-                  const base = this.path.basename(absPath);
-                  const nameNoExt = base.endsWith('.md') ? base.slice(0, -3) : base;
-                  if (nameNoExt === rowDisplayName || nameNoExt.startsWith(rowDisplayName + ' ')) {
-                    targetUid = uid;
-                    break;
-                  }
-                }
-                if (targetUid) {
-                  // Set the row title to only the UID reference so later resolvers don't convert it to file:// links
-                  rowNode.name = `[[${targetUid}]]`;
-                  // Also attach a ref on the row node itself so the row directly references the parsed MD page
-                  if (!rowNode.refs) {
-                    rowNode.refs = [];
-                  }
-                  if (!rowNode.refs.includes(targetUid)) {
-                    rowNode.refs.push(targetUid);
-                  }
-                  // No extra Content field is created anymore
-                }
-              }
-            }
+        const standaloneCsvMatch = paragraph
+          .trim()
+          .match(/^\[([^\]]*)\]\(((?:[^()]+|\([^()]*\))*)\)$/i);
+        if (standaloneCsvMatch && /\.csv(?:[?#]|$)/i.test(standaloneCsvMatch[2].trim())) {
+          const alias = standaloneCsvMatch[1];
+          const link = standaloneCsvMatch[2];
+          const parentForCsv = getCurrentParent();
+          const tableWrapper = this.ensureCsvTableForLink(parentForCsv, fileDir, link, alias);
+          if (tableWrapper) {
             i++;
             continue;
-          } catch (err) {
-            // if reading/parsing fails, fall back to normal paragraph handling
           }
         }
+      }
+
+      const parentForParagraph = getCurrentParent();
+      if (type !== 'codeblock' && paragraph.includes('](')) {
+        const csvLinkRegex = /\[([^\]]*)\]\(((?:[^()]+|\([^()]*\))*)\)/g;
+        paragraph = paragraph.replace(csvLinkRegex, (full: string, alias: string, link: string) => {
+          if (!/\.csv(?:[?#]|$)/i.test(link.trim())) {
+            return full;
+          }
+          const wrapper = this.ensureCsvTableForLink(parentForParagraph, fileDir, link, alias);
+          if (!wrapper) {
+            return full;
+          }
+          csvWrappersForParagraph.push(wrapper);
+          return `[[${wrapper.uid}]]`;
+        });
       }
 
       // handle images in paragraph
@@ -924,13 +958,35 @@ export class MarkdownConverter implements IConverter {
         pnode.children = childNodes;
         pnode.refs = childNodes.map((c) => c.uid);
       }
-      const parent = getCurrentParent();
+      const parent = parentForParagraph;
       if (!parent.children) {
         parent.children = [];
       }
       parent.children.push(pnode);
       this.summary.totalNodes += 1;
       this.summary.leafNodes += 1;
+
+      if (csvWrappersForParagraph.length) {
+        const uniqueWrappers: TanaIntermediateNode[] = [];
+        for (const w of csvWrappersForParagraph) {
+          if (!uniqueWrappers.some((existing) => existing.uid === w.uid)) {
+            uniqueWrappers.push(w);
+          }
+        }
+        for (let idx = uniqueWrappers.length - 1; idx >= 0; idx--) {
+          const wrapper = uniqueWrappers[idx];
+          const children = parent.children || [];
+          const nodeIndex = children.indexOf(pnode);
+          const wrapperIndex = children.indexOf(wrapper);
+          if (wrapperIndex !== -1 && nodeIndex !== -1 && wrapperIndex < nodeIndex) {
+            const [removed] = children.splice(wrapperIndex, 1);
+            const updatedNodeIndex = children.indexOf(pnode);
+            if (removed) {
+              children.splice(updatedNodeIndex + 1, 0, removed);
+            }
+          }
+        }
+      }
 
       // Convert fields outside lists too
       if (type !== 'codeblock' && paragraph.includes('::')) {

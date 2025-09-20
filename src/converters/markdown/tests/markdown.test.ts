@@ -3,6 +3,8 @@ import { expectImage } from '../../../testUtils/testUtils.js';
 import { importMarkdownDir } from './testUtils.js';
 import { TanaIntermediateNode } from '../../../types/types.js';
 import * as path from 'node:path';
+import type { Dirent, Stats } from 'node:fs';
+import { MarkdownConverter, type FileSystem, type PathIsh } from '../index.js';
 
 test('Headings and bullets', () => {
   const [file, , fn] = importMarkdownDir('headings');
@@ -615,8 +617,6 @@ test('Notion CSV and MD inline references are resolved to inline refs and multi-
   }
 });
 
-
-
 test('Markdown links with parentheses in URL are handled without breaking text', () => {
   const [file] = importMarkdownDir('links/parentheses');
   const page = file.nodes.find((n) => n.name === 'Parentheses Links');
@@ -640,4 +640,24 @@ test('Markdown links with parentheses in URL are handled without breaking text',
   // And it should end with the anchor (no trailing plaintext like ")" or leftover URL-encoded bits)
   expect(name.trim().endsWith('</a>')).toBe(true);
   expect(name).not.toContain('md)');
+});
+
+test('Markdown link alias ending with comma converts without hanging', () => {
+  const [file] = importMarkdownDir('link_text_comma');
+  const page = file.nodes.find((n) => n.name === 'Meeting Rituals');
+  expect(page).toBeDefined();
+
+  const bullet = (page?.children || []).find((child) =>
+    typeof child.name === 'string' && child.name.includes('From the team at Lattice'),
+  );
+  expect(bullet, 'Expected bullet with trailing-comma link alias').toBeDefined();
+
+  const rendered = String(bullet!.name);
+  expect(rendered).toContain(
+    '<a href="https://engineering-lattice.webflow.io/article/designing-team-rituals">From the team at Lattice,</a>',
+  );
+  // Ensure the remainder of the sentence is preserved (including emphasis markers)
+  expect(rendered).toContain('they *"call this ritual our Monday');
+  // Guard against duplicate anchor insertion (would indicate looping behaviour)
+  expect(rendered.split('<a ').length - 1).toBe(1);
 });

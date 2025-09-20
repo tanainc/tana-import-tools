@@ -53,6 +53,8 @@ export class MarkdownConverter implements IConverter {
   private attrMap: Map<string, TanaIntermediateAttribute> = new Map();
   private topLevelMap: Map<string, TanaIntermediateNode> = new Map();
   private mdPathToPageUid: Map<string, string> = new Map();
+  private normalizedPathToUid: Map<string, string> = new Map();
+  private dirToBasenameToUid: Map<string, Map<string, string>> = new Map();
   private pageUidToBaseDir: Map<string, string> = new Map();
   private csvTablesByParentAndPath: Map<string, TanaIntermediateNode> = new Map();
   private pendingCsvCellResolutions: {
@@ -128,6 +130,7 @@ export class MarkdownConverter implements IConverter {
       if (page) {
         const abs = this.path.resolve(f.filePath);
         this.mdPathToPageUid.set(abs, page.uid);
+        this.registerPagePath(abs, page.uid);
         this.pageUidToBaseDir.set(page.uid, this.path.dirname(abs));
         rootLevelNodes.push(page);
         const depthForFile = f.depth ?? 0;
@@ -212,7 +215,7 @@ export class MarkdownConverter implements IConverter {
     }
   }
 
-  private convertRelativeLinksRecursively(node: TanaIntermediateNode, baseDir: string) {
+  private convertRelativeLinksRecursively(node: TanaIntermediateNode, baseDir: string, depth = 0) {
     if (node.type !== 'codeblock' && typeof node.name === 'string') {
       // 1) Convert standard markdown links [alias](relative)
       if (node.name.includes('](')) {
@@ -287,7 +290,7 @@ export class MarkdownConverter implements IConverter {
     }
     if (node.children) {
       for (const c of node.children) {
-        this.convertRelativeLinksRecursively(c, baseDir);
+        this.convertRelativeLinksRecursively(c, baseDir, depth + 1);
       }
     }
   }
@@ -885,11 +888,11 @@ export class MarkdownConverter implements IConverter {
         type = 'codeblock';
       }
 
-      let csvWrappersForParagraph: TanaIntermediateNode[] = [];
+      const csvWrappersForParagraph: TanaIntermediateNode[] = [];
       if (type !== 'codeblock') {
         const standaloneCsvMatch = paragraph
           .trim()
-          .match(/^\[([^\]]*)\]\(((?:[^()]+|\([^()]*\))*)\)$/i);
+          .match(/^\[([^\]]*)\]\(((?:[^()]|\([^()]*\))*)\)$/i);
         if (standaloneCsvMatch && /\.csv(?:[?#]|$)/i.test(standaloneCsvMatch[2].trim())) {
           const alias = standaloneCsvMatch[1];
           const link = standaloneCsvMatch[2];
@@ -904,7 +907,7 @@ export class MarkdownConverter implements IConverter {
 
       const parentForParagraph = getCurrentParent();
       if (type !== 'codeblock' && paragraph.includes('](')) {
-        const csvLinkRegex = /\[([^\]]*)\]\(((?:[^()]+|\([^()]*\))*)\)/g;
+        const csvLinkRegex = /\[([^\]]*)\]\(((?:[^()]|\([^()]*\))*)\)/g;
         paragraph = paragraph.replace(csvLinkRegex, (full: string, alias: string, link: string) => {
           if (!/\.csv(?:[?#]|$)/i.test(link.trim())) {
             return full;
@@ -1118,42 +1121,32 @@ export class MarkdownConverter implements IConverter {
       return undefined;
     }
 
-    const absoluteTarget = this.path.resolve(sourceDir, sanitizedTarget);
-    const candidatePaths = new Set<string>();
-
-    candidatePaths.add(this.ensureMarkdownExtension(absoluteTarget));
-
-    const baseName = this.path.basename(sanitizedTarget);
-    if (baseName) {
-      candidatePaths.add(this.ensureMarkdownExtension(this.path.resolve(sourceDir, baseName)));
-      const mdBase = this.ensureMarkdownExtension(baseName);
-      const foundByBasename = this.findFileByBasename(sourceDir, this.path.basename(mdBase));
-      if (foundByBasename) {
-        candidatePaths.add(this.ensureMarkdownExtension(foundByBasename));
-      }
+    const absoluteTarget = this.ensureMarkdownExtension(this.path.resolve(sourceDir, sanitizedTarget));
+    const normalizedAbsolute = this.normalizePathForComparison(absoluteTarget);
+    const directUid = this.normalizedPathToUid.get(normalizedAbsolute);
+    if (directUid) {
+      return directUid;
     }
 
-    for (const candidate of candidatePaths) {
-      const resolvedCandidate = this.path.resolve(candidate);
-      const uid = this.mdPathToPageUid.get(resolvedCandidate);
-      if (uid) {
-        return uid;
-      }
-    }
-
-    const normalizedSuffix = this.normalizePathForComparison(this.ensureMarkdownExtension(sanitizedTarget));
-    if (normalizedSuffix) {
-      for (const [mdPath, uid] of this.mdPathToPageUid.entries()) {
-        if (this.normalizePathForComparison(mdPath).endsWith(normalizedSuffix)) {
+    const targetDir = this.path.dirname(absoluteTarget);
+    const dirKey = this.normalizePathForComparison(targetDir);
+    const dirEntries = this.dirToBasenameToUid.get(dirKey);
+    if (dirEntries) {
+      const base = this.path.basename(absoluteTarget);
+      const baseWithoutExt = base.endsWith('.md') ? base.slice(0, -3) : base;
+      const normalizedBase = this.normalizePathForComparison(baseWithoutExt);
+      for (const [storedBase, uid] of dirEntries) {
+        if (storedBase === normalizedBase || storedBase.startsWith(`${normalizedBase} `)) {
           return uid;
         }
       }
     }
 
-    if (baseName) {
-      const normalizedBase = this.normalizePathForComparison(this.path.basename(this.ensureMarkdownExtension(baseName)));
-      for (const [mdPath, uid] of this.mdPathToPageUid.entries()) {
-        if (this.normalizePathForComparison(this.path.basename(mdPath)) === normalizedBase) {
+    // Fallback: attempt a suffix match across known paths (rare)
+    const normalizedSuffix = this.normalizePathForComparison(absoluteTarget);
+    if (normalizedSuffix) {
+      for (const [normalizedPath, uid] of this.normalizedPathToUid.entries()) {
+        if (normalizedPath !== normalizedAbsolute && normalizedPath.endsWith(normalizedSuffix)) {
           return uid;
         }
       }
@@ -1163,14 +1156,14 @@ export class MarkdownConverter implements IConverter {
   }
 
   private findExistingPageUidForCsvRow(rowDisplayName: string, mdSiblingDir: string): string | undefined {
-    for (const [absPath, uid] of this.mdPathToPageUid.entries()) {
-      const dir = this.path.dirname(absPath);
-      if (dir !== mdSiblingDir) {
-        continue;
-      }
-      const base = this.path.basename(absPath);
-      const nameNoExt = base.endsWith('.md') ? base.slice(0, -3) : base;
-      if (nameNoExt === rowDisplayName || nameNoExt.startsWith(`${rowDisplayName} `)) {
+    const dirKey = this.normalizePathForComparison(mdSiblingDir);
+    const dirEntries = this.dirToBasenameToUid.get(dirKey);
+    if (!dirEntries) {
+      return undefined;
+    }
+    const normalizedRow = this.normalizePathForComparison(rowDisplayName);
+    for (const [storedBase, uid] of dirEntries) {
+      if (storedBase === normalizedRow || storedBase.startsWith(`${normalizedRow} `)) {
         return uid;
       }
     }
@@ -1224,12 +1217,37 @@ export class MarkdownConverter implements IConverter {
     this.pendingCsvCellResolutions = [];
   }
 
+  private registerPagePath(absPath: string, uid: string) {
+    const normalizedPath = this.normalizePathForComparison(absPath);
+    this.normalizedPathToUid.set(normalizedPath, uid);
+
+    const dir = this.path.dirname(absPath);
+    const dirKey = this.normalizePathForComparison(dir);
+    let mapForDir = this.dirToBasenameToUid.get(dirKey);
+    if (!mapForDir) {
+      mapForDir = new Map();
+      this.dirToBasenameToUid.set(dirKey, mapForDir);
+    }
+
+    const baseName = this.path.basename(absPath);
+    const baseWithoutExt = baseName.endsWith('.md') ? baseName.slice(0, -3) : baseName;
+    mapForDir.set(this.normalizePathForComparison(baseName), uid);
+    mapForDir.set(this.normalizePathForComparison(baseWithoutExt), uid);
+  }
+
   private escapeRegExp(s: string) {
     return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }
 
   // Recursively search for a file by basename under a directory
-  private findFileByBasename(dir: string, base: string): string | undefined {
+  private findFileByBasename(dir: string, base: string, visited?: Set<string>): string | undefined {
+    const normalizedDir = this.normalizePathForComparison(dir);
+    if (!visited) {
+      visited = new Set();
+    } else if (visited.has(normalizedDir)) {
+      return undefined;
+    }
+    visited.add(normalizedDir);
     try {
       const entries = this.fileSystem.readdirSync(dir, { withFileTypes: true });
       for (const e of entries) {
@@ -1237,7 +1255,7 @@ export class MarkdownConverter implements IConverter {
         if (e.isFile() && e.name === base) {
           return this.path.resolve(p);
         } else if (e.isDirectory()) {
-          const found = this.findFileByBasename(p, base);
+          const found = this.findFileByBasename(p, base, visited);
           if (found) {
             return found;
           }

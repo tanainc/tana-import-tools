@@ -224,6 +224,7 @@ test('Links to other pages and files', () => {
   );
   expect(csvWrapper, 'Expected CSV table wrapper under page A').toBeDefined();
   const csvUid = csvWrapper!.uid;
+  expect(csvWrapper!.name).toBe('CSV');
 
   const findChildByPrefix = (prefix: string) =>
     (pageA?.children || []).find((child: any) => typeof child.name === 'string' && child.name.startsWith(prefix));
@@ -277,6 +278,7 @@ test('Links to other pages and external files', () => {
   );
   expect(csvWrapper).toBeDefined();
   const csvUid = csvWrapper!.uid;
+  expect(csvWrapper!.name).toBe('CSV');
 
   const findChildByPrefix = (prefix: string) =>
     (pageA?.children || []).find((child: any) => typeof child.name === 'string' && child.name.startsWith(prefix));
@@ -298,6 +300,17 @@ test('Links to other pages and external files', () => {
   const nameField = (firstRow.children || []).find((c: any) => c.type === 'field' && c.name === 'name');
   expect(nameField).toBeDefined();
   expect(nameField!.children?.[0].name).toBe('alpha');
+});
+
+test('CSV links without alias use Table fallback name', () => {
+  const [file] = importMarkdownDir('links/pages');
+  const noAliasPage = file.nodes.find((n) => n.name === 'No alias');
+  expect(noAliasPage).toBeDefined();
+  const tableWrapper = noAliasPage?.children?.find((child: any) =>
+    (child.children || []).some((row: any) => (row.children || []).some((field: any) => field.type === 'field')),
+  );
+  expect(tableWrapper, 'Expected CSV table wrapper created from unnamed link').toBeDefined();
+  expect(tableWrapper!.name).toBe('Table');
 });
 
 test('Duplicate names under root become references to root nodes', () => {

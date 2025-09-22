@@ -372,9 +372,10 @@ export class MarkdownConverter implements IConverter {
       if (!parent.children) {
         parent.children = [];
       }
+      const aliasDisplayName = alias?.trim();
       const tableWrapper = this.createNodeForImport({
         uid: idgenerator(),
-        name: parent.name,
+        name: aliasDisplayName && aliasDisplayName.length > 0 ? aliasDisplayName : 'Table',
         createdAt: Date.now(),
         editedAt: Date.now(),
         type: 'node',

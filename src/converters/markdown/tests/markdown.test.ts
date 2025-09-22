@@ -11,9 +11,9 @@ test('Headings and bullets', () => {
   const page = file.nodes[0];
   expect(file.homeRefIds).toEqual([page.uid]);
   expect(page.name).toBe('Header 1');
-  // headings flagged as sections
+  // first heading stays as page title without section flag, subsequent headings flagged as sections
   const h1 = fn('Header 1');
-  expect(h1?.flags).toEqual(['section']);
+  expect((h1?.flags ?? []).includes('section')).toBe(false);
   const h2 = fn('Header 2');
   expect(h2?.flags).toEqual(['section']);
   // bullet items under headings
@@ -394,6 +394,13 @@ test('Top-of-page Key: Value lines become fields', () => {
   const statusField = fn('Status');
   expect(statusField?.type).toBe('field');
   expect(statusField?.children?.[0].name).toBe('Doing');
+});
+
+test('CSV pages first-line headings are treated as titles without section flags', () => {
+  const [file, , findByName] = importMarkdownDir('csv_pages');
+  const routinesPage = findByName('Routines');
+  expect(routinesPage).toBeDefined();
+  expect((routinesPage?.flags ?? []).includes('section')).toBe(false);
 });
 
 test('Inline date fields and standalone date nodes', () => {

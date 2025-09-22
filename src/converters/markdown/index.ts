@@ -473,6 +473,7 @@ export class MarkdownConverter implements IConverter {
     pageNode.children = [];
 
     const lines = file.content.split(/\r?\n/);
+    const firstLineIsTopLevelHeading = /^#\s+.+$/.test(lines[0] || '');
     let i = 0;
     // heading stack for proper nesting
     const headingStack: { level: number; node: TanaIntermediateNode }[] = [];
@@ -613,12 +614,15 @@ export class MarkdownConverter implements IConverter {
         // If this is the first heading in the file, use it as page title
         if (!firstHeadingUsedAsTitle && pageNode.name === baseName) {
           pageNode.name = title;
-          pageNode.flags = ['section'];
-          // Treat page node as the heading node at this level
-          while (headingStack.length && headingStack[headingStack.length - 1].level >= level) {
-            headingStack.pop();
+          const shouldSkipMarkingAsHeading = firstLineIsTopLevelHeading && i === 0 && level === 1;
+          if (!shouldSkipMarkingAsHeading) {
+            pageNode.flags = ['section'];
+            // Treat page node as the heading node at this level
+            while (headingStack.length && headingStack[headingStack.length - 1].level >= level) {
+              headingStack.pop();
+            }
+            headingStack.push({ level, node: pageNode });
           }
-          headingStack.push({ level, node: pageNode });
           firstHeadingUsedAsTitle = true;
 
           // Consume optional blank lines then any consecutive "Key: Value" metadata lines as fields

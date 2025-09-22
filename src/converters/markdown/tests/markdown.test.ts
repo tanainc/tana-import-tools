@@ -42,19 +42,19 @@ test('Todos and fields', () => {
 });
 
 test('Directory conversion sets home nodes from shallowest markdown files', () => {
-  const [file, , findByName] = importMarkdownDir('notion_references');
-  const dashboardNode = findByName('PARA Dashboard');
-  const businessNode = findByName('Business');
-  const gardeningNode = findByName('Gardening');
+  const [file, , findByName] = importMarkdownDir('csv_pages_links');
+  const rootNode = findByName('indyRIOT');
+  const projectNode = findByName('Notion import tool');
+  const memberNode = findByName('Eirik Hoem');
 
-  expect(dashboardNode).toBeDefined();
-  expect(businessNode).toBeDefined();
-  expect(gardeningNode).toBeDefined();
+  expect(rootNode).toBeDefined();
+  expect(projectNode).toBeDefined();
+  expect(memberNode).toBeDefined();
 
   const homeIds = new Set(file.homeRefIds);
-  expect(homeIds.has(dashboardNode!.uid)).toBe(true);
-  expect(homeIds.has(businessNode!.uid)).toBe(false);
-  expect(homeIds.has(gardeningNode!.uid)).toBe(false);
+  expect(homeIds.has(rootNode!.uid)).toBe(true);
+  expect(homeIds.has(projectNode!.uid)).toBe(false);
+  expect(homeIds.has(memberNode!.uid)).toBe(false);
   expect(homeIds.size).toBe(1);
 });
 
@@ -311,14 +311,14 @@ test('CSV cell references resolve to markdown pages', () => {
   expect(csvWrappers.length).toBeGreaterThanOrEqual(2);
 
   const notionNode = findByName('Notion import tool');
-  const offlineNode = findByName('Offline');
+  const experimentalUiNode = findByName('ExperimentalUI');
   expect(notionNode).toBeDefined();
-  expect(offlineNode).toBeDefined();
+  expect(experimentalUiNode).toBeDefined();
 
-  const eirikNode = findByName('Eirik Hoem');
-  const ingridNode = findByName('Ingrid Ødegaard');
+  const eirikNode = file.nodes.find((n) => n.name === 'Eirik Hoem');
+  const asgeirNode = file.nodes.find((n) => n.name === 'Asgeir Hoem');
   expect(eirikNode).toBeDefined();
-  expect(ingridNode).toBeDefined();
+  expect(asgeirNode).toBeDefined();
 
   const teamMembersWrapper = csvWrappers.find((wrapper) =>
     (wrapper.children || []).some((row) => (row.refs || []).includes(eirikNode!.uid)),
@@ -345,7 +345,7 @@ test('CSV cell references resolve to markdown pages', () => {
   const notionPageValues = notionPageTeamField!.children || [];
   expect(notionPageValues.length).toBeGreaterThan(0);
   expect(notionPageValues.some((child) => child.refs?.includes(eirikNode!.uid))).toBe(true);
-  expect(notionPageValues.some((child) => child.refs?.includes(ingridNode!.uid))).toBe(true);
+  expect(notionPageValues.some((child) => child.refs?.includes(asgeirNode!.uid))).toBe(true);
 
   const workingOnFieldOnMember = (eirikNode!.children || []).find(
     (child) => child.type === 'field' && child.name.trim() === 'Working on',
@@ -540,78 +540,79 @@ test('Standalone CSV link is converted into a table', () => {
 });
 
 
-// NEW: Notion CSV and MD inline references resolution
+test('CSV and markdown inline references are resolved to inline refs and multi-refs create separate nodes', () => {
+  const [file, findById, findByName] = importMarkdownDir('csv_pages_links');
 
-test('Notion CSV and MD inline references are resolved to inline refs and multi-refs create separate nodes', () => {
-  const [file, findById] = importMarkdownDir('notion_references');
+  const root = findByName('indyRIOT');
+  expect(root).toBeDefined();
 
-  // Find the PARA Dashboard page
-  const para = file.nodes.find((n) => typeof n.name === 'string' && String(n.name).includes('PARA Dashboard'))!;
-  expect(para).toBeDefined();
-
-  // Helper to find node by name recursively
-  const findByName = (n: TanaIntermediateNode, name: string): TanaIntermediateNode | undefined => {
-    if (n.name === name) { return n; }
-    for (const c of n.children || []) { const f = findByName(c, name); if (f) { return f; } }
-  };
-
-  // NOTES table wrapper under # Notes section
-  const notesSection = findByName(para, 'Notes');
-  expect(notesSection).toBeDefined();
-  const notesWrapper = (notesSection?.children || []).find((c) => c.name === 'Notes');
-  expect(notesWrapper, 'Notes wrapper should exist').toBeDefined();
-
-  // Find a row that has Area/Resource field (e.g., Flylighter row) and assert inline ref conversion
   const findField = (n: TanaIntermediateNode | undefined, fieldName: string): TanaIntermediateNode | undefined => {
-    return (n?.children || []).find((c) => c.type === 'field' && c.name === fieldName);
+    return (n?.children || []).find((c) => c.type === 'field' && c.name.trim() === fieldName);
   };
-  const candidateRow = (notesWrapper!.children || []).find((r) => !!findField(r as any, 'Area/Resource')) as TanaIntermediateNode | undefined;
-  expect(candidateRow, 'Expected at least one row with Area/Resource field').toBeDefined();
-  const areaField = findField(candidateRow, 'Area/Resource');
-  expect(areaField).toBeDefined();
-  const areaValue = areaField!.children?.[0];
-  expect(areaValue).toBeDefined();
-  // Expect value to be exactly an inline [[uid]] reference
-  const areaName = String(areaValue!.name);
-  expect(areaName).toMatch(/^\[\[[a-z0-9]+\]\]$/);
-  const areaUid = (areaValue!.name.match(/\[\[([a-z0-9]+)\]\]/) || [])[1];
-  const areaTarget = findById(areaUid);
-  expect(areaTarget).toBeDefined();
-  // The referenced page should look like an Area/Resource page
-  expect(String(areaTarget!.name)).toMatch(/Productivity|Business|Streaming/);
 
-  // Also verify a Task page with inline Project (../...md) gets resolved
-  const tasksSection = findByName(para, 'Tasks');
-  expect(tasksSection).toBeDefined();
-  // Find a task page under the tasks database directory — those pages are separate top-level nodes; pick one
-  const someTask = file.nodes.find((n) => typeof n.name === 'string' && String(n.name).startsWith('Set up overhead camera'));
-  expect(someTask).toBeDefined();
-  const projectField = findField(someTask, 'Project');
-  expect(projectField).toBeDefined();
-  const projectVal = projectField!.children?.[0];
-  expect(String(projectVal!.name)).toMatch(/^\[\[[a-z0-9]+\]\]$/);
-
-  // And verify multi-reference field splits into separate nodes with only [[uid]]
-  const buildStreaming = file.nodes.find((n) => typeof n.name === 'string' && String(n.name).startsWith('Build Streaming Setup')) as TanaIntermediateNode | undefined;
-  expect(buildStreaming, 'Expected Build Streaming Setup project page').toBeDefined();
-  const tasksField = findField(buildStreaming, 'Tasks');
-  expect(tasksField, 'Tasks field should exist on Build Streaming Setup').toBeDefined();
-  const taskValues = tasksField!.children || [];
-  expect(taskValues.length, 'Should create one value node per referenced task').toBe(4);
-  const expectedTaskNames = new Set([
-    'Set up overhead camera',
-    'Install multi-stream plugin',
-    'Figure out vertical stream layout',
-    'Fix audio clipping issues',
+  const projectPage = findByName('Notion import tool');
+  expect(projectPage).toBeDefined();
+  const teamField = findField(projectPage, 'Team members');
+  expect(teamField).toBeDefined();
+  const expectedMembers = new Map([
+    ['Eirik Hoem', false],
+    ['Asgeir Hoem', false],
   ]);
-  // All values must be [[uid]] only and resolve to the expected task pages
-  for (const v of taskValues) {
-    const nm = String(v.name);
-    expect(nm).toMatch(/^\[\[[a-z0-9]+\]\]$/);
-    const uid = (nm.match(/\[\[([a-z0-9]+)\]\]/) || [])[1];
-    const target = findById(uid);
-    expect(target, 'Value ref should resolve').toBeDefined();
-    expect(expectedTaskNames.has(String(target!.name)), `Unexpected task name: ${target?.name}`).toBe(true);
+  for (const value of teamField!.children || []) {
+    const valueName = String(value.name);
+    expect(valueName).toMatch(/^\[\[[a-z0-9]+\]\]$/);
+    const valueUid = (valueName.match(/\[\[([a-z0-9]+)\]\]/) || [])[1];
+    const target = findById(valueUid);
+    expect(target, 'Team member reference should resolve').toBeDefined();
+    if (target?.name && expectedMembers.has(String(target.name))) {
+      expectedMembers.set(String(target.name), true);
+    }
+  }
+  expectedMembers.forEach((seen, member) => {
+    expect(seen, `Expected Team members to include reference to ${member}`).toBe(true);
+  });
+
+  const memberPage = file.nodes.find((n) => n.name === 'Asgeir Hoem');
+  expect(memberPage).toBeDefined();
+  const workingOnField = findField(memberPage, 'Working on');
+  expect(workingOnField).toBeDefined();
+  const expectedProjects = new Map([
+    ['Notion import tool', false],
+    ['ExperimentalUI', false],
+  ]);
+  for (const value of workingOnField!.children || []) {
+    const valueName = String(value.name);
+    expect(valueName).toMatch(/^\[\[[a-z0-9]+\]\]$/);
+    const valueUid = (valueName.match(/\[\[([a-z0-9]+)\]\]/) || [])[1];
+    const target = findById(valueUid);
+    expect(target, 'Working on reference should resolve').toBeDefined();
+    if (target?.name && expectedProjects.has(String(target.name))) {
+      expectedProjects.set(String(target.name), true);
+    }
+    expect((value.children || []).length, 'Inline reference nodes should not duplicate CSV fields').toBe(0);
+  }
+  expectedProjects.forEach((seen, project) => {
+    expect(seen, `Expected Working on to include reference to ${project}`).toBe(true);
+  });
+
+  const csvWrappers = (root!.children || []).filter(
+    (child) =>
+      Array.isArray(child.children) &&
+      child.children.some((row) => Array.isArray(row.refs) && row.refs.length > 0),
+  );
+  expect(csvWrappers.length).toBeGreaterThan(0);
+  for (const wrapper of csvWrappers) {
+    for (const row of wrapper.children || []) {
+      if (!Array.isArray(row.refs) || row.refs.length === 0) {
+        continue;
+      }
+      const rowName = String(row.name);
+      expect(rowName).toMatch(/^\[\[[a-z0-9]+\]\]$/);
+      const rowUid = (rowName.match(/\[\[([a-z0-9]+)\]\]/) || [])[1];
+      const target = findById(rowUid);
+      expect(target, 'Row reference should resolve to markdown page').toBeDefined();
+      expect((row.children || []).length, 'Row that resolves to a markdown page should not duplicate CSV fields').toBe(0);
+    }
   }
 });
 

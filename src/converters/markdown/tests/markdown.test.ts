@@ -3,8 +3,6 @@ import { expectImage } from '../../../testUtils/testUtils.js';
 import { importMarkdownDir } from './testUtils.js';
 import { TanaIntermediateNode } from '../../../types/types.js';
 import * as path from 'node:path';
-import type { Dirent, Stats } from 'node:fs';
-import { MarkdownConverter, type FileSystem, type PathIsh } from '../index.js';
 
 test('Headings and bullets', () => {
   const [file, , fn] = importMarkdownDir('headings');

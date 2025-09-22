@@ -161,7 +161,7 @@ export function markdownToHTML(nodeContent: string) {
   // quicker than regex
   if (nodeContent.includes('](')) {
     return nodeContent.replace(
-      /\[([^\[\]]*)\]\(((?:[^()]+|\([^()]*\))*)\)/g,
+      /\[([^[\]]*)\]\(((?:[^()]+|\([^()]*\))*)\)/g,
       (fullMatch: string | undefined, alias: string | undefined, link: string) => {
         if (link?.includes('://')) {
           return `<a href="${link}">${alias}</a>`;

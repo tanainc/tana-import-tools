@@ -197,28 +197,26 @@ test('Front matter is converted to fields and first heading used as title', () =
 });
 
 test('Links to other pages and files', () => {
-  const [file] = importMarkdownDir('links/pages');
+  const [file, , findByName] = importMarkdownDir('links/pages');
   const pageA = file.nodes.find((n) => n.name === 'A');
-  const pageB = file.nodes.find((n) => n.name === 'B');
+  const pageB = findByName('B');
   expect(pageA).toBeDefined();
   expect(pageB).toBeDefined();
   expect(file.homeRefIds).toContain(pageA!.uid);
   expect(file.homeRefIds).not.toContain(pageB!.uid);
-  const uidB = pageB!.uid;
-  const findNode = (n: any): any | undefined => {
-    if (Array.isArray(n.refs) && n.refs.includes(uidB)) {
-      return n;
-    }
-    for (const c of n.children || []) {
-      const res = findNode(c);
-      if (res) {
-        return res;
-      }
-    }
-  };
-  const linkNode: any = findNode(pageA!);
-  expect(linkNode).toBeDefined();
-  expect(linkNode.refs).toContain(uidB);
+
+  const pageBAsRoot = file.nodes.find((n) => n.uid === pageB!.uid);
+  expect(pageBAsRoot).toBeUndefined();
+
+  const inlineChild = (pageA!.children || []).find((child) => child.uid === pageB!.uid);
+  expect(inlineChild, 'Expected page B to be inlined under page A').toBeDefined();
+  expect(inlineChild!.name).toBe('B');
+
+  const hasReferencePlaceholder = (pageA!.children || []).some(
+    (child) => child.uid !== pageB!.uid && Array.isArray(child.refs) && child.refs.includes(pageB!.uid),
+  );
+  expect(hasReferencePlaceholder).toBe(false);
+
   const csvWrapper = pageA?.children?.find((n: any) =>
     (n.children || []).some((row: any) => (row.children || []).some((field: any) => field.type === 'field')),
   );
@@ -251,28 +249,25 @@ test('Links to other pages and files', () => {
 
 test('Links to other pages and external files', () => {
   const abs = path.resolve(__dirname, 'fixtures/links/pages/assets/data.csv');
-  const [file] = importMarkdownDir('links/pages', new Map([[abs, "http://localhost/assets/data.csv"]]));
+  const [file, , findByName] = importMarkdownDir('links/pages', new Map([[abs, 'http://localhost/assets/data.csv']]));
   const pageA = file.nodes.find((n) => n.name === 'A');
-  const pageB = file.nodes.find((n) => n.name === 'B');
+  const pageB = findByName('B');
   expect(pageA).toBeDefined();
   expect(pageB).toBeDefined();
   expect(file.homeRefIds).toContain(pageA!.uid);
   expect(file.homeRefIds).not.toContain(pageB!.uid);
-  const uidB = pageB!.uid;
-  const findNode = (n: any): any | undefined => {
-    if (Array.isArray(n.refs) && n.refs.includes(uidB)) {
-      return n;
-    }
-    for (const c of n.children || []) {
-      const res = findNode(c);
-      if (res) {
-        return res;
-      }
-    }
-  };
-  const linkNode: any = findNode(pageA!);
-  expect(linkNode).toBeDefined();
-  expect(linkNode.refs).toContain(uidB);
+
+  const pageBAsRoot = file.nodes.find((n) => n.uid === pageB!.uid);
+  expect(pageBAsRoot).toBeUndefined();
+
+  const inlineChild = (pageA!.children || []).find((child) => child.uid === pageB!.uid);
+  expect(inlineChild, 'Expected page B to be inlined under page A').toBeDefined();
+
+  const hasReferencePlaceholder = (pageA!.children || []).some(
+    (child) => child.uid !== pageB!.uid && Array.isArray(child.refs) && child.refs.includes(pageB!.uid),
+  );
+  expect(hasReferencePlaceholder).toBe(false);
+
   const csvWrapper = pageA?.children?.find((n: any) =>
     (n.children || []).some((row: any) => (row.children || []).some((field: any) => field.type === 'field')),
   );
@@ -326,6 +321,23 @@ test('Duplicate names under root become references to root nodes', () => {
   const assigneeNode = assignedToNode?.children?.at(0);
   expect(assigneeNode?.name).toBe(`[[${asgeirNode!.uid}]]`);
   expect(assigneeNode?.refs).toContain(asgeirNode!.uid);
+});
+
+test('Markdown page linked once becomes inline child node', () => {
+  const [file, , findByName] = importMarkdownDir('csv_pages_links');
+  const indyNode = findByName('indyRIOT');
+  const testingNode = findByName('Testing');
+
+  expect(indyNode).toBeDefined();
+  expect(testingNode).toBeDefined();
+
+  const indyChildren = indyNode!.children || [];
+  expect(indyChildren.some((child) => child.uid === testingNode!.uid)).toBe(true);
+
+  const testingAsRoot = file.nodes.find((n) => n.uid === testingNode!.uid);
+  expect(testingAsRoot).toBeUndefined();
+
+  expect((testingNode!.children || []).some((c) => c.name === 'This is a sub page')).toBe(true);
 });
 
 test('CSV cell references resolve to markdown pages', () => {

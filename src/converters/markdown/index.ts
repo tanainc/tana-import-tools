@@ -56,6 +56,7 @@ export class MarkdownConverter implements IConverter {
   private normalizedPathToUid: Map<string, string> = new Map();
   private dirToBasenameToUid: Map<string, Map<string, string>> = new Map();
   private pageUidToBaseDir: Map<string, string> = new Map();
+  private pageUidToMarkdownLinkNodeUids: Map<string, Set<string>> = new Map();
   private csvTablesByParentAndPath: Map<string, TanaIntermediateNode> = new Map();
   private pendingCsvCellResolutions: {
     nodeUid: string;
@@ -84,6 +85,7 @@ export class MarkdownConverter implements IConverter {
 
   // IConverter — treat input as a single markdown file content
   convert(fileContent: string): TanaIntermediateFile | undefined {
+    this.pageUidToMarkdownLinkNodeUids.clear();
     const pageNode = this.convertSingleFile({ filePath: 'document.md', content: fileContent, depth: 0 });
     if (!pageNode) {
       return undefined;
@@ -105,6 +107,7 @@ export class MarkdownConverter implements IConverter {
 
   // Directory mode — build a single TIF from all .md files under dir
   convertDirectory(dirPath: string): TanaIntermediateFile | undefined {
+    this.pageUidToMarkdownLinkNodeUids.clear();
     if (!this.fileSystem.existsSync(dirPath) || !this.fileSystem.statSync(dirPath).isDirectory()) {
       return undefined;
     }
@@ -124,7 +127,6 @@ export class MarkdownConverter implements IConverter {
 
     const rootLevelNodes: TanaIntermediateNode[] = [];
     const pageNodesByDepth: Map<number, TanaIntermediateNode[]> = new Map();
-    let shallowestDepth = Number.POSITIVE_INFINITY;
     for (const f of files) {
       const page = this.convertSingleFile(f);
       if (page) {
@@ -134,9 +136,6 @@ export class MarkdownConverter implements IConverter {
         this.pageUidToBaseDir.set(page.uid, this.path.dirname(abs));
         rootLevelNodes.push(page);
         const depthForFile = f.depth ?? 0;
-        if (depthForFile < shallowestDepth) {
-          shallowestDepth = depthForFile;
-        }
         const existing = pageNodesByDepth.get(depthForFile);
         if (existing) {
           existing.push(page);
@@ -148,7 +147,12 @@ export class MarkdownConverter implements IConverter {
 
     this.resolvePendingCsvCellReferences();
     this.postProcessAllNodes(rootLevelNodes);
-    const homeSourceNodes = shallowestDepth === Number.POSITIVE_INFINITY ? rootLevelNodes : pageNodesByDepth.get(shallowestDepth) || [];
+    this.inlineSinglyLinkedMarkdownPages(rootLevelNodes, pageNodesByDepth);
+
+    const depthEntries = Array.from(pageNodesByDepth.entries())
+      .filter(([, nodes]) => nodes.length > 0)
+      .sort((a, b) => a[0] - b[0]);
+    const homeSourceNodes = depthEntries.length > 0 ? depthEntries[0][1] : rootLevelNodes;
     const home = Array.from(new Set(homeSourceNodes.map((node) => node.uid)));
     return {
       version: 'TanaIntermediateFile V0.1',
@@ -249,6 +253,15 @@ export class MarkdownConverter implements IConverter {
     }
   }
 
+  private recordMarkdownLinkOccurrence(pageUid: string, nodeUid: string) {
+    let nodeSet = this.pageUidToMarkdownLinkNodeUids.get(pageUid);
+    if (!nodeSet) {
+      nodeSet = new Set();
+      this.pageUidToMarkdownLinkNodeUids.set(pageUid, nodeSet);
+    }
+    nodeSet.add(nodeUid);
+  }
+
   private convertRelativeLinksRecursively(node: TanaIntermediateNode, baseDir: string, depth = 0) {
     if (node.type !== 'codeblock' && typeof node.name === 'string') {
       // 1) Convert standard markdown links [alias](relative)
@@ -268,6 +281,9 @@ export class MarkdownConverter implements IConverter {
               }
               if (!node.refs.includes(uid)) {
                 node.refs.push(uid);
+              }
+              if (node.uid) {
+                this.recordMarkdownLinkOccurrence(uid, node.uid);
               }
               return `[${alias}]([[${uid}]])`;
             }
@@ -299,6 +315,9 @@ export class MarkdownConverter implements IConverter {
             if (!node.refs.includes(uid)) {
               node.refs.push(uid);
             }
+            if (node.uid) {
+              this.recordMarkdownLinkOccurrence(uid, node.uid);
+            }
             return `[[${uid}]]`;
           }
           // If we cannot resolve, keep original text
@@ -326,6 +345,121 @@ export class MarkdownConverter implements IConverter {
       for (const c of node.children) {
         this.convertRelativeLinksRecursively(c, baseDir, depth + 1);
       }
+    }
+  }
+
+  private inlineSinglyLinkedMarkdownPages(
+    rootLevelNodes: TanaIntermediateNode[],
+    pageNodesByDepth: Map<number, TanaIntermediateNode[]>,
+  ) {
+    if (!this.pageUidToMarkdownLinkNodeUids.size || !rootLevelNodes.length) {
+      return;
+    }
+
+    type RefLocation = {
+      parent?: TanaIntermediateNode;
+      node: TanaIntermediateNode;
+      index?: number;
+    };
+
+    const pageUids = new Set(this.pageUidToBaseDir.keys());
+    if (!pageUids.size) {
+      return;
+    }
+
+    const refLocations = new Map<string, RefLocation[]>();
+    const collectRefLocations = (
+      current: TanaIntermediateNode,
+      parent: TanaIntermediateNode | undefined,
+    ) => {
+      if (Array.isArray(current.refs)) {
+        for (const ref of current.refs) {
+          if (!pageUids.has(ref) || ref === current.uid) {
+            continue;
+          }
+          let entries = refLocations.get(ref);
+          if (!entries) {
+            entries = [];
+            refLocations.set(ref, entries);
+          }
+          const index = parent && parent.children ? parent.children.indexOf(current) : undefined;
+          entries.push({ parent, node: current, index });
+        }
+      }
+      if (Array.isArray(current.children)) {
+        for (const child of current.children) {
+          collectRefLocations(child, current);
+        }
+      }
+    };
+
+    for (const node of rootLevelNodes) {
+      collectRefLocations(node, undefined);
+    }
+
+    const inlinedUids: string[] = [];
+
+    for (const [pageUid, nodeUids] of this.pageUidToMarkdownLinkNodeUids.entries()) {
+      if (!pageUids.has(pageUid)) {
+        continue;
+      }
+      if (nodeUids.size !== 1) {
+        continue;
+      }
+      const refEntries = refLocations.get(pageUid);
+      if (!refEntries || refEntries.length !== 1) {
+        continue;
+      }
+      const refEntry = refEntries[0];
+      if (!refEntry.parent || refEntry.index === undefined || refEntry.index < 0) {
+        continue;
+      }
+      if (refEntry.parent.type === 'field') {
+        continue;
+      }
+      if (refEntry.node.uid && !nodeUids.has(refEntry.node.uid)) {
+        continue;
+      }
+      if ((refEntry.node.refs?.length || 0) > 1) {
+        continue;
+      }
+      if (Array.isArray(refEntry.node.children) && refEntry.node.children.length > 0) {
+        continue;
+      }
+
+      const rootIndex = rootLevelNodes.findIndex((candidate) => candidate.uid === pageUid);
+      if (rootIndex === -1) {
+        continue;
+      }
+      const [pageNode] = rootLevelNodes.splice(rootIndex, 1);
+      if (!pageNode) {
+        continue;
+      }
+
+      refEntry.parent.children?.splice(refEntry.index, 1, pageNode);
+      if (Array.isArray(refEntry.parent.refs)) {
+        const idx = refEntry.parent.refs.indexOf(pageUid);
+        if (idx > -1) {
+          refEntry.parent.refs.splice(idx, 1);
+        }
+      }
+
+      for (const [depth, nodesAtDepth] of pageNodesByDepth) {
+        const depthIndex = nodesAtDepth.findIndex((n) => n.uid === pageUid);
+        if (depthIndex > -1) {
+          nodesAtDepth.splice(depthIndex, 1);
+          if (nodesAtDepth.length === 0) {
+            pageNodesByDepth.delete(depth);
+          }
+          break;
+        }
+      }
+
+      inlinedUids.push(pageUid);
+    }
+
+    if (inlinedUids.length) {
+      this.summary.topLevelNodes = Math.max(0, this.summary.topLevelNodes - inlinedUids.length);
     }
   }
 

@@ -160,6 +160,22 @@ export class MarkdownConverter implements IConverter {
   }
 
   private postProcessAllNodes(rootLevelNodes: TanaIntermediateNode[]) {
+    const rootLevelNameToUid = new Map<string, string>();
+    const rootLevelUids = new Set(rootLevelNodes.map((n) => n.uid));
+    for (const rootNode of rootLevelNodes) {
+      const originalRootName = this.originalNodeNames.get(rootNode.uid) || rootNode.name;
+      if (typeof originalRootName === 'string' && originalRootName) {
+        if (!rootLevelNameToUid.has(originalRootName)) {
+          rootLevelNameToUid.set(originalRootName, rootNode.uid);
+        }
+      }
+      if (typeof rootNode.name === 'string' && rootNode.name) {
+        if (!rootLevelNameToUid.has(rootNode.name)) {
+          rootLevelNameToUid.set(rootNode.name, rootNode.uid);
+        }
+      }
+    }
+
     // First, convert relative markdown page/file links into internal refs or file:// anchors
     for (const top of rootLevelNodes) {
       const baseDir = this.pageUidToBaseDir.get(top.uid);
@@ -173,6 +189,24 @@ export class MarkdownConverter implements IConverter {
     for (const [, node] of this.nodesForImport) {
       if (node.type === 'codeblock') {
         continue;
+      }
+      const originalNodeName = this.originalNodeNames.get(node.uid) || node.name;
+      if (
+        node.type === 'node' &&
+        typeof originalNodeName === 'string' &&
+        rootLevelNameToUid.has(originalNodeName) &&
+        !rootLevelUids.has(node.uid)
+      ) {
+        const rootUid = rootLevelNameToUid.get(originalNodeName);
+        if (rootUid) {
+          if (!node.refs) {
+            node.refs = [];
+          }
+          if (!node.refs.includes(rootUid)) {
+            node.refs.push(rootUid);
+          }
+          node.name = `[[${rootUid}]]`;
+        }
       }
       // Strip leading whitespace from content lines to avoid indented artifacts
       if (typeof node.name === 'string') {

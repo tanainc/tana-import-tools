@@ -300,6 +300,21 @@ test('Links to other pages and external files', () => {
   expect(nameField!.children?.[0].name).toBe('alpha');
 });
 
+test('Duplicate names under root become references to root nodes', () => {
+  const [file] = importMarkdownDir('csv_pages_links');
+  const asgeirNode = file.nodes.find((n) => n.name === 'Asgeir Hoem');
+  const experimentalUiNode = file.nodes.find((n) => n.name === 'ExperimentalUI');
+  expect(asgeirNode).toBeDefined();
+  expect(experimentalUiNode).toBeDefined();
+
+  const assignedToNode = experimentalUiNode?.children?.find((n) => n.name === 'Assigned To');
+  expect(assignedToNode?.children?.length).toBe(1);
+
+  const assigneeNode = assignedToNode?.children?.at(0);
+  expect(assigneeNode?.name).toBe(`[[${asgeirNode!.uid}]]`);
+  expect(assigneeNode?.refs).toContain(asgeirNode!.uid);
+});
+
 test('CSV cell references resolve to markdown pages', () => {
   const [file, , findByName] = importMarkdownDir('csv_pages_links');
   const indy = file.nodes.find((n) => n.name === 'indyRIOT');
@@ -502,9 +517,10 @@ test('Standalone CSV link is converted into a table', () => {
   const containerNode = findByName(page!, 'Routines');
   expect(containerNode).toBeDefined();
 
-  // The converter creates a table wrapper node under the current parent with the same name as the parent
-  const wrapper = (containerNode?.children || []).find((c) => c.name === containerNode!.name && (c.children || []).length);
+  // The converter creates a table wrapper node under the current parent referencing the parent page
+  const wrapper = (containerNode?.children || []).find((c) => (c.refs || []).includes(containerNode!.uid));
   expect(wrapper).toBeDefined();
+  expect(wrapper?.name).toBe(`[[${containerNode!.uid}]]`);
 
   // Helper to find a field by name
   const findField = (n: TanaIntermediateNode | undefined, fieldName: string): TanaIntermediateNode | undefined => {

@@ -223,6 +223,7 @@ test('Links to other pages and files', () => {
   expect(csvWrapper, 'Expected CSV table wrapper under page A').toBeDefined();
   const csvUid = csvWrapper!.uid;
   expect(csvWrapper!.name).toBe('CSV');
+  expect(csvWrapper!.viewType).toBe('table');
 
   const findChildByPrefix = (prefix: string) =>
     (pageA?.children || []).find((child: any) => typeof child.name === 'string' && child.name.startsWith(prefix));
@@ -274,6 +275,7 @@ test('Links to other pages and external files', () => {
   expect(csvWrapper).toBeDefined();
   const csvUid = csvWrapper!.uid;
   expect(csvWrapper!.name).toBe('CSV');
+  expect(csvWrapper!.viewType).toBe('table');
 
   const findChildByPrefix = (prefix: string) =>
     (pageA?.children || []).find((child: any) => typeof child.name === 'string' && child.name.startsWith(prefix));
@@ -306,6 +308,7 @@ test('CSV links without alias use Table fallback name', () => {
   );
   expect(tableWrapper, 'Expected CSV table wrapper created from unnamed link').toBeDefined();
   expect(tableWrapper!.name).toBe('Table');
+  expect(tableWrapper!.viewType).toBe('table');
 });
 
 test('Duplicate names under root become references to root nodes', () => {
@@ -482,6 +485,10 @@ test('Converts tables', () => {
   const containerNode = findByName(page, 'People');
   expect(containerNode).toBeDefined();
 
+  const tableWrapper = (containerNode?.children || []).find((child) => child.viewType === 'table');
+  expect(tableWrapper, 'Expected table wrapper for People table').toBeDefined();
+  expect(tableWrapper!.viewType).toBe('table');
+
   // Should have rows named by the first column
   const aliceRow = findByName(containerNode!, 'Alice');
   const bobRow = findByName(containerNode!, 'Bob');
@@ -522,6 +529,7 @@ test('Empty tables produce a single wrapper with empty rows, not repeated tables
   expect(wrappers.length).toBe(1);
 
   const wrapper = wrappers[0];
+  expect(wrapper.viewType).toBe('table');
   // It should have exactly 5 row nodes (one per empty row)
   const rows = wrapper.children || [];
   expect(rows.length).toBe(5);
@@ -547,6 +555,7 @@ test('Standalone CSV link is converted into a table', () => {
       ),
   );
   expect(roadMapWrapper, 'Expected Road map CSV wrapper under indyRIOT').toBeDefined();
+  expect(roadMapWrapper!.viewType).toBe('table');
 
   expect(roadMapWrapper!.name).toBe('Road map database with views');
 

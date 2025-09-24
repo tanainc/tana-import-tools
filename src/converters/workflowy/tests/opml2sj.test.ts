@@ -22,12 +22,11 @@ test('note support ', async () => {
         ownerEmail: 'hello@tana.inc',
       },
       body: {
-        subs: [{ text: 'Hello', note:'Some note here' }],
+        subs: [{ text: 'Hello', note: 'Some note here' }],
       },
     },
   });
 });
-
 
 test('one level ', async () => {
   const opml = `

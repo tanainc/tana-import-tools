@@ -2,7 +2,7 @@ import { expect, test } from 'vitest';
 import { expectImage } from '../../../testUtils/testUtils.js';
 import { getField, importLogseqFile, hasHeadingField } from './testUtils.js';
 
-test('Summary smoketest', async () => {
+test('Summary smoketest', () => {
   const [file] = importLogseqFile('smoketest.json');
 
   expect(file.summary).toEqual({
@@ -70,21 +70,21 @@ test('Images', () => {
   expect(f('single')?.mediaUrl).toBe('https://tana.inc/photo/1');
 
   // holds more images
-  expect(f('container')?.type).toBe('node');
-  expect(f('container')?.children!.length).toBe(3);
+  const container = f('container')!;
+  expect(container.type).toBe('node');
+  expect(container.children!.length).toBe(3);
 
   expectImage('first', 'https://tana.inc/photo/1', f);
   expectImage('second', 'https://tana.inc/photo/2', f);
 
-  expect(f('third')?.type).toBe('node');
-  expect(f('third')?.children!.length).toBe(2);
+  const third = f('third')!;
+  expect(third.type).toBe('node');
+  expect(third.children!.length).toBe(2);
 
-  expectImage(f('third')?.children![0].uid, 'https://tana.inc/photo/3', f);
-  expectImage(f('third')?.children![1].uid, 'https://tana.inc/photo/4', f);
+  expectImage(third.children![0].uid, 'https://tana.inc/photo/3', f);
+  expectImage(third.children![1].uid, 'https://tana.inc/photo/4', f);
 
-  expect(f('third')?.name).toBe(
-    `[[${f('third')?.children![0].uid}]] [[${f('third')?.children![1].uid}]] (pp. 726-727)`,
-  );
+  expect(third.name).toBe(`[[${third.children![0].uid}]] [[${third.children![1].uid}]] (pp. 726-727)`);
 });
 
 test('Headings', () => {
@@ -105,22 +105,22 @@ test('Headings', () => {
   expect(h2?.name).toBe('Header level 2');
 
   // child3: property heading: 1, content: ## Header level 1
-  const h3 = f('child3');
-  expect(h3?.flags).toEqual(['section']);
-  expect(h3?.name).toBe('Header level 1');
+  const h3 = f('child3')!;
+  expect(h3.flags).toEqual(['section']);
+  expect(h3.name).toBe('Header level 1');
   expect(hasHeadingField(h3)).toBe(false);
   // child3-1: property heading: 2, content: ## Nested header level 2
-  const h3_1 = f('child3-1');
-  expect(h3_1?.flags).toEqual(['section']);
-  expect(h3_1?.name).toBe('Nested header level 2');
+  const h3_1 = f('child3-1')!;
+  expect(h3_1.flags).toEqual(['section']);
+  expect(h3_1.name).toBe('Nested header level 2');
   expect(hasHeadingField(h3_1)).toBe(false);
 
   // child4: not a header, but child4-1 is
   const notHeader = f('child4');
   expect(notHeader?.flags).toBeUndefined();
-  const h4_1 = f('child4-1');
-  expect(h4_1?.flags).toEqual(['section']);
-  expect(h4_1?.name).toBe('Nested header level 3');
+  const h4_1 = f('child4-1')!;
+  expect(h4_1.flags).toEqual(['section']);
+  expect(h4_1.name).toBe('Nested header level 3');
   expect(hasHeadingField(h4_1)).toBe(false);
 
   // child5: #not a header (should not be flagged)
@@ -143,9 +143,9 @@ test('Headings', () => {
 
   // child8: property heading: 1, content: not prefixed with pound but has a heading property
   // (should be flagged, name kept as-is since no # prefix to strip)
-  const h8 = f('child8');
-  expect(h8?.flags).toEqual(['section']);
-  expect(h8?.name).toBe('not prefixed with pound but has a heading property');
+  const h8 = f('child8')!;
+  expect(h8.flags).toEqual(['section']);
+  expect(h8.name).toBe('not prefixed with pound but has a heading property');
   expect(hasHeadingField(h8)).toBe(false);
 });
 
@@ -172,9 +172,9 @@ test('Date formats', () => {
     expect(file.summary.calendarNodes).toEqual(2);
     expect(f('date1')?.name).toEqual('2022-10-06');
     expect(f('date2')?.name).toEqual('2022-10-07');
-    expect(f('date2')?.children.length).toEqual(1);
-    expect(f('date2')?.children[0].name).toEqual('Link to [[date:2022-10-06]]');
-    expect(f('date2')?.children[0].refs).toEqual([]);
+    expect(f('date2')?.children?.length).toEqual(1);
+    expect(f('date2')?.children?.[0].name).toEqual('Link to [[date:2022-10-06]]');
+    expect(f('date2')?.children?.[0].refs).toEqual([]);
   }
 });
 test('Todos', () => {

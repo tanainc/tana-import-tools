@@ -39,11 +39,11 @@ export function setNodeAsDone(node: TanaIntermediateNode) {
 export function replaceLogseqSyntax(nameToUse: string) {
   if (nameToUse.includes('{{embed')) {
     // Replace {embed:((id))} with ((id))
-    nameToUse = nameToUse.replace(/\{\{embed\s?\(\((.+)\)\)\}\}/, function (match, contents) {
+    nameToUse = nameToUse.replace(/\{\{embed\s?\(\((.+)\)\)\}\}/, function (_match, contents) {
       return `((${contents}))`;
     });
     // Replace {embed:[[name]]} with [[name]]
-    nameToUse = nameToUse.replace(/\{\{embed\s?\[\[(.+)\]\]\}\}/, function (match, contents) {
+    nameToUse = nameToUse.replace(/\{\{embed\s?\[\[(.+)\]\]\}\}/, function (_match, contents) {
       return `[[${contents}]]`;
     });
   }

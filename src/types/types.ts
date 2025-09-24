@@ -8,6 +8,9 @@ export type TanaIntermediateFile = {
   // all nodes
   nodes: TanaIntermediateNode[];
 
+  // Node IDs that will be added to the home node
+  homeNodeIds?: string[];
+
   // all attributes
   attributes?: TanaIntermediateAttribute[];
 

@@ -20,7 +20,7 @@ export class WorkflowyConverter {
       return undefined;
     }
 
-    const rootLevelNodes = [];
+    const rootLevelNodes: TanaIntermediateNode[] = [];
     for (const sub of outline.opml.body.subs) {
       rootLevelNodes.push(this.createTanaNode(sub));
     }

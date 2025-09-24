@@ -55,6 +55,8 @@ export type NodeType = 'field' | 'image' | 'codeblock' | 'node' | 'date';
 
 export type FlagType = 'section';
 
+export type ViewType = 'list' | 'table';
+
 export type TanaIntermediateNode = {
   // uid of the node, only used during import. There is no mapping to the Tana Node id
   uid: string;
@@ -101,6 +103,8 @@ export type TanaIntermediateNode = {
 
   // for section/heading nodes
   flags?: FlagType[];
+
+  viewType?: ViewType;
 
   // if set, we will create TODO / DONE for this node
   todoState?: 'todo' | 'done';

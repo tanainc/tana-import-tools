@@ -514,6 +514,7 @@ export class MarkdownConverter implements IConverter {
         editedAt: Date.now(),
         type: 'node',
       });
+      tableWrapper.viewType = 'table';
       tableWrapper.children = [];
       parent.children.push(tableWrapper);
       this.summary.totalNodes += 1;
@@ -900,6 +901,7 @@ export class MarkdownConverter implements IConverter {
             editedAt: Date.now(),
             type: 'node',
           });
+          tableWrapper.viewType = 'table';
           tableWrapper.children = [];
           parent.children.push(tableWrapper);
           this.summary.totalNodes += 1;

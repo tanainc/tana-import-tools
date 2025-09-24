@@ -21,7 +21,12 @@
     "convert:roam": "npm run build && node dist/runner.js roam",
     "convert:workflowy": "npm run build && node dist/runner.js workflowy",
     "convert:logseq": "npm run build && node dist/runner.js logseq",
-    "test": "vitest"
+    "convert:markdown": "npm run build && node dist/runner.js markdown",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "date-fns": "^4.1.0"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.28.0",
@@ -29,7 +34,6 @@
     "@types/node": "^24.2.0",
     "@typescript-eslint/eslint-plugin": "^8.39.0",
     "@typescript-eslint/parser": "^8.39.0",
-    "date-fns": "^4.1.0",
     "eslint": "^9.32.0",
     "prettier": "^3.6.2",
     "typescript": "^5.9.2",

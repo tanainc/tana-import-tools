@@ -67,6 +67,16 @@ If you are making changes that you think will benefit other users, please create
 
 4. `npm run convert:logseq datasets/my_logseq_export.json`
 
+### Markdown
+
+ - 🟢 graph
+ - 🟢 images
+ - 🟢 tables
+ - 🟢 headings
+ - 🟢 todos 
+ - 🟢 frontmatter 
+ - 🟢 code blocks 
+
 ### Workflowy
 
  - 🟢 graph

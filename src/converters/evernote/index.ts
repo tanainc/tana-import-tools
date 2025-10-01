@@ -20,6 +20,7 @@ import { parse as parseDate, isValid as isValidDate } from 'date-fns';
 
 import {
   NodeType,
+  TanaIntermediateAttribute,
   TanaIntermediateFile,
   TanaIntermediateNode,
   TanaIntermediateSummary,
@@ -98,6 +99,7 @@ export class EvernoteConverter implements IConverter {
 
   private guidToUid: Map<string, string> = new Map();
   private titleToUid: Map<string, string> = new Map();
+  private attrMap: Map<string, TanaIntermediateAttribute> = new Map();
 
   convert(fileContent: string): TanaIntermediateFile | undefined {
     const parsed = this.parser.parse(fileContent);
@@ -140,12 +142,14 @@ export class EvernoteConverter implements IConverter {
 
     this.computeSummary(rootNodes);
     const home = rootNodes.map((n) => n.uid);
+    const attributes = Array.from(this.attrMap.values());
 
     return {
       version: 'TanaIntermediateFile V0.1',
       summary: this.summary,
       nodes: rootNodes,
       homeNodeIds: home,
+      attributes: attributes.length ? attributes : undefined,
     };
   }
 
@@ -340,7 +344,7 @@ export class EvernoteConverter implements IConverter {
       const indentLevel = this.getIndentLevel(child);
       this.reconcileStackForIndent(stack, indentLevel);
       const parentNode = stack[stack.length - 1].node;
-      const blockNode = this.convertBlockElement(child, note);
+  const blockNode = this.convertBlockElement(child, note, parentNode);
       if (!blockNode) {
         return;
       }
@@ -350,7 +354,7 @@ export class EvernoteConverter implements IConverter {
       if (blockNode.flags && blockNode.flags.includes('section')) {
         lastSectionNode = blockNode;
       }
-      if (!['codeblock', 'image', 'date'].includes(blockNode.type)) {
+      if (!['codeblock', 'image', 'date'].includes(blockNode.type) && blockNode.viewType !== 'table') {
         stack.push({ indent: indentLevel, node: blockNode });
       }
     };
@@ -358,10 +362,14 @@ export class EvernoteConverter implements IConverter {
     enNote.childNodes.forEach(processChild);
   }
 
-  private convertBlockElement(element: HTMLElement, note: EvernoteNote): TanaIntermediateNode | undefined {
+  private convertBlockElement(
+    element: HTMLElement,
+    note: EvernoteNote,
+    parent: TanaIntermediateNode,
+  ): TanaIntermediateNode | undefined {
     const tag = element.tagName.toLowerCase();
     if (tag === 'table') {
-      return this.convertTable(element, note);
+      return this.convertTable(element, note, parent);
     }
 
     if (tag === 'br') {
@@ -400,7 +408,11 @@ export class EvernoteConverter implements IConverter {
     return node;
   }
 
-  private convertTable(element: HTMLElement, note: EvernoteNote): TanaIntermediateNode | undefined {
+  private convertTable(
+    element: HTMLElement,
+    note: EvernoteNote,
+    parent: TanaIntermediateNode,
+  ): TanaIntermediateNode | undefined {
     const rows = element.querySelectorAll('tr');
     if (!rows.length) {
       return undefined;
@@ -408,11 +420,7 @@ export class EvernoteConverter implements IConverter {
 
     const firstRow = rows[0];
     const firstRowCells = this.collectCells(firstRow);
-    const hasHeader = firstRow.querySelectorAll('th').length > 0;
-
-    const headers: string[] = hasHeader
-      ? firstRowCells.map((cell, idx) => cell || `Column ${idx + 1}`)
-      : firstRowCells.map((_, idx) => `Column ${idx + 1}`);
+    const headers: string[] = firstRowCells.map((cell, idx) => cell || `Column ${idx + 1}`);
 
     const ensureHeaderLength = (length: number) => {
       for (let idx = headers.length; idx < length; idx++) {
@@ -420,21 +428,35 @@ export class EvernoteConverter implements IConverter {
       }
     };
 
-    const tableNode = this.createNode('Table', 'node', note.createdAt, note.updatedAt);
+    const tableName =
+      Array.isArray(parent.flags) && parent.flags.includes('section') && typeof parent.name === 'string'
+        ? parent.name
+        : 'Table';
+
+    const tableNode = this.createNode(tableName, 'node', note.createdAt, note.updatedAt);
     tableNode.viewType = 'table' as ViewType;
     tableNode.children = [];
 
-    const dataStartIndex = hasHeader ? 1 : 0;
+  const dataStartIndex = 1;
     for (let i = dataStartIndex; i < rows.length; i++) {
       const row = rows[i];
-      const rowNode = this.createNode(`Row ${tableNode.children.length + 1}`, 'node', note.createdAt, note.updatedAt);
-      rowNode.children = [];
       const cellValues = this.collectCells(row);
+      if (!cellValues.length) {
+        continue;
+      }
       ensureHeaderLength(cellValues.length);
+      const rowName = cellValues[0] || 'Row';
+      const rowNode = this.createNode(rowName, 'node', note.createdAt, note.updatedAt);
+      rowNode.children = [];
+
       headers.forEach((header, index) => {
+        if (index === 0) {
+          return;
+        }
         const value = cellValues[index] ?? '';
         this.addField(rowNode, header, value, note.createdAt, note.updatedAt);
       });
+
       tableNode.children.push(rowNode);
     }
 
@@ -613,6 +635,14 @@ export class EvernoteConverter implements IConverter {
     parent.children = parent.children ?? [];
     parent.children.push(fieldNode);
     this.summary.fields += 1;
+    this.recordAttribute(fieldName, value);
+  }
+
+  private recordAttribute(fieldName: string, rawValue: string) {
+    const attribute = this.attrMap.get(fieldName) ?? { name: fieldName, values: [], count: 0 };
+    attribute.values.push(rawValue.trim());
+    attribute.count += 1;
+    this.attrMap.set(fieldName, attribute);
   }
 
   private createNode(name: string, type: NodeType, createdAt: number, editedAt: number): TanaIntermediateNode {

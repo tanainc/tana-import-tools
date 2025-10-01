@@ -109,23 +109,29 @@ describe('Evernote converter', () => {
     expect(tableNode?.viewType).toBe('table');
     expect(tableNode?.children?.length).toBe(2);
 
-    const firstRow = tableNode?.children?.[0];
-    expect(firstRow).toBeDefined();
-    const firstRowCol1 = firstRow?.children?.find((child) => child.name === 'Column 1');
-    expect(firstRowCol1).toBeDefined();
-    expectField(firstRowCol1?.uid, 'Column 1', ['table row 1 col 1'], byId);
-    const firstRowCol2 = firstRow?.children?.find((child) => child.name === 'Column 2');
-    expect(firstRowCol2).toBeDefined();
-    expectField(firstRowCol2?.uid, 'Column 2', ['table row 1 col 2'], byId);
+    const joeRow = tableNode?.children?.find((child) => child.name === 'Joe');
+    expect(joeRow).toBeDefined();
+    const joeNameField = joeRow?.children?.find((child) => child.name === 'Name');
+    expect(joeNameField).toBeUndefined();
+    const joeAgeField = joeRow?.children?.find((child) => child.name === 'Age');
+    expect(joeAgeField).toBeDefined();
+    expectField(joeAgeField?.uid, 'Age', ['59'], byId);
 
-    const secondRow = tableNode?.children?.[1];
-    expect(secondRow).toBeDefined();
-    const secondRowCol1 = secondRow?.children?.find((child) => child.name === 'Column 1');
-    expect(secondRowCol1).toBeDefined();
-    expectField(secondRowCol1?.uid, 'Column 1', ['table row 2 col 1'], byId);
-    const secondRowCol2 = secondRow?.children?.find((child) => child.name === 'Column 2');
-    expect(secondRowCol2).toBeDefined();
-    expectField(secondRowCol2?.uid, 'Column 2', ['table row 2 col 2'], byId);
+    const anneRow = tableNode?.children?.find((child) => child.name === 'Anne');
+    expect(anneRow).toBeDefined();
+    const anneNameField = anneRow?.children?.find((child) => child.name === 'Name');
+    expect(anneNameField).toBeUndefined();
+    const anneAgeField = anneRow?.children?.find((child) => child.name === 'Age');
+    expect(anneAgeField).toBeDefined();
+    expectField(anneAgeField?.uid, 'Age', ['36'], byId);
+  });
+
+  it('aggregates fields into attributes summary', () => {
+    const attributes = file.attributes || [];
+    const ageAttribute = attributes.find((attr) => attr.name === 'Age');
+    expect(ageAttribute).toBeDefined();
+    expect(ageAttribute?.values).toEqual(['59', '36']);
+    expect(ageAttribute?.count).toBe(2);
   });
 
   it('converts highlights and inline dates', () => {

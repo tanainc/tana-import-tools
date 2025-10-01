@@ -110,14 +110,14 @@ If you are making changes that you think will benefit other users, please create
  - 🟢 headings
  - 🟢 tables - first column header will always be "Title" in Tana
  - 🟢 code blocks
- - 🔴 images
- - 🔴 comments on nodes
- - events
- - tags (converted to supertags)
+ - 🟢 tags (converted to supertags)
  - 🟢 highlighted text
  - 🟢 author field
+ - 🟡 events - dates are not handled
  - 🟡 flags (marking as important) - converted to fields
  - 🟡 reminders - converted to fields
+ - 🔴 images
+ - 🔴 comments on nodes
  - 🔴 person assignments
  - 🔴 divider (horizontal line)
  - 🔴 recurring dates

@@ -57,6 +57,17 @@ describe('Evernote converter', () => {
     expect(secondDate?.type).toBe('date');
   });
 
+  it('excludes calendar nodes from home node ids', () => {
+    const homeIds = new Set(file.homeNodeIds);
+    const firstCalendar = byName('2025-09-30');
+    const anotherNote = byName('Another note');
+
+    expect(firstCalendar).toBeDefined();
+    expect(anotherNote).toBeDefined();
+    expect(homeIds.has(firstCalendar?.uid ?? '')).toBe(false);
+    expect(homeIds.has(anotherNote?.uid ?? '')).toBe(true);
+  });
+
   it('preserves indentation hierarchy', () => {
     const indentParent = byName('Indent parent');
     expect(indentParent).toBeDefined();

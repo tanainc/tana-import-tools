@@ -141,7 +141,7 @@ export class EvernoteConverter implements IConverter {
     }
 
     this.computeSummary(rootNodes);
-    const home = rootNodes.map((n) => n.uid);
+  const home = rootNodes.filter((node) => node.type !== 'date').map((node) => node.uid);
     const attributes = Array.from(this.attrMap.values());
 
     return {

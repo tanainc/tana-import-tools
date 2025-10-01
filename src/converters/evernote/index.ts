@@ -344,7 +344,7 @@ export class EvernoteConverter implements IConverter {
       const indentLevel = this.getIndentLevel(child);
       this.reconcileStackForIndent(stack, indentLevel);
       const parentNode = stack[stack.length - 1].node;
-  const blockNode = this.convertBlockElement(child, note, parentNode);
+      const blockNode = this.convertBlockElement(child, note, parentNode);
       if (!blockNode) {
         return;
       }
@@ -437,7 +437,7 @@ export class EvernoteConverter implements IConverter {
     tableNode.viewType = 'table' as ViewType;
     tableNode.children = [];
 
-  const dataStartIndex = 1;
+    const dataStartIndex = 1;
     for (let i = dataStartIndex; i < rows.length; i++) {
       const row = rows[i];
       const cellValues = this.collectCells(row);

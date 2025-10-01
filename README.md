@@ -73,7 +73,7 @@ If you are making changes that you think will benefit other users, please create
 ### Markdown
 
  - 🟢 graph
- - 🟢 tables
+ - 🟢 tables - first column header will always be "Title" in Tana
  - 🟢 headings
  - 🟢 todos 
  - 🟢 frontmatter 
@@ -104,20 +104,22 @@ If you are making changes that you think will benefit other users, please create
 
 ### Evernote
 
- - graph (links, inline links)
- - journal pages (daily notes)
- - todos
+ - 🟢 graph (links, inline links)
+ - 🟢 journal pages (daily notes)
+ - 🟢 todos
  - 🟢 headings
- - divider (horizontal line)
+ - 🟢 tables - first column header will always be "Title" in Tana
  - 🟢 code blocks
- - 🟡 flags (marking as important) - converted to fields
- - images
- - comments on nodes
+ - 🔴 images
+ - 🔴 comments on nodes
  - events
  - tags (converted to supertags)
  - 🟢 highlighted text
+ - 🟢 author field
+ - 🟡 flags (marking as important) - converted to fields
  - 🟡 reminders - converted to fields
- - person assignments
+ - 🔴 person assignments
+ - 🔴 divider (horizontal line)
  - 🔴 recurring dates
 
 1. You must be on the Desktop app for export functionality
@@ -128,7 +130,7 @@ If you are making changes that you think will benefit other users, please create
 
 4. Click "Export notebook..."
 
-5. Select all attributes and the "enex" format
+5. Select all attributes and the "enex" format. Don't include the author attribute (or others) if you don't want them to show as fields in Tana.
 
 # 📥 Importing to Tana
 

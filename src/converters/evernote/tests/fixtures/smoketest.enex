@@ -172,16 +172,4 @@
 			</resource-attributes>
 		</resource>
 	</note>
-	<note>
-		<title>Untitled</title>
-		<created>20251001T000104Z</created>
-		<updated>20251001T000104Z</updated>
-		<note-attributes>
-			<author>mikojunkye762a60aff50a426</author>
-		</note-attributes>
-		<content>
-      <![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd"><en-note><div style="display:none;--en-chs:&quot;eyJpc0VtcHR5Ijp0cnVlfQ==&quot;"> </div><div><br/></div></en-note>      ]]>
-    </content>
-	</note>
 </en-export>

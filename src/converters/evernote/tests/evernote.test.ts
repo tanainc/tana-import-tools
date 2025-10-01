@@ -148,9 +148,16 @@ describe('Evernote converter', () => {
   it('converts highlights and inline dates', () => {
     const highlightNode = byName('some text with ^^highlights^^');
     expect(highlightNode).toBeDefined();
+  });
 
-    const inlineDate = byName('[[2024-09-30]]');
-    expect(inlineDate).toBeDefined();
+  it('creates date reference nodes', () => {
+    const parent = byName('2025-09-30');
+    expect(parent).toBeDefined();
+    const children = parent?.children ?? [];
+    const dateRefIndex = children.findIndex((child) => child.name === 'date:2024-09-30');
+
+    expect(dateRefIndex).toBeGreaterThanOrEqual(0);
+    expect(children[dateRefIndex]?.type).toBe('node');
   });
 
   it('adds tasks beneath their task group sections', () => {
@@ -173,7 +180,9 @@ describe('Evernote converter', () => {
     expect(dueTask?.todoState).toBe('todo');
     const dueField = dueTask?.children?.find((child) => child.name === 'Due date');
     expect(dueField).toBeDefined();
-    expectField(dueField?.uid, 'Due date', ['[[2025-10-02]]'], byId);
+    const dueValue = dueField?.children?.[0];
+    expect(dueValue?.type).toBe('date');
+    expect(dueValue?.name).toBe('2025-10-02');
   });
 
   it('stores author metadata as fields', () => {

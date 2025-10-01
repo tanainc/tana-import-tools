@@ -104,21 +104,21 @@ If you are making changes that you think will benefit other users, please create
 
 ### Evernote
 
-- graph (links, inline links)
-- journal pages (daily notes)
-- todos
-- headings
-- divider (horizontal line)
-- code blocks
-- flags (marking as important)
-- images
-- comments on nodes
-- events
-- tags (converted to supertags)
-- highlighted text
-- reminders
-- person assignments
-- 🔴 recurring dates
+ - graph (links, inline links)
+ - journal pages (daily notes)
+ - todos
+ - 🟢 headings
+ - divider (horizontal line)
+ - 🟢 code blocks
+ - 🟡 flags (marking as important) - converted to fields
+ - images
+ - comments on nodes
+ - events
+ - tags (converted to supertags)
+ - 🟢 highlighted text
+ - 🟡 reminders - converted to fields
+ - person assignments
+ - 🔴 recurring dates
 
 1. You must be on the Desktop app for export functionality
 

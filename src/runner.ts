@@ -6,6 +6,7 @@ import { RoamConverter } from './converters/roam/index.js';
 import { WorkflowyConverter } from './converters/workflowy/index.js';
 import { LogseqConverter } from './converters/logseq/index.js';
 import { MarkdownConverter } from './converters/markdown/index.js';
+import { EvernoteConverter } from './converters/evernote/index.js';
 import * as path from 'node:path';
 
 const fileType = process.argv[2];
@@ -21,7 +22,7 @@ if (!file) {
   exit(0);
 }
 
-const supportedTypes = ['roam', 'workflowy', 'logseq', 'markdown'];
+const supportedTypes = ['roam', 'workflowy', 'logseq', 'markdown', 'evernote'];
 if (!supportedTypes.includes(fileType)) {
   console.log(`File type: ${fileType} is not supported`);
   exit(0);
@@ -95,6 +96,12 @@ switch (fileType) {
     }
     break;
   }
+  case 'evernote':
+    if (!contents) {
+      throw new Error('No content to process');
+    }
+    tanaIntermediteFile = new EvernoteConverter().convert(contents);
+    break;
   default:
     console.log(`File type ${fileType} is not supported`);
     exit(0);

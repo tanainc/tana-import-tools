@@ -3,7 +3,7 @@
 ## Project Structure & Module Organization
 
 - `src/`: TypeScript source.
-  - `converters/{roam,workflowy,logseq,markdown}`: Converter implementations with `index.ts`, utils, and `tests/`.
+  - `converters/*`: Converter implementations with `index.ts`, utils, and `tests/`.
   - `types/`: Tana Intermediate Format types (`types.ts`).
   - `utils/`, `testUtils/`: Shared helpers and test utilities.
   - `runner.ts`: CLI entry used by convert scripts.

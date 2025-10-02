@@ -163,7 +163,7 @@ describe('Evernote converter', () => {
     const parent = byName('2025-09-30');
     expect(parent).toBeDefined();
     const children = parent?.children ?? [];
-    const dateRefIndex = children.findIndex((child) => child.name === 'date:2024-09-30');
+    const dateRefIndex = children.findIndex((child) => child.name === '[[date:2024-09-30]]');
 
     expect(dateRefIndex).toBeGreaterThanOrEqual(0);
     expect(children[dateRefIndex]?.type).toBe('node');

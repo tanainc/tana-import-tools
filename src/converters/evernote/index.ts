@@ -393,8 +393,8 @@ export class EvernoteConverter implements IConverter {
     const inlineDate = this.tryConvertInlineDate(content);
     let nodeName = content;
     if (inlineDate && refs.length === 0) {
-      // If it's a date and has no other references, make it a date node with "date:YYYY-MM-DD" format
-      nodeName = `date:${inlineDate}`;
+      // If it's a date and has no other references, make it a date node with "[[date:YYYY-MM-DD]]" format
+      nodeName = `[[date:${inlineDate}]]`;
     }
 
     const node = this.createNode(nodeName, nodeType, note.createdAt, note.updatedAt);
@@ -642,7 +642,8 @@ export class EvernoteConverter implements IConverter {
       const dateValue = dateRefMatch[1];
       const dateNode = this.createNode(dateValue, 'date', createdAt, editedAt);
       fieldNode.children.push(dateNode);
-      // Don't record date values in attributes - they don't need to be there
+      // Record date values in attributes with [[date:YYYY-MM-DD]] format
+      this.recordAttribute(fieldName, `[[date:${dateValue}]]`);
     } else {
       fieldNode.children.push(this.createNode(value, 'node', createdAt, editedAt));
       this.recordAttribute(fieldName, value);

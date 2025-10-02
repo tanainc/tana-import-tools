@@ -30,7 +30,7 @@ import { idgenerator } from '../../utils/utils.js';
 import { convertDateToTanaDateStr } from '../common.js';
 import { IConverter } from '../IConverter.js';
 
-const DAILY_NOTE_TITLE_WITH_DATE = /\s+[\-–—]\s+(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
+const DAILY_NOTE_TITLE_WITH_DATE = /\s+[-–—]\s+(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
 
 type EvernoteResource = {
   hash: string;

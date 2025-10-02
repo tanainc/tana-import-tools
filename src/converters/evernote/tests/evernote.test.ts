@@ -8,7 +8,7 @@ import {
   IdLookupHelper,
   NameLookupHelper,
 } from '../../../testUtils/testUtils.js';
-import { TanaIntermediateFile, TanaIntermediateNode } from '../../../types/types.js';
+import { TanaIntermediateFile } from '../../../types/types.js';
 
 const FIXTURE = path.resolve(__dirname, 'fixtures/smoketest.enex');
 

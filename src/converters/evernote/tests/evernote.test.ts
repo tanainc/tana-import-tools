@@ -145,6 +145,15 @@ describe('Evernote converter', () => {
     expect(ageAttribute?.count).toBe(2);
   });
 
+  it('deduplicates attribute values while maintaining count', () => {
+    const attributes = file.attributes || [];
+    const authorAttribute = attributes.find((attr) => attr.name === 'Author');
+    expect(authorAttribute).toBeDefined();
+    // Should have only one unique value despite appearing 6 times
+    expect(authorAttribute?.values).toEqual(['mikojunkye762a60aff50a426']);
+    expect(authorAttribute?.count).toBe(6);
+  });
+
   it('converts highlights and inline dates', () => {
     const highlightNode = byName('some text with ^^highlights^^');
     expect(highlightNode).toBeDefined();

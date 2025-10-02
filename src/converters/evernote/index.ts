@@ -141,7 +141,7 @@ export class EvernoteConverter implements IConverter {
     }
 
     this.computeSummary(rootNodes);
-  const home = rootNodes.filter((node) => node.type !== 'date').map((node) => node.uid);
+    const home = rootNodes.filter((node) => node.type !== 'date').map((node) => node.uid);
     const attributes = Array.from(this.attrMap.values());
 
     return {
@@ -389,7 +389,15 @@ export class EvernoteConverter implements IConverter {
       nodeType = 'codeblock';
     }
 
-    const node = this.createNode(content, nodeType, note.createdAt, note.updatedAt);
+    // Check if the content is a standalone date
+    const inlineDate = this.tryConvertInlineDate(content);
+    let nodeName = content;
+    if (inlineDate && refs.length === 0) {
+      // If it's a date and has no other references, make it a date node with "date:YYYY-MM-DD" format
+      nodeName = `date:${inlineDate}`;
+    }
+
+    const node = this.createNode(nodeName, nodeType, note.createdAt, note.updatedAt);
     if (nodeType === 'codeblock') {
       const langMatch = style.match(/--en-syntaxLanguage\s*:\s*([^;]+)/i);
       if (langMatch) {
@@ -570,12 +578,8 @@ export class EvernoteConverter implements IConverter {
     }
 
     const result = this.serializeChildren(node.childNodes, note);
-    if (tag === 'div' || tag === 'p') {
-      const inlineDate = this.tryConvertInlineDate(result.text.trim());
-      if (inlineDate) {
-        return { text: `[[${inlineDate}]]`, refs: [] };
-      }
-    }
+    // Don't convert dates in div/p tags here - let convertBlockElement handle them
+    // so they can be created as proper date nodes
     return result;
   }
 
@@ -631,16 +635,31 @@ export class EvernoteConverter implements IConverter {
   ) {
     const fieldNode = this.createNode(fieldName, 'field', createdAt, editedAt);
     fieldNode.children = fieldNode.children ?? [];
-    fieldNode.children.push(this.createNode(value, 'node', createdAt, editedAt));
+
+    // Check if value is a date reference like [[2025-10-02]]
+    const dateRefMatch = value.match(/^\[\[(\d{4}-\d{2}-\d{2})\]\]$/);
+    if (dateRefMatch) {
+      const dateValue = dateRefMatch[1];
+      const dateNode = this.createNode(dateValue, 'date', createdAt, editedAt);
+      fieldNode.children.push(dateNode);
+      // Don't record date values in attributes - they don't need to be there
+    } else {
+      fieldNode.children.push(this.createNode(value, 'node', createdAt, editedAt));
+      this.recordAttribute(fieldName, value);
+    }
+
     parent.children = parent.children ?? [];
     parent.children.push(fieldNode);
     this.summary.fields += 1;
-    this.recordAttribute(fieldName, value);
   }
 
   private recordAttribute(fieldName: string, rawValue: string) {
     const attribute = this.attrMap.get(fieldName) ?? { name: fieldName, values: [], count: 0 };
-    attribute.values.push(rawValue.trim());
+    const trimmedValue = rawValue.trim();
+    // Only add the value if it's not already in the array (deduplicate)
+    if (!attribute.values.includes(trimmedValue)) {
+      attribute.values.push(trimmedValue);
+    }
     attribute.count += 1;
     this.attrMap.set(fieldName, attribute);
   }

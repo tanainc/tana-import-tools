@@ -21,24 +21,6 @@ describe('Evernote converter', () => {
     [file, byId, byName] = importFileAndGetHelpers(new EvernoteConverter(), FIXTURE);
   });
 
-  const findNodeSatisfying = (predicate: (node: TanaIntermediateNode) => boolean): TanaIntermediateNode | undefined => {
-    const walk = (nodes?: TanaIntermediateNode[]): TanaIntermediateNode | undefined => {
-      if (!nodes) {
-        return undefined;
-      }
-      for (const node of nodes) {
-        if (predicate(node)) {
-          return node;
-        }
-        const inChildren = walk(node.children);
-        if (inChildren) {
-          return inChildren;
-        }
-      }
-    };
-    return walk(file.nodes);
-  };
-
   it('summarises the file', () => {
     expect(file.summary.totalNodes).toBeGreaterThan(0);
     expect(file.summary.calendarNodes).toBe(2);

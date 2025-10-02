@@ -21,7 +21,7 @@ describe('Evernote converter', () => {
     [file, byId, byName] = importFileAndGetHelpers(new EvernoteConverter(), FIXTURE);
   });
 
-  it('summarises the file', () => {
+  it('summarizes the file', () => {
     expect(file.summary.totalNodes).toBeGreaterThan(0);
     expect(file.summary.calendarNodes).toBe(2);
     expect(file.summary.fields).toBeGreaterThanOrEqual(4);
@@ -136,7 +136,7 @@ describe('Evernote converter', () => {
     expect(authorAttribute?.count).toBe(6);
   });
 
-  it('converts highlights and inline dates', () => {
+  it('converts highlights', () => {
     const highlightNode = byName('some text with ^^highlights^^');
     expect(highlightNode).toBeDefined();
   });

@@ -771,49 +771,39 @@ export class EvernoteConverter implements IConverter {
     if (typeof value !== 'string') {
       return Number.NaN;
     }
+    // Parse Evernote format: YYYYMMDDTHHmmssZ -> ISO: YYYY-MM-DDTHH:mm:ssZ
     const match = value.match(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z$/);
     if (!match) {
       return Number.NaN;
     }
     const [, year, month, day, hour, minute, second] = match;
-    return Date.UTC(Number(year), Number(month) - 1, Number(day), Number(hour), Number(minute), Number(second));
+    const isoString = `${year}-${month}-${day}T${hour}:${minute}:${second}Z`;
+    return Date.parse(isoString);
   }
 
   private tryParseDailyNoteDate(title: string, source?: string): Date | undefined {
     if (!source || source.toLowerCase() !== 'daily.note') {
       return undefined;
     }
-    const trimmedTitle = title.trim();
-    const match = trimmedTitle.match(DAILY_NOTE_TITLE_WITH_DATE);
+    const match = title.trim().match(DAILY_NOTE_TITLE_WITH_DATE);
     if (!match) {
       return undefined;
     }
     const [, month, day, year] = match;
-    const parsedYear = Number(year);
-    const parsedMonth = Number(month);
-    const parsedDay = Number(day);
-    if (!Number.isFinite(parsedYear) || !Number.isFinite(parsedMonth) || !Number.isFinite(parsedDay)) {
-      return undefined;
-    }
-    const candidate = new Date(parsedYear, parsedMonth - 1, parsedDay);
-    if (!Number.isFinite(candidate.getTime())) {
-      return undefined;
-    }
-    if (
-      candidate.getFullYear() !== parsedYear ||
-      candidate.getMonth() !== parsedMonth - 1 ||
-      candidate.getDate() !== parsedDay
-    ) {
-      return undefined;
-    }
-    return candidate;
+    const date = new Date(Number(year), Number(month) - 1, Number(day));
+    // Validate the date by checking if values round-trip correctly
+    return date.getFullYear() === Number(year) &&
+      date.getMonth() === Number(month) - 1 &&
+      date.getDate() === Number(day)
+      ? date
+      : undefined;
   }
 
   private tryConvertInlineDate(value: string): string | undefined {
     for (const format of INLINE_DATE_FORMATS) {
       const parsed = parseDate(value, format, new Date());
       if (isValidDate(parsed)) {
-        return this.formatDateParts(parsed.getFullYear(), parsed.getMonth() + 1, parsed.getDate());
+        return convertDateToTanaDateStr(parsed);
       }
     }
     return undefined;
@@ -824,17 +814,7 @@ export class EvernoteConverter implements IConverter {
       return undefined;
     }
     const date = new Date(timestamp);
-    return this.formatDateParts(date.getUTCFullYear(), date.getUTCMonth() + 1, date.getUTCDate());
-  }
-
-  private formatDateParts(year: number, month: number, day: number): string {
-    const candidate = new Date(year, month - 1, day);
-    if (!Number.isFinite(candidate.getTime())) {
-      const mm = month.toString().padStart(2, '0');
-      const dd = day.toString().padStart(2, '0');
-      return `${year}-${mm}-${dd}`;
-    }
-    return convertDateToTanaDateStr(candidate);
+    return convertDateToTanaDateStr(new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
   }
 
   private computeSummary(rootNodes: TanaIntermediateNode[]) {

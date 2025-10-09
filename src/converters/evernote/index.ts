@@ -13,10 +13,10 @@
  * - code blocks have style --en-codeblock:true; and language is specified with --en-syntaxLanguage:[language];
  */
 
-import crypto from 'node:crypto';
 import { XMLParser } from 'fast-xml-parser';
 import { parse as parseHtml, HTMLElement, Node as HtmlNode, TextNode } from 'node-html-parser';
 import { parse as parseDate, isValid as isValidDate } from 'date-fns';
+import md5 from 'md5';
 
 import {
   NodeType,
@@ -84,6 +84,16 @@ const XML_OPTIONS = {
 };
 
 const INLINE_DATE_FORMATS = ['MMMM d, yyyy', 'MMMM dd, yyyy'];
+
+function base64Decode(str: string) {
+  if (typeof atob === 'function') {
+    return atob(str);
+  } else if (typeof Buffer === 'function') {
+    return Buffer.from(str, 'base64').toString('utf8');
+  } else {
+    throw new Error('No base64 decoder available in this environment.');
+  }
+}
 
 export class EvernoteConverter implements IConverter {
   private parser = new XMLParser(XML_OPTIONS);
@@ -687,8 +697,8 @@ export class EvernoteConverter implements IConverter {
       if (!base64) {
         continue;
       }
-      const buffer = Buffer.from(base64, 'base64');
-      const hash = crypto.createHash('md5').update(buffer).digest('hex');
+      const bytes = base64Decode(base64);
+      const hash = md5(bytes);
       const mime = resource.mime?.toString() ?? 'application/octet-stream';
       const dataUri = `data:${mime};base64,${base64}`;
       const fileName = resource['resource-attributes']?.['file-name']?.toString();

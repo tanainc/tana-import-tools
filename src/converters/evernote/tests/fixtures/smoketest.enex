@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE en-export SYSTEM "http://xml.evernote.com/pub/evernote-export4.dtd">
+<en-export export-date="20251001T191039Z" application="Evernote" version="10.156.2">
+	<note>
+		<title>a note with a reminder</title>
+		<created>20250930T235405Z</created>
+		<updated>20250930T235501Z</updated>
+		<note-attributes>
+			<author>mikojunkye762a60aff50a426</author>
+			<reminder-time>20251007T160000Z</reminder-time>
+			<reminder-order>1759276469254</reminder-order>
+		</note-attributes>
+		<content>
+      <![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd"><en-note><div style="display:none;--en-chs:&quot;eyJoMSI6eyJmb250RmFtaWx5IjoiaW5oZXJpdCIsImZvbnRTaXplIjoiMjVweCIsImNvbG9yIjoiaW5oZXJpdCIsImZvbnRXZWlnaHQiOiI2MDAiLCJmb250U3R5bGUiOiJpbmhlcml0IiwidGV4dERlY29yYXRpb24iOiJpbmhlcml0In0sImgyIjp7ImZvbnRGYW1pbHkiOiJpbmhlcml0IiwiZm9udFNpemUiOiIyMHB4IiwiY29sb3IiOiJpbmhlcml0IiwiZm9udFdlaWdodCI6IjYwMCIsImZvbnRTdHlsZSI6ImluaGVyaXQiLCJ0ZXh0RGVjb3JhdGlvbiI6ImluaGVyaXQifSwiaDMiOnsiZm9udEZhbWlseSI6ImluaGVyaXQiLCJmb250U2l6ZSI6IjE4cHgiLCJjb2xvciI6ImluaGVyaXQiLCJmb250V2VpZ2h0IjoiNjAwIiwiZm9udFN0eWxlIjoiaW5oZXJpdCIsInRleHREZWNvcmF0aW9uIjoiaW5oZXJpdCJ9LCJwIjp7ImZvbnRGYW1pbHkiOiJpbmhlcml0IiwiZm9udFNpemUiOiJpbmhlcml0IiwiY29sb3IiOiJpbmhlcml0IiwiZm9udFdlaWdodCI6ImluaGVyaXQiLCJmb250U3R5bGUiOiJpbmhlcml0IiwidGV4dERlY29yYXRpb24iOiJpbmhlcml0In0sImlzRW1wdHkiOmZhbHNlfQ==&quot;"> </div><div>reminder in 1 week</div></en-note>      ]]>
+    </content>
+	</note>
+	<note>
+		<title>Another note</title>
+		<created>20251001T002400Z</created>
+		<updated>20251001T002416Z</updated>
+		<note-attributes>
+			<author>mikojunkye762a60aff50a426</author>
+		</note-attributes>
+		<content>
+      <![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd"><en-note><div style="display:none;--en-chs:&quot;eyJpc0VtcHR5IjpmYWxzZSwiaDEiOnsiZm9udEZhbWlseSI6ImluaGVyaXQiLCJmb250U2l6ZSI6IjI1cHgiLCJjb2xvciI6ImluaGVyaXQiLCJmb250V2VpZ2h0IjoiNjAwIiwiZm9udFN0eWxlIjoiaW5oZXJpdCIsInRleHREZWNvcmF0aW9uIjoiaW5oZXJpdCJ9LCJoMiI6eyJmb250RmFtaWx5IjoiaW5oZXJpdCIsImZvbnRTaXplIjoiMjBweCIsImNvbG9yIjoiaW5oZXJpdCIsImZvbnRXZWlnaHQiOiI2MDAiLCJmb250U3R5bGUiOiJpbmhlcml0IiwidGV4dERlY29yYXRpb24iOiJpbmhlcml0In0sImgzIjp7ImZvbnRGYW1pbHkiOiJpbmhlcml0IiwiZm9udFNpemUiOiIxOHB4IiwiY29sb3IiOiJpbmhlcml0IiwiZm9udFdlaWdodCI6IjYwMCIsImZvbnRTdHlsZSI6ImluaGVyaXQiLCJ0ZXh0RGVjb3JhdGlvbiI6ImluaGVyaXQifSwicCI6eyJmb250RmFtaWx5IjoiaW5oZXJpdCIsImZvbnRTaXplIjoiaW5oZXJpdCIsImNvbG9yIjoiaW5oZXJpdCIsImZvbnRXZWlnaHQiOiJpbmhlcml0IiwiZm9udFN0eWxlIjoiaW5oZXJpdCIsInRleHREZWNvcmF0aW9uIjoiaW5oZXJpdCJ9fQ==&quot;"> </div><div>Content in another note</div></en-note>      ]]>
+    </content>
+	</note>
+	<note>
+		<title>Daily Note Template</title>
+		<created>20250930T145915Z</created>
+		<updated>20251001T002301Z</updated>
+		<note-attributes>
+			<author>mikojunkye762a60aff50a426</author>
+			<source>daily.note</source>
+		</note-attributes>
+		<content>
+      <![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd"><en-note><div style="display:none;--en-chs:&quot;eyJpc0VtcHR5IjpmYWxzZSwiaDEiOnsiZm9udEZhbWlseSI6ImluaGVyaXQiLCJmb250U2l6ZSI6IjI1cHgiLCJjb2xvciI6ImluaGVyaXQiLCJmb250V2VpZ2h0IjoiNjAwIiwiZm9udFN0eWxlIjoiaW5oZXJpdCIsInRleHREZWNvcmF0aW9uIjoiaW5oZXJpdCJ9LCJoMiI6eyJmb250RmFtaWx5IjoiaW5oZXJpdCIsImZvbnRTaXplIjoiMjBweCIsImNvbG9yIjoiaW5oZXJpdCIsImZvbnRXZWlnaHQiOiI2MDAiLCJmb250U3R5bGUiOiJpbmhlcml0IiwidGV4dERlY29yYXRpb24iOiJpbmhlcml0In0sImgzIjp7ImZvbnRGYW1pbHkiOiJpbmhlcml0IiwiZm9udFNpemUiOiIxOHB4IiwiY29sb3IiOiJpbmhlcml0IiwiZm9udFdlaWdodCI6IjYwMCIsImZvbnRTdHlsZSI6ImluaGVyaXQiLCJ0ZXh0RGVjb3JhdGlvbiI6ImluaGVyaXQifSwicCI6eyJmb250RmFtaWx5IjoiaW5oZXJpdCIsImZvbnRTaXplIjoiaW5oZXJpdCIsImNvbG9yIjoiaW5oZXJpdCIsImZvbnRXZWlnaHQiOiJpbmhlcml0IiwiZm9udFN0eWxlIjoiaW5oZXJpdCIsInRleHREZWNvcmF0aW9uIjoiaW5oZXJpdCJ9fQ==&quot;"> </div><div>Things to do today</div><div><br/></div></en-note>      ]]>
+    </content>
+	</note>
+	<note>
+		<title>Daily Note Template - 10/1/2025</title>
+		<created>20251002T003812Z</created>
+		<updated>20251001T003857Z</updated>
+		<note-attributes>
+			<author>mikojunkye762a60aff50a426</author>
+			<source>daily.note</source>
+		</note-attributes>
+		<content>
+      <![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd"><en-note><div style="display:none;--en-chs:&quot;eyJpc0VtcHR5IjpmYWxzZSwiaDEiOnsiZm9udEZhbWlseSI6ImluaGVyaXQiLCJmb250U2l6ZSI6IjI1cHgiLCJjb2xvciI6ImluaGVyaXQiLCJmb250V2VpZ2h0IjoiNjAwIiwiZm9udFN0eWxlIjoiaW5oZXJpdCIsInRleHREZWNvcmF0aW9uIjoiaW5oZXJpdCJ9LCJoMiI6eyJmb250RmFtaWx5IjoiaW5oZXJpdCIsImZvbnRTaXplIjoiMjBweCIsImNvbG9yIjoiaW5oZXJpdCIsImZvbnRXZWlnaHQiOiI2MDAiLCJmb250U3R5bGUiOiJpbmhlcml0IiwidGV4dERlY29yYXRpb24iOiJpbmhlcml0In0sImgzIjp7ImZvbnRGYW1pbHkiOiJpbmhlcml0IiwiZm9udFNpemUiOiIxOHB4IiwiY29sb3IiOiJpbmhlcml0IiwiZm9udFdlaWdodCI6IjYwMCIsImZvbnRTdHlsZSI6ImluaGVyaXQiLCJ0ZXh0RGVjb3JhdGlvbiI6ImluaGVyaXQifSwicCI6eyJmb250RmFtaWx5IjoiaW5oZXJpdCIsImZvbnRTaXplIjoiaW5oZXJpdCIsImNvbG9yIjoiaW5oZXJpdCIsImZvbnRXZWlnaHQiOiJpbmhlcml0IiwiZm9udFN0eWxlIjoiaW5oZXJpdCIsInRleHREZWNvcmF0aW9uIjoiaW5oZXJpdCJ9fQ==&quot;"> </div><div>Things to do today</div><div>things for 10/1/2025</div></en-note>      ]]>
+    </content>
+	</note>
+	<note>
+		<title>Island note</title>
+		<created>20250930T234619Z</created>
+		<updated>20250930T234728Z</updated>
+		<note-attributes>
+			<author>mikojunkye762a60aff50a426</author>
+		</note-attributes>
+		<content>
+      <![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd"><en-note><div style="display:none;--en-chs:&quot;eyJpc0VtcHR5IjpmYWxzZSwiaDEiOnsiZm9udEZhbWlseSI6ImluaGVyaXQiLCJmb250U2l6ZSI6IjI1cHgiLCJjb2xvciI6ImluaGVyaXQiLCJmb250V2VpZ2h0IjoiNjAwIiwiZm9udFN0eWxlIjoiaW5oZXJpdCIsInRleHREZWNvcmF0aW9uIjoiaW5oZXJpdCJ9LCJoMiI6eyJmb250RmFtaWx5IjoiaW5oZXJpdCIsImZvbnRTaXplIjoiMjBweCIsImNvbG9yIjoiaW5oZXJpdCIsImZvbnRXZWlnaHQiOiI2MDAiLCJmb250U3R5bGUiOiJpbmhlcml0IiwidGV4dERlY29yYXRpb24iOiJpbmhlcml0In0sImgzIjp7ImZvbnRGYW1pbHkiOiJpbmhlcml0IiwiZm9udFNpemUiOiIxOHB4IiwiY29sb3IiOiJpbmhlcml0IiwiZm9udFdlaWdodCI6IjYwMCIsImZvbnRTdHlsZSI6ImluaGVyaXQiLCJ0ZXh0RGVjb3JhdGlvbiI6ImluaGVyaXQifSwicCI6eyJmb250RmFtaWx5IjoiaW5oZXJpdCIsImZvbnRTaXplIjoiaW5oZXJpdCIsImNvbG9yIjoiaW5oZXJpdCIsImZvbnRXZWlnaHQiOiJpbmhlcml0IiwiZm9udFN0eWxlIjoiaW5oZXJpdCIsInRleHREZWNvcmF0aW9uIjoiaW5oZXJpdCJ9fQ==&quot;"> </div><div>no links to this note</div></en-note>      ]]>
+    </content>
+	</note>
+	<note>
+		<title>To-do list - 9/30/2025</title>
+		<created>20250930T145916Z</created>
+		<updated>20251001T190911Z</updated>
+		<tag>tag on to-do list note</tag>
+		<note-attributes>
+			<author>mikojunkye762a60aff50a426</author>
+			<source>daily.note</source>
+		</note-attributes>
+		<content>
+      <![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd"><en-note><div style="display:none;--en-chs:&quot;eyJpc0VtcHR5IjpmYWxzZSwiaDEiOnsiZm9udEZhbWlseSI6ImluaGVyaXQiLCJmb250U2l6ZSI6IjI1cHgiLCJjb2xvciI6ImluaGVyaXQiLCJmb250V2VpZ2h0IjoiNjAwIiwiZm9udFN0eWxlIjoiaW5oZXJpdCIsInRleHREZWNvcmF0aW9uIjoiaW5oZXJpdCJ9LCJoMiI6eyJmb250RmFtaWx5IjoiaW5oZXJpdCIsImZvbnRTaXplIjoiMjBweCIsImNvbG9yIjoiaW5oZXJpdCIsImZvbnRXZWlnaHQiOiI2MDAiLCJmb250U3R5bGUiOiJpbmhlcml0IiwidGV4dERlY29yYXRpb24iOiJpbmhlcml0In0sImgzIjp7ImZvbnRGYW1pbHkiOiJpbmhlcml0IiwiZm9udFNpemUiOiIxOHB4IiwiY29sb3IiOiJpbmhlcml0IiwiZm9udFdlaWdodCI6IjYwMCIsImZvbnRTdHlsZSI6ImluaGVyaXQiLCJ0ZXh0RGVjb3JhdGlvbiI6ImluaGVyaXQifSwicCI6eyJmb250RmFtaWx5IjoiaW5oZXJpdCIsImZvbnRTaXplIjoiaW5oZXJpdCIsImNvbG9yIjoiaW5oZXJpdCIsImZvbnRXZWlnaHQiOiJpbmhlcml0IiwiZm9udFN0eWxlIjoiaW5oZXJpdCIsInRleHREZWNvcmF0aW9uIjoiaW5oZXJpdCJ9fQ==&quot;"> </div><div style="--en-threads:&quot;[{\&quot;comments\&quot;:[{\&quot;content\&quot;:\&quot;here is the comment\&quot;,\&quot;createdAt\&quot;:1759278345057,\&quot;hasBeenEdited\&quot;:false,\&quot;id\&quot;:\&quot;a5ea37bb-f6c7-431a-a54a-0032ab5a2c89\&quot;,\&quot;owner\&quot;:\&quot;Profile:USR:304583111\&quot;}],\&quot;createdAt\&quot;:1759278337590,\&quot;id\&quot;:\&quot;42723a36-63ed-4826-9773-90889e738c17\&quot;,\&quot;isResolved\&quot;:false,\&quot;owner\&quot;:\&quot;Profile:USR:304583111\&quot;,\&quot;ranges\&quot;:[{\&quot;from\&quot;:265,\&quot;to\&quot;:284}]}]&quot;;--en-requiredFeatures:&quot;[\&quot;evernoteComments\&quot;]&quot;;"></div><div><br/></div><h1 style="--en-nodeId:1f6a4426-7873-4eb0-b75e-0a4fa9991aec;">❗High priority</h1><div><span style="color:rgb(140, 140, 140);">👉 Add your most urgent and important tasks here. Don't forget to set a due date and reminder!</span></div><div style="--en-task-group:true; --en-id:529340ff-b54f-46e5-8317-ad66a935c423;--en-content-hash:b9b19d9b503e1205dd853a3e216b05fc;-webkit-user-modify:read-only;-moz-user-modify:read-only;user-modify:read-only;border-radius:3px;border:1px solid rgba(182,182,182,0.09);background:rgba(174,174,174,0.09);overflow:hidden;color:#868686"><div style="background:rgba(182,182,182,0.09) no-repeat 6px 6px url(&quot;data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzg2ODY4NiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE5LjcyNTEgMjBDMjAuMTgxIDIwIDIwLjYwMTEgMTkuNzU2IDIwLjgyOSAxOS4zNkMyMS4wNTcgMTguOTY0IDIxLjA1NyAxOC40NzYgMjAuODI5IDE4LjA4TDEzLjEwMzEgNC42Mzk5OUMxMi44NzYgNC4yNDM5OSAxMi40NTUxIDQgMTIgNEMxMS41NDQ5IDQgMTEuMTI0IDQuMjQzOTkgMTAuODk2MSA0LjYzOTk5TDMuMTcwOTggMTguMDhDMi45NDMwMSAxOC40NzYgMi45NDMwMSAxOC45NjQgMy4xNzA5OCAxOS4zNkMzLjM5ODEgMTkuNzU2IDMuODE4OTMgMjAgNC4yNzQwOCAyMEgxOS43MjUxWk00Ljg2NDg5IDE4LjRMMTIgNS45ODc5OEwxOS4xMzUxIDE4LjRINC44NjQ4OVoiLz4KPHBhdGggZD0iTTEyLjc1IDEwLjU3NTJDMTIuNzUgMTAuMTYxIDEyLjQxNDIgOS44MjUyMyAxMiA5LjgyNTIzQzExLjU4NTggOS44MjUyMyAxMS4yNSAxMC4xNjEgMTEuMjUgMTAuNTc1MlYxMy4yOTc5QzExLjI1IDEzLjcxMjEgMTEuNTg1OCAxNC4wNDc5IDEyIDE0LjA0NzlDMTIuNDE0MiAxNC4wNDc5IDEyLjc1IDEzLjcxMjEgMTIuNzUgMTMuMjk3OVYxMC41NzUyWiIvPgo8cGF0aCBkPSJNMTIuODc1IDE1Ljk1MTFDMTIuODc1IDE2LjQzNDQgMTIuNDgzMiAxNi44MjYxIDEyIDE2LjgyNjFDMTEuNTE2OCAxNi44MjYxIDExLjEyNSAxNi40MzQ0IDExLjEyNSAxNS45NTExQzExLjEyNSAxNS40Njc5IDExLjUxNjggMTUuMDc2MSAxMiAxNS4wNzYxQzEyLjQ4MzIgMTUuMDc2MSAxMi44NzUgMTUuNDY3OSAxMi44NzUgMTUuOTUxMVoiLz4KPC9zdmc+Cg==&quot;);padding:8px 38px;font-weight:600">Content not supported</div><div style="padding:2px 6px;margin: 1em">This block is a placeholder for Tasks, which has been officially released on the newest version of Evernote and is no longer supported on this version. Deleting or moving this block may cause unexpected behavior in newer versions of Evernote.</div></div><div><span style="color:rgb(140, 140, 140);">Indent parent</span></div><div style="padding-left:40px;"><span style="color:rgb(140, 140, 140);">indented node</span></div><div style="padding-left:80px;">2nd level indented node</div><div>node with a comment</div><div style="--en-calendarBlock:true;--en-calendarEvent:&quot;{\&quot;areDetailsHidden\&quot;:false,\&quot;attendees\&quot;:[],\&quot;calendarEventExternalId\&quot;:\&quot;\&quot;,\&quot;created\&quot;:1759275340331,\&quot;description\&quot;:null,\&quot;displayColor\&quot;:null,\&quot;end\&quot;:1760572800000,\&quot;eventCreator\&quot;:{\&quot;avatar\&quot;:null,\&quot;displayName\&quot;:null,\&quot;email\&quot;:\&quot;\&quot;},\&quot;eventOrganizer\&quot;:{\&quot;avatar\&quot;:null,\&quot;displayName\&quot;:null,\&quot;email\&quot;:\&quot;\&quot;},\&quot;externalProviderDeleted\&quot;:null,\&quot;iCalendarUid\&quot;:\&quot;\&quot;,\&quot;id\&quot;:\&quot;cf261e4e-a0ba-f189-cbff-0793938f69f1#287e0fa2-a640-cb0c-1ce6-b1f0da38a8fb\&quot;,\&quot;isAccountConnected\&quot;:false,\&quot;isAllDay\&quot;:true,\&quot;isBusy\&quot;:false,\&quot;isRecurrenceInstance\&quot;:false,\&quot;label\&quot;:\&quot;\&quot;,\&quot;lastModified\&quot;:0,\&quot;links\&quot;:[],\&quot;localChangeTimestamp\&quot;:0,\&quot;location\&quot;:null,\&quot;provider\&quot;:\&quot;EVERNOTE\&quot;,\&quot;recurrence\&quot;:null,\&quot;recurrentEventId\&quot;:null,\&quot;start\&quot;:1760572800000,\&quot;status\&quot;:\&quot;CONFIRMED\&quot;,\&quot;summary\&quot;:\&quot;Test Event on Oct. 16\&quot;,\&quot;userCalendarExternalId\&quot;:\&quot;cf261e4e-a0ba-f189-cbff-0793938f69f1\&quot;,\&quot;userIdFromExternalProvider\&quot;:\&quot;304583111@calendar.evernote.com\&quot;}&quot;;--en-expanded:false;-webkit-user-modify:read-only;-moz-user-modify:read-only;border-radius:6px;border:2px solid rgba(182,182,182,0.09);background:rgba(174,174,174,0.09);overflow:hidden"><div style="background:url(&quot;data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjUiIHZpZXdCb3g9IjAgMCAyNCAyNSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTkuNTQzNDUgMTIuNzk3NUM5LjU0MzQ1IDEzLjMwMzggOS4xMzMwNCAxMy43MTQyIDguNjI2NzggMTMuNzE0MkM4LjEyMDUyIDEzLjcxNDIgNy43MTAxMSAxMy4zMDM4IDcuNzEwMTEgMTIuNzk3NUM3LjcxMDExIDEyLjI5MTIgOC4xMjA1MiAxMS44ODA4IDguNjI2NzggMTEuODgwOEM5LjEzMzA0IDExLjg4MDggOS41NDM0NSAxMi4yOTEyIDkuNTQzNDUgMTIuNzk3NVoiIC8+CjxwYXRoIGQ9Ik0xMi45MTY3IDEyLjc5NzVDMTIuOTE2NyAxMy4zMDM4IDEyLjUwNjMgMTMuNzE0MiAxMiAxMy43MTQyQzExLjQ5MzggMTMuNzE0MiAxMS4wODM0IDEzLjMwMzggMTEuMDgzNCAxMi43OTc1QzExLjA4MzQgMTIuMjkxMiAxMS40OTM4IDExLjg4MDggMTIgMTEuODgwOEMxMi41MDYzIDExLjg4MDggMTIuOTE2NyAxMi4yOTEyIDEyLjkxNjcgMTIuNzk3NVoiIC8+CjxwYXRoIGQ9Ik0xNi4yOTE2IDEyLjc5NzVDMTYuMjkxNiAxMy4zMDM4IDE1Ljg4MTIgMTMuNzE0MiAxNS4zNzUgMTMuNzE0MkMxNC44Njg3IDEzLjcxNDIgMTQuNDU4MyAxMy4zMDM4IDE0LjQ1ODMgMTIuNzk3NUMxNC40NTgzIDEyLjI5MTIgMTQuODY4NyAxMS44ODA4IDE1LjM3NSAxMS44ODA4QzE1Ljg4MTIgMTEuODgwOCAxNi4yOTE2IDEyLjI5MTIgMTYuMjkxNiAxMi43OTc1WiIgLz4KPHBhdGggZD0iTTkuNTQzNCAxNi4xNzI1QzkuNTQzNCAxNi42Nzg4IDkuMTMyOTkgMTcuMDg5MiA4LjYyNjczIDE3LjA4OTJDOC4xMjA0NyAxNy4wODkyIDcuNzEwMDYgMTYuNjc4OCA3LjcxMDA2IDE2LjE3MjVDNy43MTAwNiAxNS42NjYyIDguMTIwNDcgMTUuMjU1OCA4LjYyNjczIDE1LjI1NThDOS4xMzI5OSAxNS4yNTU4IDkuNTQzNCAxNS42NjYyIDkuNTQzNCAxNi4xNzI1WiIgLz4KPHBhdGggZD0iTTEyLjkxNjcgMTYuMTcyNUMxMi45MTY3IDE2LjY3ODggMTIuNTA2MyAxNy4wODkyIDEyIDE3LjA4OTJDMTEuNDkzNyAxNy4wODkyIDExLjA4MzMgMTYuNjc4OCAxMS4wODMzIDE2LjE3MjVDMTEuMDgzMyAxNS42NjYyIDExLjQ5MzcgMTUuMjU1OCAxMiAxNS4yNTU4QzEyLjUwNjMgMTUuMjU1OCAxMi45MTY3IDE1LjY2NjIgMTIuOTE2NyAxNi4xNzI1WiIgLz4KPHBhdGggZD0iTTE2LjI5MTcgMTYuMTcyNUMxNi4yOTE3IDE2LjY3ODggMTUuODgxMyAxNy4wODkyIDE1LjM3NSAxNy4wODkyQzE0Ljg2ODggMTcuMDg5MiAxNC40NTg0IDE2LjY3ODggMTQuNDU4NCAxNi4xNzI1QzE0LjQ1ODQgMTUuNjY2MiAxNC44Njg4IDE1LjI1NTggMTUuMzc1IDE1LjI1NThDMTUuODgxMyAxNS4yNTU4IDE2LjI5MTcgMTUuNjY2MiAxNi4yOTE3IDE2LjE3MjVaIiAvPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTE1LjM3NSA0LjAyNzgzQzE1LjAyOTggNC4wMjc4MyAxNC43NSA0LjMwNzY1IDE0Ljc1IDQuNjUyODNWNi4xMzA0OUg5LjI1MTc2VjQuNjUyOTNDOS4yNTE3NiA0LjMwNzc2IDguOTcxOTQgNC4wMjc5MyA4LjYyNjc2IDQuMDI3OTNDOC4yODE1OCA0LjAyNzkzIDguMDAxNzYgNC4zMDc3NiA4LjAwMTc2IDQuNjUyOTNWNi4xMzA0OUg3LjIwODM1QzUuOTQyNyA2LjEzMDQ5IDQuOTE2NjkgNy4xNTY1MSA0LjkxNjY5IDguNDIyMTZWMTcuNTg4OEM0LjkxNjY5IDE4Ljg1NDUgNS45NDI3IDE5Ljg4MDUgNy4yMDgzNSAxOS44ODA1SDE2Ljc5MTdDMTguMDU3MyAxOS44ODA1IDE5LjA4MzQgMTguODU0NSAxOS4wODM0IDE3LjU4ODhWOC40MjIxNkMxOS4wODM0IDcuMTU2NTEgMTguMDU3MyA2LjEzMDQ5IDE2Ljc5MTcgNi4xMzA0OUgxNlY0LjY1MjgzQzE2IDQuMzA3NjUgMTUuNzIwMiA0LjAyNzgzIDE1LjM3NSA0LjAyNzgzWk0xNC43NSA3LjM4MDQ5VjkuMjM2MTdDMTQuNzUgOS41ODEzNCAxNS4wMjk4IDkuODYxMTcgMTUuMzc1IDkuODYxMTdDMTUuNzIwMiA5Ljg2MTE3IDE2IDkuNTgxMzQgMTYgOS4yMzYxN1Y3LjM4MDQ5SDE2Ljc5MTdDMTcuMzY3IDcuMzgwNDkgMTcuODMzNCA3Ljg0Njg2IDE3LjgzMzQgOC40MjIxNlYxNy41ODg4QzE3LjgzMzQgMTguMTY0MSAxNy4zNjcgMTguNjMwNSAxNi43OTE3IDE4LjYzMDVINy4yMDgzNUM2LjYzMzA2IDE4LjYzMDUgNi4xNjY2OSAxOC4xNjQxIDYuMTY2NjkgMTcuNTg4OFY4LjQyMjE2QzYuMTY2NjkgNy44NDY4NiA2LjYzMzA2IDcuMzgwNDkgNy4yMDgzNSA3LjM4MDQ5SDguMDAxNzZWOS4yMzYyN0M4LjAwMTc2IDkuNTgxNDUgOC4yODE1OCA5Ljg2MTI3IDguNjI2NzYgOS44NjEyN0M4Ljk3MTk0IDkuODYxMjcgOS4yNTE3NiA5LjU4MTQ1IDkuMjUxNzYgOS4yMzYyN1Y3LjM4MDQ5SDE0Ljc1WiIgLz4KPC9zdmc+Cg==&quot;) 6px 6px no-repeat, url(&quot;data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjUiIHZpZXdCb3g9IjAgMCAyNCAyNSIgZmlsbD0iIzY2NjY2NiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xOS43MjUxIDIwLjVDMjAuMTgxIDIwLjUgMjAuNjAxMSAyMC4yNTYgMjAuODI5IDE5Ljg2QzIxLjA1NyAxOS40NjQgMjEuMDU3IDE4Ljk3NiAyMC44MjkgMTguNThMMTMuMTAzMSA1LjEzOTk5QzEyLjg3NiA0Ljc0Mzk5IDEyLjQ1NTEgNC41IDEyIDQuNUMxMS41NDQ5IDQuNSAxMS4xMjQgNC43NDM5OSAxMC44OTYxIDUuMTM5OTlMMy4xNzA5OCAxOC41OEMyLjk0MzAxIDE4Ljk3NiAyLjk0MzAxIDE5LjQ2NCAzLjE3MDk4IDE5Ljg2QzMuMzk4MSAyMC4yNTYgMy44MTg5MyAyMC41IDQuMjc0MDggMjAuNUgxOS43MjUxWk00Ljg2NDg5IDE4LjlMMTIgNi40ODc5OEwxOS4xMzUxIDE4LjlINC44NjQ4OVoiIC8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMTIuNzUgMTEuMDc1MkMxMi43NSAxMC42NjEgMTIuNDE0MiAxMC4zMjUyIDEyIDEwLjMyNTJDMTEuNTg1OCAxMC4zMjUyIDExLjI1IDEwLjY2MSAxMS4yNSAxMS4wNzUyVjEzLjc5NzlDMTEuMjUgMTQuMjEyMSAxMS41ODU4IDE0LjU0NzkgMTIgMTQuNTQ3OUMxMi40MTQyIDE0LjU0NzkgMTIuNzUgMTQuMjEyMSAxMi43NSAxMy43OTc5VjExLjA3NTJaIiAvPgo8cGF0aCBkPSJNMTIuODc1IDE2LjQ1MTFDMTIuODc1IDE2LjkzNDQgMTIuNDgzMiAxNy4zMjYxIDEyIDE3LjMyNjFDMTEuNTE2OCAxNy4zMjYxIDExLjEyNSAxNi45MzQ0IDExLjEyNSAxNi40NTExQzExLjEyNSAxNS45Njc5IDExLjUxNjggMTUuNTc2MSAxMiAxNS41NzYxQzEyLjQ4MzIgMTUuNTc2MSAxMi44NzUgMTUuOTY3OSAxMi44NzUgMTYuNDUxMVoiIC8+Cjwvc3ZnPgo=&quot;) right 6px top 6px no-repeat, rgba(182,182,182,0.09);padding:8px 38px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="Calendar events are not fully supported in this version."><span style="color:#666">Test Event on Oct. 16</span></div><div style="padding:10px;color:#666"><div style="margin-bottom:8px;min-height:29px"><span style="color:#666;font-weight:700;margin-right:4px;white-space:nowrap">Date &amp; Time:</span><span>Thursday, October 16, 2025</span></div><div style="font-size:0.88em;white-space:pre-wrap"></div></div></div><div><a href="evernote:///view/304583111/s419/d06e8c95-20d9-dda8-fb34-db984b6ba808/0e234885-c171-4a76-97b6-92e08a44c643" rev="en_rl_none">Another note</a></div><div><a href="evernote:///view/304583111/s419/d06e8c95-20d9-dda8-fb34-db984b6ba808/0e234885-c171-4a76-97b6-92e08a44c643" rev="en_rl_none">Inline link</a> to another note</div><table width="376px" style="border-collapse:collapse;width:376px;"><colgroup><col style="width: 188px;" /><col style="width: 188px;" /></colgroup><tbody><tr><td style="border-color:#ccc;border-width:1px;border-style:solid;padding:10px;"><div>Name</div></td><td style="border-color:#ccc;border-width:1px;border-style:solid;padding:10px;"><div>Age</div></td></tr><tr><td style="border-color:#ccc;border-width:1px;border-style:solid;padding:10px;"><div>Joe</div></td><td style="border-color:#ccc;border-width:1px;border-style:solid;padding:10px;"><div>59</div></td></tr><tr><td style="border-color:#ccc;border-width:1px;border-style:solid;padding:10px;"><div>Anne</div></td><td style="border-color:#ccc;border-width:1px;border-style:solid;padding:10px;"><div>36</div></td></tr></tbody></table><div><a href="https://www.tana.inc" rev="en_rl_none">inline hyperlink</a> to a webpage</div><div>horizontal line below this node</div><hr/><div>some text with <span style="--en-highlight:yellow;background-color: #ffef9e;">highlights</span></div><h1 style="--en-nodeId:9df3db5a-5b7f-4c61-95e2-c81b2de293c2;">⚡ Medium priority</h1><div><span style="color:rgb(140, 140, 140);">👉 These tasks are important, but not as time sensitive.</span></div><div style="--en-task-group:true; --en-id:17a58d8f-fd9e-4128-9e3b-c593635c118c;--en-content-hash:a2ba88ff900ca1c4ac2d8122350400a4;-webkit-user-modify:read-only;-moz-user-modify:read-only;user-modify:read-only;border-radius:3px;border:1px solid rgba(182,182,182,0.09);background:rgba(174,174,174,0.09);overflow:hidden;color:#868686"><div style="background:rgba(182,182,182,0.09) no-repeat 6px 6px url(&quot;data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzg2ODY4NiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE5LjcyNTEgMjBDMjAuMTgxIDIwIDIwLjYwMTEgMTkuNzU2IDIwLjgyOSAxOS4zNkMyMS4wNTcgMTguOTY0IDIxLjA1NyAxOC40NzYgMjAuODI5IDE4LjA4TDEzLjEwMzEgNC42Mzk5OUMxMi44NzYgNC4yNDM5OSAxMi40NTUxIDQgMTIgNEMxMS41NDQ5IDQgMTEuMTI0IDQuMjQzOTkgMTAuODk2MSA0LjYzOTk5TDMuMTcwOTggMTguMDhDMi45NDMwMSAxOC40NzYgMi45NDMwMSAxOC45NjQgMy4xNzA5OCAxOS4zNkMzLjM5ODEgMTkuNzU2IDMuODE4OTMgMjAgNC4yNzQwOCAyMEgxOS43MjUxWk00Ljg2NDg5IDE4LjRMMTIgNS45ODc5OEwxOS4xMzUxIDE4LjRINC44NjQ4OVoiLz4KPHBhdGggZD0iTTEyLjc1IDEwLjU3NTJDMTIuNzUgMTAuMTYxIDEyLjQxNDIgOS44MjUyMyAxMiA5LjgyNTIzQzExLjU4NTggOS44MjUyMyAxMS4yNSAxMC4xNjEgMTEuMjUgMTAuNTc1MlYxMy4yOTc5QzExLjI1IDEzLjcxMjEgMTEuNTg1OCAxNC4wNDc5IDEyIDE0LjA0NzlDMTIuNDE0MiAxNC4wNDc5IDEyLjc1IDEzLjcxMjEgMTIuNzUgMTMuMjk3OVYxMC41NzUyWiIvPgo8cGF0aCBkPSJNMTIuODc1IDE1Ljk1MTFDMTIuODc1IDE2LjQzNDQgMTIuNDgzMiAxNi44MjYxIDEyIDE2LjgyNjFDMTEuNTE2OCAxNi44MjYxIDExLjEyNSAxNi40MzQ0IDExLjEyNSAxNS45NTExQzExLjEyNSAxNS40Njc5IDExLjUxNjggMTUuMDc2MSAxMiAxNS4wNzYxQzEyLjQ4MzIgMTUuMDc2MSAxMi44NzUgMTUuNDY3OSAxMi44NzUgMTUuOTUxMVoiLz4KPC9zdmc+Cg==&quot;);padding:8px 38px;font-weight:600">Content not supported</div><div style="padding:2px 6px;margin: 1em">This block is a placeholder for Tasks, which has been officially released on the newest version of Evernote and is no longer supported on this version. Deleting or moving this block may cause unexpected behavior in newer versions of Evernote.</div></div><div><br/></div><div style="--en-codeblock:true; --en-syntaxLanguage:javascript; --en-lineWrapping:false;box-sizing: border-box; padding: 8px; font-family: &quot;Fira Code&quot;,&quot;Consolas&quot;,&quot;Monaco&quot;,&quot;Andale Mono&quot;,&quot;Ubuntu Mono&quot;,&quot;Courier New&quot;,monospace font-size: 12px; color: rgb(51, 51, 51); border-top-left-radius: 4px; border-top-right-radius: 4px; border-bottom-right-radius: 4px; border-bottom-left-radius: 4px; background-color: rgb(251, 250, 248); border: 1px solid rgba(0, 0, 0, 0.14902); background-position: initial initial; background-repeat: initial initial;"><div>var abc = 123;</div></div><div>Image below</div><en-media style="--en-naturalWidth:256; --en-naturalHeight:171;" hash="7e7feab8570e13ef79a1308f8f4cc892" type="image/jpeg" /><div>September 30, 2024</div><h1 style="--en-nodeId:effd2c69-ade2-48ec-a7ed-9a7b885b6736;">✨ Bulleted list</h1><ul><li><div><b>Break big projects into smaller tasks.</b>  The great thing about a daily to-do list is that you can turn long and complicated projects into more manageable lists!</div></li><li><div><b>See all your tasks in one place.</b> Visit Tasks in the side bar to see all your tasks in one view.</div></li><li><div><b>Constantly reprioritize.</b> Did something suddenly become more urgent? Drag and drop tasks within this note so that it's always an accurate representation of your day.</div></li><li><div><b>Block off time to get things done.</b> Use Evernote Calendar to set up time to work on specific tasks.</div></li></ul><div><br/></div></en-note>      ]]>
+    </content>
+		<task>
+			<title>high priority task 1</title>
+			<created>20250930T234358Z</created>
+			<updated>20251001T190737Z</updated>
+			<taskStatus>open</taskStatus>
+			<taskFlag>true</taskFlag>
+			<sortWeight>B</sortWeight>
+			<noteLevelID>4ab40a67-cfb7-43c9-a950-a2ad908b4228</noteLevelID>
+			<taskGroupNoteLevelID>529340ff-b54f-46e5-8317-ad66a935c423</taskGroupNoteLevelID>
+			<repeatAfterCompletion>false</repeatAfterCompletion>
+			<statusUpdated>20250930T234358Z</statusUpdated>
+			<creator>304583111</creator>
+			<lastEditor>304583111</lastEditor>
+		</task>
+		<task>
+			<title>high priority task 2</title>
+			<created>20250930T234358Z</created>
+			<updated>20251001T190737Z</updated>
+			<taskStatus>open</taskStatus>
+			<taskFlag>false</taskFlag>
+			<sortWeight>J</sortWeight>
+			<noteLevelID>b007060c-c861-4fc9-b360-b309cc0a9341</noteLevelID>
+			<taskGroupNoteLevelID>529340ff-b54f-46e5-8317-ad66a935c423</taskGroupNoteLevelID>
+			<repeatAfterCompletion>false</repeatAfterCompletion>
+			<statusUpdated>20250930T234358Z</statusUpdated>
+			<creator>304583111</creator>
+			<lastEditor>304583111</lastEditor>
+		</task>
+		<task>
+			<title>medium task priority with tomorrow due date</title>
+			<created>20250930T234358Z</created>
+			<updated>20251001T190737Z</updated>
+			<taskStatus>open</taskStatus>
+			<taskFlag>false</taskFlag>
+			<sortWeight>B</sortWeight>
+			<noteLevelID>7ce6323d-1430-40ca-8ad6-74a8e96ad693</noteLevelID>
+			<taskGroupNoteLevelID>17a58d8f-fd9e-4128-9e3b-c593635c118c</taskGroupNoteLevelID>
+			<dueDate>20251002T065959Z</dueDate>
+			<dueDateUIOption>date_only</dueDateUIOption>
+			<timeZone>America/Los_Angeles</timeZone>
+			<repeatAfterCompletion>false</repeatAfterCompletion>
+			<statusUpdated>20250930T234358Z</statusUpdated>
+			<creator>304583111</creator>
+			<lastEditor>304583111</lastEditor>
+		</task>
+		<resource>
+			<data encoding="base64">
+				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
+				</data>
+			<mime>image/jpeg</mime>
+			<width>256</width>
+			<height>171</height>
+			<resource-attributes>
+				<file-name>unsplash-shrunk.jpg</file-name>
+				<source-url>
+					en-cache://tokenKey%3D%22AuthToken%3AUser%3A304583111%22+19b60a09-a25f-f53e-f7e3-01c3b23b0e8b+7e7feab8570e13ef79a1308f8f4cc892+https%3A%2F%2Fpublic.www.evernote.com%2Fresources%2Fs419%2F81081b1a-7b5d-6f62-d2ce-95b8100470fb</source-url>
+			</resource-attributes>
+		</resource>
+	</note>
+</en-export>

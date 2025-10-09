@@ -78,7 +78,7 @@ If you are making changes that you think will benefit other users, please create
  - 🟢 frontmatter 
  - 🟢 code blocks 
  - 🟢 dates
- - 🟡 images (only remote images without redirect are working. Local images/assets still not working)
+ - 🟢 images 
 
 ### Workflowy
 

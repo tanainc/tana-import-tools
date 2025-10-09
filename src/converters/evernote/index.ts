@@ -294,6 +294,7 @@ export class EvernoteConverter implements IConverter {
 
     const processChild = (child: HtmlNode) => {
       if (child.nodeType === 3) {
+        // Text nodes (nodeType 3) are handled via serializeInline; other nodeTypes include 1 for elements and 8 for comments.
         return;
       }
 

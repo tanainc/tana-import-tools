@@ -85,14 +85,21 @@ const XML_OPTIONS = {
 
 const INLINE_DATE_FORMATS = ['MMMM d, yyyy', 'MMMM dd, yyyy'];
 
-function base64Decode(str: string) {
-  if (typeof atob === 'function') {
-    return atob(str);
-  } else if (typeof Buffer === 'function') {
-    return Buffer.from(str, 'base64').toString('utf8');
-  } else {
-    throw new Error('No base64 decoder available in this environment.');
+function base64ToBytes(str: string): Uint8Array {
+  if (typeof Buffer === 'function') {
+    return Uint8Array.from(Buffer.from(str, 'base64'));
   }
+
+  if (typeof atob === 'function') {
+    const binary = atob(str);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i += 1) {
+      bytes[i] = binary.charCodeAt(i);
+    }
+    return bytes;
+  }
+
+  throw new Error('No base64 decoder available in this environment.');
 }
 
 export class EvernoteConverter implements IConverter {
@@ -697,8 +704,13 @@ export class EvernoteConverter implements IConverter {
       if (!base64) {
         continue;
       }
-      const bytes = base64Decode(base64);
-      const hash = md5(bytes);
+      const bytes = base64ToBytes(base64);
+      let hash: string;
+      if (typeof Buffer === 'function') {
+        hash = md5(Buffer.from(bytes));
+      } else {
+        hash = md5(Array.from(bytes));
+      }
       const mime = resource.mime?.toString() ?? 'application/octet-stream';
       const dataUri = `data:${mime};base64,${base64}`;
       const fileName = resource['resource-attributes']?.['file-name']?.toString();

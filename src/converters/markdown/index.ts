@@ -262,14 +262,155 @@ export class MarkdownConverter implements IConverter {
     nodeSet.add(nodeUid);
   }
 
+  // Manual parser to replace catastrophic backtracking regex for markdown links
+  // Handles [alias](link) with balanced parentheses in the link part
+  private parseMarkdownLinks(text: string, callback: (alias: string, link: string) => string): string {
+    let result = '';
+    let i = 0;
+
+    while (i < text.length) {
+      // Find opening bracket
+      if (text[i] === '[') {
+        const aliasStart = i + 1;
+        let aliasEnd = -1;
+
+        // Find closing bracket for alias, respecting escaped brackets
+        for (let j = aliasStart; j < text.length; j++) {
+          if (text[j] === '\\' && j + 1 < text.length) {
+            j++; // skip escaped character
+            continue;
+          }
+          if (text[j] === ']') {
+            aliasEnd = j;
+            break;
+          }
+        }
+
+        if (aliasEnd === -1) {
+          result += text[i];
+          i++;
+          continue;
+        }
+
+        // Check if followed by (
+        if (aliasEnd + 1 < text.length && text[aliasEnd + 1] === '(') {
+          const linkStart = aliasEnd + 2;
+          let linkEnd = -1;
+          let depth = 1;
+          let j = linkStart;
+
+          // Match balanced parentheses with a safety limit
+          const maxIterations = Math.min(text.length - j, 10000);
+          let iterations = 0;
+
+          while (j < text.length && depth > 0 && iterations < maxIterations) {
+            if (text[j] === '\\' && j + 1 < text.length) {
+              j += 2; // skip escaped character
+              iterations++;
+              continue;
+            }
+            if (text[j] === '(') {
+              depth++;
+            } else if (text[j] === ')') {
+              depth--;
+              if (depth === 0) {
+                linkEnd = j;
+                break;
+              }
+            }
+            j++;
+            iterations++;
+          }
+
+          if (linkEnd !== -1 && iterations < maxIterations) {
+            const alias = text.substring(aliasStart, aliasEnd);
+            const link = text.substring(linkStart, linkEnd);
+            const replacement = callback(alias, link);
+            result += replacement;
+            i = linkEnd + 1;
+            continue;
+          }
+        }
+      }
+
+      result += text[i];
+      i++;
+    }
+
+    return result;
+  }
+
+  // Helper to parse a single markdown link at the start of text
+  // Returns {alias, link} if found, undefined otherwise
+  private parseMarkdownLinkAtStart(text: string): { alias: string; link: string } | undefined {
+    if (!text.startsWith('[')) {
+      return undefined;
+    }
+
+    const aliasStart = 1;
+    let aliasEnd = -1;
+
+    // Find closing bracket for alias
+    for (let j = aliasStart; j < text.length; j++) {
+      if (text[j] === '\\' && j + 1 < text.length) {
+        j++;
+        continue;
+      }
+      if (text[j] === ']') {
+        aliasEnd = j;
+        break;
+      }
+    }
+
+    if (aliasEnd === -1 || aliasEnd + 1 >= text.length || text[aliasEnd + 1] !== '(') {
+      return undefined;
+    }
+
+    const linkStart = aliasEnd + 2;
+    let linkEnd = -1;
+    let depth = 1;
+    let j = linkStart;
+    const maxIterations = Math.min(text.length - j, 10000);
+    let iterations = 0;
+
+    while (j < text.length && depth > 0 && iterations < maxIterations) {
+      if (text[j] === '\\' && j + 1 < text.length) {
+        j += 2;
+        iterations++;
+        continue;
+      }
+      if (text[j] === '(') {
+        depth++;
+      } else if (text[j] === ')') {
+        depth--;
+        if (depth === 0) {
+          linkEnd = j;
+          break;
+        }
+      }
+      j++;
+      iterations++;
+    }
+
+    // Only match if the entire text is the link (standalone check)
+    if (linkEnd !== -1 && linkEnd === text.length - 1 && iterations < maxIterations) {
+      return {
+        alias: text.substring(aliasStart, aliasEnd),
+        link: text.substring(linkStart, linkEnd),
+      };
+    }
+
+    return undefined;
+  }
+
   private convertRelativeLinksRecursively(node: TanaIntermediateNode, baseDir: string, depth = 0) {
     if (node.type !== 'codeblock' && typeof node.name === 'string') {
       // 1) Convert standard markdown links [alias](relative)
       if (node.name.includes('](')) {
-        node.name = node.name.replace(/\[([^\]]*)\]\(((?:[^()]+|\([^()]*\))*)\)/g, (_full, alias: string, link: string) => {
+        node.name = this.parseMarkdownLinks(node.name, (alias: string, link: string) => {
           // external links left as-is; handled by markdownToHTML later
           if (/^[a-z]+:\/\//i.test(link) || link.startsWith('mailto:')) {
-            return _full;
+            return `[${alias}](${link})`;
           }
           const decoded = this.safeDecode(link);
           const abs = this.path.resolve(baseDir, decoded);
@@ -301,7 +442,9 @@ export class MarkdownConverter implements IConverter {
       //    May occur multiple times in a single value, separated by commas, etc.
       //    We only convert .md references that resolve to a known page in this import.
       if (node.name.includes('(') && node.name.includes('.md')) {
-        const re = /([^\s()[\]](?:[^()[\]]*?[^\s()[\]])?)\s*\(([^)]+\.md)\)/g;
+        // Simplified regex without nested optionals to avoid backtracking
+        // Matches: non-whitespace text followed by optional more text, then (link.md)
+        const re = /([^\s()[\]][^()[\]]{0,200}?)\s*\(([^)]{1,500}?\.md)\)/g;
         node.name = node.name.replace(re, (full: string, aliasText: string, link: string) => {
           // Skip if link looks external
           if (/^[a-z]+:\/\//i.test(link) || link.startsWith('mailto:')) {
@@ -1065,14 +1208,12 @@ export class MarkdownConverter implements IConverter {
 
       const csvWrappersForParagraph: TanaIntermediateNode[] = [];
       if (type !== 'codeblock') {
-        const standaloneCsvMatch = paragraph
-          .trim()
-          .match(/^\[([^\]]*)\]\(((?:[^()]|\([^()]*\))*)\)$/i);
-        if (standaloneCsvMatch && /\.csv(?:[?#]|$)/i.test(standaloneCsvMatch[2].trim())) {
-          const alias = standaloneCsvMatch[1];
-          const link = standaloneCsvMatch[2];
+        const trimmed = paragraph.trim();
+        // Use manual parser for standalone CSV match to avoid catastrophic backtracking
+        const standaloneCsvMatch = this.parseMarkdownLinkAtStart(trimmed);
+        if (standaloneCsvMatch && /\.csv(?:[?#]|$)/i.test(standaloneCsvMatch.link.trim())) {
           const parentForCsv = getCurrentParent();
-          const tableWrapper = this.ensureCsvTableForLink(parentForCsv, fileDir, link, alias);
+          const tableWrapper = this.ensureCsvTableForLink(parentForCsv, fileDir, standaloneCsvMatch.link, standaloneCsvMatch.alias);
           if (tableWrapper) {
             i++;
             continue;
@@ -1082,14 +1223,14 @@ export class MarkdownConverter implements IConverter {
 
       const parentForParagraph = getCurrentParent();
       if (type !== 'codeblock' && paragraph.includes('](')) {
-        const csvLinkRegex = /\[([^\]]*)\]\(((?:[^()]|\([^()]*\))*)\)/g;
-        paragraph = paragraph.replace(csvLinkRegex, (full: string, alias: string, link: string) => {
+        // Use manual parser instead of catastrophic regex
+        paragraph = this.parseMarkdownLinks(paragraph, (alias: string, link: string) => {
           if (!/\.csv(?:[?#]|$)/i.test(link.trim())) {
-            return full;
+            return `[${alias}](${link})`;
           }
           const wrapper = this.ensureCsvTableForLink(parentForParagraph, fileDir, link, alias);
           if (!wrapper) {
-            return full;
+            return `[${alias}](${link})`;
           }
           csvWrappersForParagraph.push(wrapper);
           return `[[${wrapper.uid}]]`;
@@ -1269,7 +1410,10 @@ export class MarkdownConverter implements IConverter {
 
     const refs: string[] = [];
     const unresolvedTargets: string[] = [];
-    const csvLinkLikeRegex = /([^()]+?)\s*\(((?:[^()]|\([^()]*\))+?\.(?:csv|md)(?:[?#][^)]*)?)\)/g;
+    // Add length limits to prevent catastrophic backtracking on malformed input
+    // Matches: text followed by (link.csv or link.md with optional query/fragment)
+    // Allows one level of nested parentheses in the link part with strict limits
+    const csvLinkLikeRegex = /([^()\n]{1,200}?)\s*\(((?:[^()\n]|\([^()\n]{0,200}\)){1,500}?\.(?:csv|md)(?:[?#][^)\n]{0,100})?)\)/g;
 
     const text = value.replace(csvLinkLikeRegex, (full: string, _alias: string, target: string) => {
       const uid = this.resolveUidForLinkedPath(target, sourceDir);

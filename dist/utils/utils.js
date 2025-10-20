@@ -138,7 +138,10 @@ export function markdownToHTML(nodeContent) {
     nodeContent = replaceTokenWithHtml(nodeContent, '~~', 'del');
     // quicker than regex
     if (nodeContent.includes('](')) {
-        return nodeContent.replace(/\[([^[\]]*)\]\(((?:[^()]+|\([^()]*\))*)\)/g, (fullMatch, alias, link) => {
+        // Use length limits to prevent catastrophic backtracking
+        // Matches [alias](link) with one level of nested parentheses allowed in link
+        console.debug('[REGEX] markdownToHTML link regex matching (utils.ts:~166):', JSON.stringify(nodeContent.substring(0, 200)));
+        return nodeContent.replace(/\[([^[\]\n]{0,500})\]\(((?:[^()\n]|\([^()\n]{0,500}\)){1,1000})\)/g, (fullMatch, alias, link) => {
             if (link === null || link === void 0 ? void 0 : link.includes('://')) {
                 return `<a href="${link}">${alias}</a>`;
             }

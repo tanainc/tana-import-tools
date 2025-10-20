@@ -444,6 +444,7 @@ export class MarkdownConverter implements IConverter {
       if (node.name.includes('(') && node.name.includes('.md')) {
         // Simplified regex without nested optionals to avoid backtracking
         // Matches: non-whitespace text followed by optional more text, then (link.md)
+        console.debug('[REGEX] Notion-style reference regex matching (line ~447):', JSON.stringify(node.name.substring(0, 2000)));
         const re = /([^\s()[\]][^()[\]]{0,200}?)\s*\(([^)]{1,500}?\.md)\)/g;
         node.name = node.name.replace(re, (full: string, aliasText: string, link: string) => {
           // Skip if link looks external
@@ -1118,11 +1119,13 @@ export class MarkdownConverter implements IConverter {
         let mediaUrl: string | undefined;
 
         // images: match all ![alt](...)
-        const imageRegex = /!\[[^\]]*\]\(([^)]+)\)/g;
+        // Use length limits to prevent catastrophic backtracking
+        console.debug('[REGEX] Image regex matching in list item content (line ~1122):', JSON.stringify(content.substring(0, 2000)));
+        const imageRegex = /!\[([^\]\n]{0,500})\]\(([^)\n]{1,1000})\)/g;
         const images: { full: string; url: string }[] = [];
         let m: RegExpExecArray | null;
         while ((m = imageRegex.exec(content)) !== null) {
-          images.push({ full: m[0], url: m[1] });
+          images.push({ full: m[0], url: m[2] });
         }
         if (images.length === 1 && content.trim() === images[0].full) {
           nodeType = 'image';
@@ -1238,11 +1241,13 @@ export class MarkdownConverter implements IConverter {
       }
 
       // handle images in paragraph
-      const imageRegex = /!\[[^\]]*\]\(([^)]+)\)/g;
+      // Use length limits to prevent catastrophic backtracking
+      console.debug('[REGEX] Image regex matching in paragraph (line ~1243):', JSON.stringify(paragraph.substring(0, 2000)));
+      const imageRegex = /!\[([^\]\n]{0,500})\]\(([^)\n]{1,1000})\)/g;
       const imgs: { full: string; url: string }[] = [];
       let rm: RegExpExecArray | null;
       while ((rm = imageRegex.exec(paragraph)) !== null) {
-        imgs.push({ full: rm[0], url: rm[1] });
+        imgs.push({ full: rm[0], url: rm[2] });
       }
       const childNodes: TanaIntermediateNode[] = [];
       if (type !== 'codeblock' && imgs.length) {
@@ -1413,6 +1418,7 @@ export class MarkdownConverter implements IConverter {
     // Add length limits to prevent catastrophic backtracking on malformed input
     // Matches: text followed by (link.csv or link.md with optional query/fragment)
     // Allows one level of nested parentheses in the link part with strict limits
+    console.debug('[REGEX] CSV cell value regex matching (line ~1421):', JSON.stringify(value.substring(0, 2000)));
     const csvLinkLikeRegex = /([^()\n]{1,200}?)\s*\(((?:[^()\n]|\([^()\n]{0,200}\)){1,500}?\.(?:csv|md)(?:[?#][^)\n]{0,100})?)\)/g;
 
     const text = value.replace(csvLinkLikeRegex, (full: string, _alias: string, target: string) => {

@@ -160,8 +160,11 @@ export function markdownToHTML(nodeContent: string) {
 
   // quicker than regex
   if (nodeContent.includes('](')) {
+    // Use length limits to prevent catastrophic backtracking
+    // Matches [alias](link) with one level of nested parentheses allowed in link
+    console.debug('[REGEX] markdownToHTML link regex matching (utils.ts:~166):', JSON.stringify(nodeContent.substring(0, 200)));
     return nodeContent.replace(
-      /\[([^[\]]*)\]\(((?:[^()]+|\([^()]*\))*)\)/g,
+      /\[([^[\]\n]{0,500})\]\(((?:[^()\n]|\([^()\n]{0,500}\)){1,1000})\)/g,
       (fullMatch: string | undefined, alias: string | undefined, link: string) => {
         if (link?.includes('://')) {
           return `<a href="${link}">${alias}</a>`;

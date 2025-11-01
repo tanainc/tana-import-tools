@@ -11,6 +11,7 @@ If you need to do some something special with your data before putting it into T
 If you are making changes that you think will benefit other users, please create a pull request.
 
 #### Installing
+
 1. Install Node.js 22.x https://nodejs.org/en/download/
 2. Use npm (comes with Node 22). No Yarn required.
 3. Download or git clone this tana-import-tools (or as-of-yet-unmerged branch you want to test, such as logseq)
@@ -72,7 +73,7 @@ If you are making changes that you think will benefit other users, please create
 ### Markdown
 
  - 🟢 graph
- - 🟢 tables
+ - 🟢 tables - first column header will always be "Title" in Tana
  - 🟢 headings
  - 🟢 todos 
  - 🟢 frontmatter 
@@ -100,6 +101,36 @@ If you are making changes that you think will benefit other users, please create
 3. Select "OPML" and click to download
 
 4. `npm run convert:workflowy datasets/my_workflowy_export.opml`
+
+### Evernote
+
+ - 🟢 graph (links, inline links)
+ - 🟢 journal pages (daily notes)
+ - 🟢 todos
+ - 🟢 headings
+ - 🟢 tables - first column header will always be "Title" in Tana
+ - 🟢 code blocks
+ - 🟢 tags (converted to supertags)
+ - 🟢 highlighted text
+ - 🟢 author field
+ - 🟡 events - dates are not handled
+ - 🟡 flags (marking as important) - converted to fields
+ - 🟡 reminders - converted to fields
+ - 🔴 images
+ - 🔴 comments on nodes
+ - 🔴 person assignments
+ - 🔴 divider (horizontal line)
+ - 🔴 recurring dates
+
+1. You must be on the Desktop app for export functionality
+
+2. Click "notebooks" on the left sidebar
+
+3. Click the three dots next to the notebook you want to export
+
+4. Click "Export notebook..."
+
+5. Select all attributes and the "enex" format. Don't include the author attribute (or others) if you don't want them to show as fields in Tana.
 
 # 📥 Importing to Tana
 

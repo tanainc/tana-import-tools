@@ -22,19 +22,27 @@
     "convert:workflowy": "npm run build && node dist/runner.js workflowy",
     "convert:logseq": "npm run build && node dist/runner.js logseq",
     "convert:markdown": "npm run build && node dist/runner.js markdown",
+    "convert:evernote": "npm run build && node dist/runner.js evernote",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:browser": "vitest run --browser --config vitest.browser.config.ts"
   },
   "dependencies": {
-    "date-fns": "^4.1.0"
+    "date-fns": "^4.1.0",
+    "fast-xml-parser": "^4.5.1",
+    "md5": "^2.3.0",
+    "node-html-parser": "^6.1.13"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.28.0",
     "@babel/preset-typescript": "^7.27.1",
+    "@types/md5": "^2.3.5",
     "@types/node": "^24.2.0",
     "@typescript-eslint/eslint-plugin": "^8.39.0",
     "@typescript-eslint/parser": "^8.39.0",
+    "@vitest/browser": "^3.2.4",
     "eslint": "^9.32.0",
+    "playwright": "^1.56.0",
     "prettier": "^3.6.2",
     "typescript": "^5.9.2",
     "vitest": "^3.2.4"

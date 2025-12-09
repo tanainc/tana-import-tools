@@ -1453,6 +1453,12 @@ export class MarkdownConverter implements IConverter {
   // Detect inline date values like "January 7, 2020 10:11 PM" or "Jan 7, 2020"
   private isInlineDateValue(text: string): boolean {
     const t = text.trim();
+
+    // Don't treat URLs, HTML tags, or paths as dates
+    if (t.includes('://') || t.includes('href=') || t.startsWith('<') || t.includes('/>')) {
+      return false;
+    }
+
     // Full month names
     const fullMonth =
       /^(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},\s*\d{4}(?:\s+\d{1,2}:\d{2}(?::\d{2})?\s*(?:AM|PM)?)?$/i;
@@ -1462,7 +1468,19 @@ export class MarkdownConverter implements IConverter {
     if (fullMonth.test(t) || shortMonth.test(t)) {
       return true;
     }
-    // Fallback: Date.parse for common variants with month names
+
+    // Only use Date.parse for text that looks like it could be a date
+    // (contains month name but not URL-like patterns)
+    const monthPattern = /(january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)/i;
+    if (!monthPattern.test(t)) {
+      return false;
+    }
+
+    // Additional safety: exclude strings with excessive length
+    if (t.length > 50) {
+      return false;
+    }
+
     const parsed = Date.parse(t);
     return !Number.isNaN(parsed);
   }

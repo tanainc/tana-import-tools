@@ -1476,8 +1476,8 @@ export class MarkdownConverter implements IConverter {
       return false;
     }
 
-    // Additional safety: exclude strings with slashes (likely paths/URLs) or excessive length
-    if (t.includes('/') || t.length > 50) {
+    // Additional safety: exclude strings with excessive length
+    if (t.length > 50) {
       return false;
     }
 

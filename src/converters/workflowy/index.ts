@@ -25,10 +25,14 @@ export class WorkflowyConverter {
       rootLevelNodes.push(this.createTanaNode(sub));
     }
 
+    this.summary.topLevelNodes = rootLevelNodes.length;
+    const home = rootLevelNodes.map((node) => node.uid);
+
     return {
       version: 'TanaIntermediateFile V0.1',
       summary: this.summary,
       nodes: [...rootLevelNodes],
+      homeNodeIds: home,
     };
   }
 

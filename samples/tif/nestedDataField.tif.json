@@ -1,0 +1,140 @@
+{
+  "version": "TanaIntermediateFile V0.1",
+  "summary": {
+    "leafNodes": 7,
+    "topLevelNodes": 5,
+    "totalNodes": 12,
+    "calendarNodes": 2,
+    "fields": 1,
+    "brokenRefs": 0
+  },
+  "nodes": [
+    {
+      "uid": "QurV43yDX",
+      "name": "Stian Håklev",
+      "children": [],
+      "createdAt": 1708949585676,
+      "editedAt": 1708949585676,
+      "refs": [],
+      "type": "node"
+    },
+    {
+      "uid": "02-26-2023",
+      "name": "02-26-2023",
+      "children": [
+        {
+          "uid": "2Cygr8dtf",
+          "name": "Attribute",
+          "children": [
+            {
+              "uid": "kA9kosl8o",
+              "name": "[[YCxUvrYOS]]",
+              "children": [
+                {
+                  "uid": "mfCoZc0ek",
+                  "name": "Content",
+                  "children": [],
+                  "createdAt": 1708951619371,
+                  "editedAt": 1708951619371,
+                  "refs": [],
+                  "type": "node"
+                }
+              ],
+              "createdAt": 1708951619371,
+              "editedAt": 1708951619371,
+              "refs": [
+                "YCxUvrYOS"
+              ],
+              "type": "node"
+            }
+          ],
+          "createdAt": 1708951619371,
+          "editedAt": 1708951619371,
+          "refs": [
+            "yBJ68eEL1"
+          ],
+          "type": "field"
+        },
+        {
+          "uid": "FkO53OIBB",
+          "name": "[[YCxUvrYOS]]",
+          "children": [
+            {
+              "uid": "jHm6RbNp9",
+              "name": "Content",
+              "children": [],
+              "createdAt": 1708951707793,
+              "editedAt": 1708951709878,
+              "refs": [],
+              "type": "node"
+            }
+          ],
+          "createdAt": 1708951703270,
+          "editedAt": 1708951707158,
+          "refs": [
+            "YCxUvrYOS"
+          ],
+          "type": "node"
+        }
+      ],
+      "createdAt": 1708949585678,
+      "editedAt": 1708949585678,
+      "refs": [],
+      "type": "date"
+    },
+    {
+      "uid": "02-27-2023",
+      "name": "02-27-2023",
+      "children": [
+        {
+          "uid": "szSGjjABL",
+          "name": "February 26th, 2023",
+          "children": [
+            {
+              "uid": "jSzj0QnLe",
+              "name": "this is a nice day",
+              "children": [],
+              "createdAt": 1708950165332,
+              "editedAt": 1708950167494,
+              "refs": [],
+              "type": "node"
+            }
+          ],
+          "createdAt": 1708950162320,
+          "editedAt": 1708950164901,
+          "refs": [],
+          "type": "node"
+        }
+      ],
+      "createdAt": 1708950161606,
+      "editedAt": 1708950161606,
+      "refs": [],
+      "type": "date"
+    },
+    {
+      "uid": "yBJ68eEL1",
+      "name": "Attribute",
+      "children": [],
+      "createdAt": 1708951619370,
+      "editedAt": 1708951619371,
+      "refs": [],
+      "type": "node"
+    },
+    {
+      "uid": "YCxUvrYOS",
+      "name": "Link to Page",
+      "children": [],
+      "createdAt": 1708951619370,
+      "editedAt": 1708951619371,
+      "refs": [],
+      "type": "node"
+    }
+  ],
+  "attributes": [
+    {
+      "name": "Attribute",
+      "values": [],
+      "count": 1
+    }
+  ]
+}

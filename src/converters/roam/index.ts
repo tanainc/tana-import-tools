@@ -514,6 +514,7 @@ export class RoamConverter implements IConverter {
 
   private fixBrokenLinks(nodeForImport: TanaIntermediateNode): TanaIntermediateNode[] {
     const createdNodes: TanaIntermediateNode[] = [];
+
     // Find all links that are not part of other links
     const outerLinks = getBracketLinks(nodeForImport.name, true);
 

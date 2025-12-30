@@ -160,13 +160,24 @@ export function markdownToHTML(nodeContent: string) {
 
   // quicker than regex
   if (nodeContent.includes('](')) {
-    return nodeContent.replace(
-      /\[([^[\]]*)\]\(((?:[^()]+|\([^()]*\))*)\)/g,
+    // Non-backtracking pattern to avoid ReDoS on malformed markdown links
+    // Matches: [text](url) where url can contain balanced parentheses
+    nodeContent = nodeContent.replace(
+      /\[([^[\]]*)\]\(([^()]*(?:\([^)]*\)[^()]*)*)\)/g,
       (fullMatch: string | undefined, alias: string | undefined, link: string) => {
         if (link?.includes('://')) {
           return `<a href="${link}">${alias}</a>`;
         }
         return fullMatch || '';
+      },
+    );
+
+    // Best-effort fallback for malformed markdown links without closing paren
+    // Matches: [text](url-to-end-of-string where url contains ://
+    nodeContent = nodeContent.replace(
+      /\[([^[\]]*)\]\(((?:https?|file):\/\/[^)\s]*)$/gm,
+      (fullMatch: string | undefined, alias: string | undefined, link: string) => {
+        return `<a href="${link}">${alias}</a>`;
       },
     );
   }

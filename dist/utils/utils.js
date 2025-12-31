@@ -138,11 +138,18 @@ export function markdownToHTML(nodeContent) {
     nodeContent = replaceTokenWithHtml(nodeContent, '~~', 'del');
     // quicker than regex
     if (nodeContent.includes('](')) {
-        return nodeContent.replace(/\[([^[\]]*)\]\(((?:[^()]+|\([^()]*\))*)\)/g, (fullMatch, alias, link) => {
+        // Non-backtracking pattern to avoid ReDoS on malformed markdown links
+        // Matches: [text](url) where url can contain balanced parentheses
+        nodeContent = nodeContent.replace(/\[([^[\]]*)\]\(([^()]*(?:\([^)]*\)[^()]*)*)\)/g, (fullMatch, alias, link) => {
             if (link === null || link === void 0 ? void 0 : link.includes('://')) {
                 return `<a href="${link}">${alias}</a>`;
             }
             return fullMatch || '';
+        });
+        // Best-effort fallback for malformed markdown links without closing paren
+        // Matches: [text](url-to-end-of-string where url contains ://
+        nodeContent = nodeContent.replace(/\[([^[\]]*)\]\(((?:https?|file):\/\/[^)\s]*)$/gm, (fullMatch, alias, link) => {
+            return `<a href="${link}">${alias}</a>`;
         });
     }
     return nodeContent;

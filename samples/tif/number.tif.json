@@ -1,0 +1,26 @@
+{
+    "version": "TanaIntermediateFile V0.1",
+    "nodes": [
+      {
+        "uid": "theBugId",
+        "name": 1,
+        "createdAt": 1654674792663,
+        "editedAt": 1654674792663,
+        "type": "node"
+      }
+    ],
+    "supertags": [
+      {
+        "uid": "bugTag",
+        "name": 11
+      }
+    ],
+    "attributes": [
+      {
+        "name": 12,
+        "count": 1,
+        "uid": "attrId"
+      }
+    ]
+  }
+  

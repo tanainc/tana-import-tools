@@ -1,29 +1,148 @@
 import { expect, test } from 'vitest';
+import { TanaIntermediateNode, TanaIntermediateFile } from '../../../types/types.js';
 import { importWorkflowyFile } from './testUtils.js';
 
-test('Smoke test import preview ', () => {
-  const [file, , fn] = importWorkflowyFile('smoketest.opml');
+function createMasker() {
+  const uidMap = new Map<string, string>();
+  let counter = 0;
 
-  expect(file.summary).toEqual({
-    brokenRefs: 0,
-    topLevelNodes: 0,
-    leafNodes: 6,
-    fields: 0,
-    totalNodes: 8,
-    calendarNodes: 0,
+  const maskUid = (uid: string) => {
+    if (!uidMap.has(uid)) {
+      uidMap.set(uid, `x${++counter}`);
+    }
+    return uidMap.get(uid)!;
+  };
+
+  const maskNode = (node: TanaIntermediateNode): unknown => ({
+    ...node,
+    uid: maskUid(node.uid),
+    createdAt: '<time>',
+    editedAt: '<time>',
+    children: node.children?.map(maskNode),
   });
 
-  expect(file.attributes).toBeUndefined();
+  const maskFile = (file: TanaIntermediateFile) => ({
+    ...file,
+    nodes: file.nodes.map(maskNode),
+    homeNodeIds: file.homeNodeIds?.map(maskUid),
+  });
 
-  const node1 = fn('Hello how are you')!;
-  expect(node1.children!.length).toBe(2);
-  expect(node1.description).toBe('Some note here');
-  expect(node1.children![0].name).toBe('Good');
-  expect(node1.children![1].name).toBe('Great');
+  return { maskFile };
+}
 
-  expect(fn('LinkNode')!.children![0].name).toBe('<a href="https://www.vg.no/">alias here</a>');
+test('TIF output snapshot', () => {
+  const [file] = importWorkflowyFile('smoketest.opml');
+  const { maskFile } = createMasker();
 
-  expect(fn('Todo1')?.todoState).toBe('done');
-  expect(fn('Todo2')?.todoState).toBe('done');
-  expect(fn('Todo3')?.todoState).toBe('done');
+  expect(maskFile(file)).toMatchInlineSnapshot(`
+    {
+      "homeNodeIds": [
+        "x1",
+        "x4",
+        "x6",
+        "x7",
+        "x8",
+      ],
+      "nodes": [
+        {
+          "children": [
+            {
+              "children": [],
+              "createdAt": "<time>",
+              "description": undefined,
+              "editedAt": "<time>",
+              "name": "Good",
+              "todoState": undefined,
+              "type": "node",
+              "uid": "x2",
+            },
+            {
+              "children": [],
+              "createdAt": "<time>",
+              "description": undefined,
+              "editedAt": "<time>",
+              "name": "Great",
+              "todoState": undefined,
+              "type": "node",
+              "uid": "x3",
+            },
+          ],
+          "createdAt": "<time>",
+          "description": "Some note here",
+          "editedAt": "<time>",
+          "name": "Hello how are you",
+          "todoState": undefined,
+          "type": "node",
+          "uid": "x1",
+        },
+        {
+          "children": [
+            {
+              "children": [],
+              "createdAt": "<time>",
+              "description": undefined,
+              "editedAt": "<time>",
+              "name": "<a href="https://www.vg.no/">alias here</a>",
+              "todoState": undefined,
+              "type": "node",
+              "uid": "x5",
+            },
+          ],
+          "createdAt": "<time>",
+          "description": undefined,
+          "editedAt": "<time>",
+          "name": "LinkNode",
+          "todoState": undefined,
+          "type": "node",
+          "uid": "x4",
+        },
+        {
+          "children": [],
+          "createdAt": "<time>",
+          "description": undefined,
+          "editedAt": "<time>",
+          "name": "Todo1",
+          "todoState": "done",
+          "type": "node",
+          "uid": "x6",
+        },
+        {
+          "children": [],
+          "createdAt": "<time>",
+          "description": undefined,
+          "editedAt": "<time>",
+          "name": "Todo2",
+          "todoState": "done",
+          "type": "node",
+          "uid": "x7",
+        },
+        {
+          "children": [],
+          "createdAt": "<time>",
+          "description": undefined,
+          "editedAt": "<time>",
+          "name": "Todo3",
+          "todoState": "done",
+          "type": "node",
+          "uid": "x8",
+        },
+      ],
+      "summary": {
+        "brokenRefs": 0,
+        "calendarNodes": 0,
+        "fields": 0,
+        "leafNodes": 6,
+        "topLevelNodes": 5,
+        "totalNodes": 8,
+      },
+      "version": "TanaIntermediateFile V0.1",
+    }
+  `);
+});
+
+test('homeNodeIds matches top-level node UIDs', () => {
+  const [file] = importWorkflowyFile('smoketest.opml');
+
+  expect(file.homeNodeIds).toHaveLength(5);
+  expect(file.nodes.map((n) => n.uid)).toEqual(file.homeNodeIds);
 });

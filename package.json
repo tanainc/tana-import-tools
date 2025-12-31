@@ -25,7 +25,8 @@
     "convert:evernote": "npm run build && node dist/runner.js evernote",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:browser": "vitest run --browser --config vitest.browser.config.ts"
+    "test:browser": "vitest run --browser --config vitest.browser.config.ts",
+    "release:dist": "git checkout dist && git merge main --no-edit && npm run build && git add -f dist/ && (git commit -m 'build: update dist from main' || echo 'No changes to commit') && git push origin dist && git checkout main"
   },
   "dependencies": {
     "date-fns": "^4.1.0",

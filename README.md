@@ -142,6 +142,44 @@ Imports are placed in a new workspace to prevent potential conflicts.
 
 3. Click "Tana Intermediate Format" and navigate to the generated file.
 
+# 🧩 Tana Intermediate Format 2
+
+The converters in this repository write `TanaIntermediateFile V0.1`, which Tana keeps importing. Tana also imports **Tana Intermediate Format 2** (`TanaIntermediateFile V2`), the format Tana's own workspace export writes. It is convenient to write by hand or with an LLM, and it can link to tags, fields and nodes that already exist in your workspaces.
+
+```json
+{
+  "version": "TanaIntermediateFile V2",
+  "contents": {
+    "schema": { "children": [{ "type": "template", "uid": "project", "name": "project" }] },
+    "workspace": {
+      "children": [
+        {
+          "uid": "launch",
+          "name": "Launch plan, see [[notes]]",
+          "tags": [{ "uid": "project" }, "EXISTING_TAG_ID"],
+          "children": [
+            {
+              "type": "tuple",
+              "attributeDef": { "id": "EXISTING_FIELD_ID" },
+              "values": [{ "isRef": true, "id": "EXISTING_OPTION_ID" }]
+            },
+            { "uid": "notes", "name": "Notes" },
+            { "name": "Book venue", "isDone": false }
+          ]
+        }
+      ]
+    }
+  }
+}
+```
+
+- `contents` may hold `workspace`, `inbox`, `library`, `schema` and `additionalRoots`. Each container is a node whose children go into the matching place in the new workspace.
+- A node has `name` (or structured `nameParts`), optional `type` (`node` by default, or `template`, `attributeDef`, `tuple`, `codeBlock`, `url`, `visual`, …), `children`, `tags` and `description`. Fields are `tuple` nodes with an `attributeDef` and `values`. `isDone: false` makes an open todo.
+- `uid` is a label local to the file. `[[uid]]` in a name, `{ "isRef": true, "uid": "…" }` and `{ "uid": "…" }` in `tags` or `attributeDef` point at that node.
+- `id` means a node's ID in Tana (see **Show API Schema** on a supertag). A node the file defines with an `id` is imported as a copy, and references to that ID point at the copy. An ID the file only references links to the existing node, which you must be able to read.
+- Imports always create a new workspace and never change existing nodes. Existing links to copied nodes still point to the originals.
+- Attribute definitions take a `dataType` such as `options`, `date`, `number`, `url` or `user`, plus optional `fixedOptionIds`. Templates take `extends` with parent tag IDs.
+
 # ✍️ Contributing
 
 We are always looking for new importers and as well as improvements to existing ones! Contributions from open-source developers are greatly appreciated.

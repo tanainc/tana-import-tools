@@ -1,0 +1,46 @@
+{
+  "version": "TanaIntermediateFile V2",
+  "contents": {
+    "schema": {
+      "children": [
+        {
+          "type": "attributeDef",
+          "uid": "status",
+          "name": "Status",
+          "dataType": "options",
+          "fixedOptionIds": [{ "uid": "planned" }, { "uid": "active" }],
+          "inlineNodes": {
+            "planned": { "uid": "planned", "name": "Planned" },
+            "active": { "uid": "active", "name": "Active" }
+          }
+        },
+        {
+          "type": "template",
+          "uid": "project",
+          "name": "project",
+          "children": [{ "type": "tuple", "attributeDef": { "uid": "status" }, "values": [] }]
+        }
+      ]
+    },
+    "workspace": {
+      "children": [
+        {
+          "uid": "launch",
+          "name": "Launch plan, see [[notes]]",
+          "tags": [{ "uid": "project" }],
+          "children": [
+            {
+              "type": "tuple",
+              "attributeDef": { "uid": "status" },
+              "values": [{ "isRef": true, "uid": "planned" }]
+            },
+            { "uid": "notes", "name": "Notes" },
+            { "name": "Book venue", "isDone": false },
+            { "name": "Confirm date [[date:2026-10-15]]", "isDone": true }
+          ]
+        },
+        { "name": "Project shortcut", "children": [{ "isRef": true, "uid": "launch" }] }
+      ]
+    }
+  }
+}

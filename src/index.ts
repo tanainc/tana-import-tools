@@ -4,3 +4,4 @@ export * from './converters/logseq/index.js';
 export * from './converters/markdown/index.js';
 export * from './converters/evernote/index.js';
 export * from './types/types.js';
+export * from './types/tif2.js';

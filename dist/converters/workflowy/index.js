@@ -1,3 +1,4 @@
+import { createTifFile } from '../createTifFile.js';
 import { idgenerator } from '../../utils/utils.js';
 import { opml2js } from './opml2js.js';
 export class WorkflowyConverter {
@@ -13,6 +14,10 @@ export class WorkflowyConverter {
         };
     }
     convert(fileContent) {
+        const graph = this.parse(fileContent);
+        return graph && createTifFile(graph);
+    }
+    parse(fileContent) {
         const outline = opml2js(fileContent);
         if (!outline) {
             return undefined;
@@ -24,10 +29,9 @@ export class WorkflowyConverter {
         this.summary.topLevelNodes = rootLevelNodes.length;
         const home = rootLevelNodes.map((node) => node.uid);
         return {
-            version: 'TanaIntermediateFile V0.1',
             summary: this.summary,
-            nodes: [...rootLevelNodes],
-            homeNodeIds: home,
+            roots: [...rootLevelNodes],
+            homeIds: home,
         };
     }
     createTanaNode(sub) {

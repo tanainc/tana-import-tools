@@ -1,4 +1,5 @@
-import { TanaIntermediateFile } from '../../types/types.js';
+import type { TanaIntermediateFile } from '../../types/types.js';
+import { SourceGraph } from '../sourceGraph.js';
 import { IConverter } from '../IConverter.js';
 export declare class LogseqConverter implements IConverter {
     private nodesForImport;
@@ -7,6 +8,7 @@ export declare class LogseqConverter implements IConverter {
     private topLevelMap;
     private summary;
     convert(fileContent: string): TanaIntermediateFile | undefined;
+    parse(fileContent: string): SourceGraph | undefined;
     private extractMetaNodeContentAndGetNumRemaningChildren;
     private convertToField;
     private createNodeForImport;

@@ -1,3 +1,4 @@
+import { createTifFile } from '../createTifFile.js';
 /**
  * - Each <note> is converted to a Tana node.
  * - The <content> of the <note> has items that are converted to Tana nodes.
@@ -57,6 +58,10 @@ export class EvernoteConverter {
         this.attrMap = new Map();
     }
     convert(fileContent) {
+        const graph = this.parse(fileContent);
+        return graph && createTifFile(graph);
+    }
+    parse(fileContent) {
         const parsed = this.parser.parse(fileContent);
         if (!parsed || !parsed['en-export']) {
             return undefined;
@@ -93,11 +98,10 @@ export class EvernoteConverter {
         const home = rootNodes.filter((node) => node.type !== 'date').map((node) => node.uid);
         const attributes = Array.from(this.attrMap.values());
         return {
-            version: 'TanaIntermediateFile V0.1',
             summary: this.summary,
-            nodes: rootNodes,
-            homeNodeIds: home,
-            attributes: attributes.length ? attributes : undefined,
+            roots: rootNodes,
+            homeIds: home,
+            fields: attributes.length ? attributes : undefined,
         };
     }
     normalizeNote(raw) {

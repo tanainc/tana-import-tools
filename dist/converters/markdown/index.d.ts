@@ -1,4 +1,5 @@
-import { TanaIntermediateFile } from '../../types/types.js';
+import type { TanaIntermediateFile } from '../../types/types.js';
+import { SourceGraph } from '../sourceGraph.js';
 import { IConverter } from '../IConverter.js';
 import type * as fs from 'fs';
 export type FileSystem = {
@@ -36,7 +37,9 @@ export declare class MarkdownConverter implements IConverter {
     private fileToUrlMap?;
     constructor(fileSystem: FileSystem, pathIsh: PathIsh, fileToUrlMap?: Map<string, string>);
     convert(fileContent: string): TanaIntermediateFile | undefined;
+    parse(fileContent: string): SourceGraph | undefined;
     convertDirectory(dirPath: string): TanaIntermediateFile | undefined;
+    parseDirectory(dirPath: string): SourceGraph | undefined;
     private postProcessAllNodes;
     private recordMarkdownLinkOccurrence;
     private convertRelativeLinksRecursively;

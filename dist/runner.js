@@ -104,5 +104,5 @@ if (!tanaIntermediteFile) {
     console.log('No nodes found');
     exit(0);
 }
-console.dir(tanaIntermediteFile.summary);
+console.log(`Format: ${tanaIntermediteFile.version}`);
 saveFile(file, tanaIntermediteFile);

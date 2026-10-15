@@ -1,3 +1,4 @@
+import { createTifFile } from '../createTifFile.js';
 import { markdownToHTML, findGroups, getBracketLinks, getCodeIfCodeblock, idgenerator, isIndexWithinBackticks, } from '../../utils/utils.js';
 import { getAttributeDefinitionsFromName, getValueForAttribute, hasField, hasImages, convertDateToTanaDateStr, } from '../common.js';
 import { isDone, isTodo, replaceRoamSyntax, setNodeAsDone, setNodeAsTodo } from './roamUtils.js';
@@ -25,6 +26,10 @@ export class RoamConverter {
         };
     }
     convert(fileContent) {
+        const graph = this.parse(fileContent);
+        return graph && createTifFile(graph);
+    }
+    parse(fileContent) {
         const rootLevelNodes = [];
         try {
             const nodes = JSON.parse(fileContent);
@@ -54,10 +59,9 @@ export class RoamConverter {
             return undefined;
         }
         const file = {
-            version: 'TanaIntermediateFile V0.1',
             summary: this.summary,
-            nodes: rootLevelNodes,
-            attributes: [...this.attrMap.values()],
+            roots: rootLevelNodes,
+            fields: [...this.attrMap.values()],
         };
         return file;
     }

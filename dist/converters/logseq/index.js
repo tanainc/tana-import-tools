@@ -1,3 +1,4 @@
+import { createTifFile } from '../createTifFile.js';
 import { markdownToHTML, findGroups, getBracketLinks, getCodeIfCodeblock, idgenerator, isIndexWithinBackticks, } from '../../utils/utils.js';
 import { hasImages, convertDateToTanaDateStr } from '../common.js';
 import { hasDuplicateProperties, isDone, isTodo, replaceLogseqSyntax, setNodeAsDone, setNodeAsTodo, } from './logseqUtils.js';
@@ -49,6 +50,10 @@ export class LogseqConverter {
         };
     }
     convert(fileContent) {
+        const graph = this.parse(fileContent);
+        return graph && createTifFile(graph);
+    }
+    parse(fileContent) {
         const rootLevelNodes = [];
         try {
             const logseq = JSON.parse(fileContent);
@@ -79,10 +84,9 @@ export class LogseqConverter {
             return undefined;
         }
         const file = {
-            version: 'TanaIntermediateFile V0.1',
             summary: this.summary,
-            nodes: rootLevelNodes,
-            attributes: [...this.attrMap.values()],
+            roots: rootLevelNodes,
+            fields: [...this.attrMap.values()],
         };
         return file;
     }

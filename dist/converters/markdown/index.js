@@ -1,3 +1,4 @@
+import { createTifFile } from '../createTifFile.js';
 import { findGroups, getBracketLinks, getCodeIfCodeblock, idgenerator, isIndexWithinBackticks, markdownToHTML, } from '../../utils/utils.js';
 export class MarkdownConverter {
     constructor(fileSystem, pathIsh, fileToUrlMap) {
@@ -26,6 +27,10 @@ export class MarkdownConverter {
     }
     // IConverter — treat input as a single markdown file content
     convert(fileContent) {
+        const graph = this.parse(fileContent);
+        return graph && createTifFile(graph);
+    }
+    parse(fileContent) {
         this.pageUidToMarkdownLinkNodeUids.clear();
         const pageNode = this.convertSingleFile({ filePath: 'document.md', content: fileContent, depth: 0 });
         if (!pageNode) {
@@ -36,15 +41,18 @@ export class MarkdownConverter {
         this.postProcessAllNodes(rootLevelNodes);
         const home = Array.from(new Set(rootLevelNodes.map((node) => node.uid)));
         return {
-            version: 'TanaIntermediateFile V0.1',
             summary: this.summary,
-            nodes: rootLevelNodes,
-            homeNodeIds: home,
-            attributes: [...this.attrMap.values()],
+            roots: rootLevelNodes,
+            homeIds: home,
+            fields: [...this.attrMap.values()],
         };
     }
     // Directory mode — build a single TIF from all .md files under dir
     convertDirectory(dirPath) {
+        const graph = this.parseDirectory(dirPath);
+        return graph && createTifFile(graph);
+    }
+    parseDirectory(dirPath) {
         var _a;
         this.pageUidToMarkdownLinkNodeUids.clear();
         if (!this.fileSystem.existsSync(dirPath) || !this.fileSystem.statSync(dirPath).isDirectory()) {
@@ -93,11 +101,10 @@ export class MarkdownConverter {
         const homeSourceNodes = depthEntries.length > 0 ? depthEntries[0][1] : rootLevelNodes;
         const home = Array.from(new Set(homeSourceNodes.map((node) => node.uid)));
         return {
-            version: 'TanaIntermediateFile V0.1',
             summary: this.summary,
-            nodes: rootLevelNodes,
-            homeNodeIds: home,
-            attributes: [...this.attrMap.values()],
+            roots: rootLevelNodes,
+            homeIds: home,
+            fields: [...this.attrMap.values()],
         };
     }
     postProcessAllNodes(rootLevelNodes) {
@@ -935,9 +942,7 @@ export class MarkdownConverter {
             }
             const csvWrappersForParagraph = [];
             if (type !== 'codeblock') {
-                const standaloneCsvMatch = paragraph
-                    .trim()
-                    .match(/^\[([^\]]*)\]\(((?:[^()]|\([^()]*\))*)\)$/i);
+                const standaloneCsvMatch = paragraph.trim().match(/^\[([^\]]*)\]\(((?:[^()]|\([^()]*\))*)\)$/i);
                 if (standaloneCsvMatch && /\.csv(?:[?#]|$)/i.test(standaloneCsvMatch[2].trim())) {
                     const alias = standaloneCsvMatch[1];
                     const link = standaloneCsvMatch[2];
@@ -1211,12 +1216,8 @@ export class MarkdownConverter {
         return stripped;
     }
     normalizePathForComparison(pathLike) {
-        const withoutQuery = this.stripQueryAndFragment(pathLike)
-            .replace(/\\/g, '/')
-            .replace(/\/+/g, '/');
-        const stripDotSegments = withoutQuery
-            .replace(/^(?:\.\/)+/, '')
-            .replace(/^(?:\.\.\/)+/, '');
+        const withoutQuery = this.stripQueryAndFragment(pathLike).replace(/\\/g, '/').replace(/\/+/g, '/');
+        const stripDotSegments = withoutQuery.replace(/^(?:\.\/)+/, '').replace(/^(?:\.\.\/)+/, '');
         return stripDotSegments.toLowerCase();
     }
     resolvePendingCsvCellReferences() {

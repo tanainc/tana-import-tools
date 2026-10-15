@@ -1,15 +1,15 @@
 import { expect, test } from 'vitest';
 import { expectImage } from '../../../testUtils/testUtils.js';
 import { importMarkdownDir } from './testUtils.js';
-import { TanaIntermediateNode } from '../../../types/types.js';
+import { SourceNode } from '../../sourceGraph.js';
 import * as path from 'node:path';
 
 test('Headings and bullets', () => {
   const [file, , fn] = importMarkdownDir('headings');
   // one page per file; page title should come from first heading
   expect(file.summary.topLevelNodes).toBe(1);
-  const page = file.nodes[0];
-  expect(file.homeNodeIds).toEqual([page.uid]);
+  const page = file.roots[0];
+  expect(file.homeIds).toEqual([page.uid]);
   expect(page.name).toBe('Header 1');
   // first heading stays as page title without section flag, subsequent headings flagged as sections
   const h1 = fn('Header 1');
@@ -25,7 +25,7 @@ test('Todos and fields', () => {
   const [file, , fn] = importMarkdownDir('todos_fields');
   const page = fn('Tasks');
   expect(page).toBeDefined();
-  expect(file.homeNodeIds).toContain(page!.uid);
+  expect(file.homeIds).toContain(page!.uid);
   const todo = fn('a todo item');
   expect(todo?.todoState).toBe('todo');
   const done = fn('done item');
@@ -34,7 +34,7 @@ test('Todos and fields', () => {
   const field = fn('Owner');
   expect(field?.type).toBe('field');
   expect(field?.children?.[0].name).toMatch(/^\[\[/); // value is a link
-  expect(file.attributes?.find((a) => a.name === 'Owner')?.count).toBeGreaterThan(0);
+  expect(file.fields?.find((a) => a.name === 'Owner')?.count).toBeGreaterThan(0);
   // paragraph field
   const pf = fn('Status');
   expect(pf?.type).toBe('field');
@@ -51,7 +51,7 @@ test('Directory conversion sets home nodes from shallowest markdown files', () =
   expect(projectNode).toBeDefined();
   expect(memberNode).toBeDefined();
 
-  const homeIds = new Set(file.homeNodeIds);
+  const homeIds = new Set(file.homeIds);
   expect(homeIds.has(rootNode!.uid)).toBe(true);
   expect(homeIds.has(projectNode!.uid)).toBe(false);
   expect(homeIds.has(memberNode!.uid)).toBe(false);
@@ -60,9 +60,9 @@ test('Directory conversion sets home nodes from shallowest markdown files', () =
 
 test('Images and links', () => {
   const [file, f, fn] = importMarkdownDir('images_links');
-  const mediaPage = file.nodes.find((n) => n.name === 'Media');
+  const mediaPage = file.roots.find((n) => n.name === 'Media');
   expect(mediaPage).toBeDefined();
-  expect(file.homeNodeIds).toContain(mediaPage!.uid);
+  expect(file.homeIds).toContain(mediaPage!.uid);
   // single image line
   const img = fn('image');
   expect(img?.type).toBe('image');
@@ -91,8 +91,8 @@ test('Images and links', () => {
 
 test('Image conversion: standalone image tokens become image nodes (list and paragraph), inline remains child', () => {
   const [file] = importMarkdownDir('images_links');
-  const page = file.nodes.find((n) => n.name === 'Media')!;
-  expect(file.homeNodeIds).toContain(page.uid);
+  const page = file.roots.find((n) => n.name === 'Media')!;
+  expect(file.homeIds).toContain(page.uid);
 
   // Collect all image nodes and map by URL
   const images: Record<string, any[]> = {};
@@ -123,10 +123,14 @@ test('Image conversion: standalone image tokens become image nodes (list and par
 
   // 3) Inline image with surrounding text should remain a child image, not convert the host to image
   // Find a host node that references https://tana.inc/photo/5
-  const hostWithInline = hosts.find((h) => (h.children || []).some((c: any) => c.type === 'image' && c.mediaUrl === 'https://tana.inc/photo/5'));
+  const hostWithInline = hosts.find((h) =>
+    (h.children || []).some((c: any) => c.type === 'image' && c.mediaUrl === 'https://tana.inc/photo/5'),
+  );
   expect(hostWithInline, 'Expected a text node hosting an inline image child').toBeDefined();
   expect(hostWithInline.type).not.toBe('image');
-  const inlineChild = (hostWithInline.children || []).find((c: any) => c.type === 'image' && c.mediaUrl === 'https://tana.inc/photo/5');
+  const inlineChild = (hostWithInline.children || []).find(
+    (c: any) => c.type === 'image' && c.mediaUrl === 'https://tana.inc/photo/5',
+  );
   expect(inlineChild).toBeDefined();
   // And the host should keep the textual content (contains the phrase "Inline with text before")
   expect(typeof hostWithInline.name).toBe('string');
@@ -142,10 +146,10 @@ test('Codeblocks', () => {
 
 test('Local images get file://', () => {
   const [file] = importMarkdownDir('local_images');
-  const page = file.nodes.find((n) => n.name === 'Local');
+  const page = file.roots.find((n) => n.name === 'Local');
   expect(page).toBeDefined();
-  expect(file.homeNodeIds).toContain(page!.uid);
-  expect(file.homeNodeIds?.length).toBe(1);
+  expect(file.homeIds).toContain(page!.uid);
+  expect(file.homeIds?.length).toBe(1);
   const collect: any[] = [];
   const walk = (n: any) => {
     if (n.type === 'image' && typeof n.mediaUrl === 'string' && n.mediaUrl.startsWith('file://')) {
@@ -155,7 +159,7 @@ test('Local images get file://', () => {
       walk(c);
     }
   };
-  for (const top of file.nodes) {
+  for (const top of file.roots) {
     walk(top);
   }
   expect(collect.length).toBeGreaterThan(0);
@@ -163,11 +167,11 @@ test('Local images get file://', () => {
 
 test('Mapped images get replaced URL', () => {
   const image = path.resolve(__dirname, 'fixtures/local_images/img.png');
-  const [file] = importMarkdownDir('local_images', new Map<string, string>([[image, "http://localhost/img.png"]]));
-  const page = file.nodes.find((n) => n.name === 'Local');
+  const [file] = importMarkdownDir('local_images', new Map<string, string>([[image, 'http://localhost/img.png']]));
+  const page = file.roots.find((n) => n.name === 'Local');
   expect(page).toBeDefined();
-  expect(file.homeNodeIds).toContain(page!.uid);
-  expect(file.homeNodeIds?.length).toBe(1);
+  expect(file.homeIds).toContain(page!.uid);
+  expect(file.homeIds?.length).toBe(1);
   const collect: any[] = [];
   const walk = (n: any) => {
     if (n.type === 'image' && typeof n.mediaUrl === 'string' && n.mediaUrl.startsWith('http://localhost')) {
@@ -177,7 +181,7 @@ test('Mapped images get replaced URL', () => {
       walk(c);
     }
   };
-  for (const top of file.nodes) {
+  for (const top of file.roots) {
     walk(top);
   }
   expect(collect.length).toBeGreaterThan(0);
@@ -185,8 +189,8 @@ test('Mapped images get replaced URL', () => {
 
 test('Front matter is converted to fields and first heading used as title', () => {
   const [file, , fn] = importMarkdownDir('frontmatter');
-  expect(file.homeNodeIds).toContain(file.nodes[0].uid);
-  const page = file.nodes[0];
+  expect(file.homeIds).toContain(file.roots[0].uid);
+  const page = file.roots[0];
   expect(page.name).toBe('Frontmatter Title');
   const author = fn('Author');
   expect(author?.type).toBe('field');
@@ -198,14 +202,14 @@ test('Front matter is converted to fields and first heading used as title', () =
 
 test('Links to other pages and files', () => {
   const [file, , findByName] = importMarkdownDir('links/pages');
-  const pageA = file.nodes.find((n) => n.name === 'A');
+  const pageA = file.roots.find((n) => n.name === 'A');
   const pageB = findByName('B');
   expect(pageA).toBeDefined();
   expect(pageB).toBeDefined();
-  expect(file.homeNodeIds).toContain(pageA!.uid);
-  expect(file.homeNodeIds).not.toContain(pageB!.uid);
+  expect(file.homeIds).toContain(pageA!.uid);
+  expect(file.homeIds).not.toContain(pageB!.uid);
 
-  const pageBAsRoot = file.nodes.find((n) => n.uid === pageB!.uid);
+  const pageBAsRoot = file.roots.find((n) => n.uid === pageB!.uid);
   expect(pageBAsRoot).toBeUndefined();
 
   const inlineChild = (pageA!.children || []).find((child) => child.uid === pageB!.uid);
@@ -251,14 +255,14 @@ test('Links to other pages and files', () => {
 test('Links to other pages and external files', () => {
   const abs = path.resolve(__dirname, 'fixtures/links/pages/assets/data.csv');
   const [file, , findByName] = importMarkdownDir('links/pages', new Map([[abs, 'http://localhost/assets/data.csv']]));
-  const pageA = file.nodes.find((n) => n.name === 'A');
+  const pageA = file.roots.find((n) => n.name === 'A');
   const pageB = findByName('B');
   expect(pageA).toBeDefined();
   expect(pageB).toBeDefined();
-  expect(file.homeNodeIds).toContain(pageA!.uid);
-  expect(file.homeNodeIds).not.toContain(pageB!.uid);
+  expect(file.homeIds).toContain(pageA!.uid);
+  expect(file.homeIds).not.toContain(pageB!.uid);
 
-  const pageBAsRoot = file.nodes.find((n) => n.uid === pageB!.uid);
+  const pageBAsRoot = file.roots.find((n) => n.uid === pageB!.uid);
   expect(pageBAsRoot).toBeUndefined();
 
   const inlineChild = (pageA!.children || []).find((child) => child.uid === pageB!.uid);
@@ -301,7 +305,7 @@ test('Links to other pages and external files', () => {
 
 test('CSV links without alias use Table fallback name', () => {
   const [file] = importMarkdownDir('links/pages');
-  const noAliasPage = file.nodes.find((n) => n.name === 'No alias');
+  const noAliasPage = file.roots.find((n) => n.name === 'No alias');
   expect(noAliasPage).toBeDefined();
   const tableWrapper = noAliasPage?.children?.find((child: any) =>
     (child.children || []).some((row: any) => (row.children || []).some((field: any) => field.type === 'field')),
@@ -313,8 +317,8 @@ test('CSV links without alias use Table fallback name', () => {
 
 test('Duplicate names under root become references to root nodes', () => {
   const [file] = importMarkdownDir('csv_pages_links');
-  const asgeirNode = file.nodes.find((n) => n.name === 'Asgeir Hoem');
-  const experimentalUiNode = file.nodes.find((n) => n.name === 'ExperimentalUI');
+  const asgeirNode = file.roots.find((n) => n.name === 'Asgeir Hoem');
+  const experimentalUiNode = file.roots.find((n) => n.name === 'ExperimentalUI');
   expect(asgeirNode).toBeDefined();
   expect(experimentalUiNode).toBeDefined();
 
@@ -337,7 +341,7 @@ test('Markdown page linked once becomes inline child node', () => {
   const indyChildren = indyNode!.children || [];
   expect(indyChildren.some((child) => child.uid === testingNode!.uid)).toBe(true);
 
-  const testingAsRoot = file.nodes.find((n) => n.uid === testingNode!.uid);
+  const testingAsRoot = file.roots.find((n) => n.uid === testingNode!.uid);
   expect(testingAsRoot).toBeUndefined();
 
   expect((testingNode!.children || []).some((c) => c.name === 'This is a sub page')).toBe(true);
@@ -345,11 +349,11 @@ test('Markdown page linked once becomes inline child node', () => {
 
 test('CSV cell references resolve to markdown pages', () => {
   const [file, , findByName] = importMarkdownDir('csv_pages_links');
-  const indy = file.nodes.find((n) => n.name === 'indyRIOT');
+  const indy = file.roots.find((n) => n.name === 'indyRIOT');
   expect(indy).toBeDefined();
 
-  const csvWrappers = (indy!.children || []).filter((child) =>
-    Array.isArray(child.children) && child.children.length > 0,
+  const csvWrappers = (indy!.children || []).filter(
+    (child) => Array.isArray(child.children) && child.children.length > 0,
   );
   expect(csvWrappers.length).toBeGreaterThanOrEqual(2);
 
@@ -358,8 +362,8 @@ test('CSV cell references resolve to markdown pages', () => {
   expect(notionNode).toBeDefined();
   expect(experimentalUiNode).toBeDefined();
 
-  const eirikNode = file.nodes.find((n) => n.name === 'Eirik Hoem');
-  const asgeirNode = file.nodes.find((n) => n.name === 'Asgeir Hoem');
+  const eirikNode = file.roots.find((n) => n.name === 'Eirik Hoem');
+  const asgeirNode = file.roots.find((n) => n.name === 'Asgeir Hoem');
   expect(eirikNode).toBeDefined();
   expect(asgeirNode).toBeDefined();
 
@@ -403,7 +407,7 @@ test('Top-of-page Key: Value lines become fields', () => {
   const page = findByName('Notion import tool');
   expect(page).toBeDefined();
 
-  const findField = (node: TanaIntermediateNode | undefined, fieldName: string) => {
+  const findField = (node: SourceNode | undefined, fieldName: string) => {
     return (node?.children || []).find((child) => child.type === 'field' && child.name === fieldName);
   };
 
@@ -441,9 +445,9 @@ test('Inline date fields and standalone date nodes', () => {
 
 test('Top-level paragraph after list is not nested', () => {
   const [file] = importMarkdownDir('notion_gs');
-  const page = file.nodes[0];
+  const page = file.roots[0];
 
-  const findByName = (n: TanaIntermediateNode, name: string): TanaIntermediateNode | undefined => {
+  const findByName = (n: SourceNode, name: string): SourceNode | undefined => {
     if (n.name === name) {
       return n;
     }
@@ -461,12 +465,11 @@ test('Top-level paragraph after list is not nested', () => {
   expect(hasQuestionAsChild).toBe(false);
 });
 
-
 test('Converts tables', () => {
   const [file] = importMarkdownDir('tables');
-  const page = file.nodes.find((n) => n.name === 'Tables')!;
+  const page = file.roots.find((n) => n.name === 'Tables')!;
 
-  const findByName = (n: TanaIntermediateNode, name: string): TanaIntermediateNode | undefined => {
+  const findByName = (n: SourceNode, name: string): SourceNode | undefined => {
     if (n.name === name) {
       return n;
     }
@@ -496,7 +499,7 @@ test('Converts tables', () => {
   expect(bobRow).toBeDefined();
 
   // Each row should have Age as a field with proper values
-  const findField = (n: TanaIntermediateNode | undefined, fieldName: string): TanaIntermediateNode | undefined => {
+  const findField = (n: SourceNode | undefined, fieldName: string): SourceNode | undefined => {
     return (n?.children || []).find((c) => c.type === 'field' && c.name === fieldName);
   };
 
@@ -508,17 +511,19 @@ test('Converts tables', () => {
 
 test('Empty tables produce a single wrapper with empty rows, not repeated tables', () => {
   const [file] = importMarkdownDir('tables');
-  const page = file.nodes.find((n) => n.name === 'Empty Table');
+  const page = file.roots.find((n) => n.name === 'Empty Table');
   expect(page).toBeDefined();
 
   // Find the container node (section)
-  const findByName = (n: TanaIntermediateNode, name: string): TanaIntermediateNode | undefined => {
+  const findByName = (n: SourceNode, name: string): SourceNode | undefined => {
     if (n.name === name) {
       return n;
     }
     for (const c of n.children || []) {
       const f = findByName(c, name);
-      if (f) { return f; }
+      if (f) {
+        return f;
+      }
     }
   };
   const container = findByName(page!, 'Schedule');
@@ -541,7 +546,6 @@ test('Empty tables produce a single wrapper with empty rows, not repeated tables
   }
 });
 
-
 test('Standalone CSV link is converted into a table', () => {
   const [, findById, findByName] = importMarkdownDir('csv_pages_links');
   const root = findByName('indyRIOT');
@@ -550,8 +554,8 @@ test('Standalone CSV link is converted into a table', () => {
   const roadMapWrapper = (root!.children || []).find(
     (child) =>
       Array.isArray(child.children) &&
-      child.children.some((row) =>
-        Array.isArray(row.refs) && row.refs.some((uid) => findById(uid)?.name === 'Notion import tool'),
+      child.children.some(
+        (row) => Array.isArray(row.refs) && row.refs.some((uid) => findById(uid)?.name === 'Notion import tool'),
       ),
   );
   expect(roadMapWrapper, 'Expected Road map CSV wrapper under indyRIOT').toBeDefined();
@@ -559,18 +563,15 @@ test('Standalone CSV link is converted into a table', () => {
 
   expect(roadMapWrapper!.name).toBe('Road map database with views');
 
-  const findField = (node: TanaIntermediateNode | undefined, fieldName: string): TanaIntermediateNode | undefined => {
+  const findField = (node: SourceNode | undefined, fieldName: string): SourceNode | undefined => {
     return (node?.children || []).find((c) => c.type === 'field' && c.name === fieldName);
   };
 
-  const expectations = [
-    { name: 'Notion import tool', dateSnippet: 'August 10, 2025' },
-    { name: 'ExperimentalUI' },
-  ];
+  const expectations = [{ name: 'Notion import tool', dateSnippet: 'August 10, 2025' }, { name: 'ExperimentalUI' }];
 
   for (const { name, dateSnippet } of expectations) {
-    const rowNode = (roadMapWrapper!.children || []).find((row) =>
-      Array.isArray(row.refs) && row.refs.some((uid) => findById(uid)?.name === name),
+    const rowNode = (roadMapWrapper!.children || []).find(
+      (row) => Array.isArray(row.refs) && row.refs.some((uid) => findById(uid)?.name === name),
     );
     expect(rowNode, `Row ${name} should exist`).toBeDefined();
     expect((rowNode!.refs || []).length, `Row ${name} should have at least one ref`).toBeGreaterThan(0);
@@ -592,14 +593,13 @@ test('Standalone CSV link is converted into a table', () => {
   }
 });
 
-
 test('CSV and markdown inline references are resolved to inline refs and multi-refs create separate nodes', () => {
   const [file, findById, findByName] = importMarkdownDir('csv_pages_links');
 
   const root = findByName('indyRIOT');
   expect(root).toBeDefined();
 
-  const findField = (n: TanaIntermediateNode | undefined, fieldName: string): TanaIntermediateNode | undefined => {
+  const findField = (n: SourceNode | undefined, fieldName: string): SourceNode | undefined => {
     return (n?.children || []).find((c) => c.type === 'field' && c.name.trim() === fieldName);
   };
 
@@ -625,7 +625,7 @@ test('CSV and markdown inline references are resolved to inline refs and multi-r
     expect(seen, `Expected Team members to include reference to ${member}`).toBe(true);
   });
 
-  const memberPage = file.nodes.find((n) => n.name === 'Asgeir Hoem');
+  const memberPage = file.roots.find((n) => n.name === 'Asgeir Hoem');
   expect(memberPage).toBeDefined();
   const workingOnField = findField(memberPage, 'Working on');
   expect(workingOnField).toBeDefined();
@@ -650,8 +650,7 @@ test('CSV and markdown inline references are resolved to inline refs and multi-r
 
   const csvWrappers = (root!.children || []).filter(
     (child) =>
-      Array.isArray(child.children) &&
-      child.children.some((row) => Array.isArray(row.refs) && row.refs.length > 0),
+      Array.isArray(child.children) && child.children.some((row) => Array.isArray(row.refs) && row.refs.length > 0),
   );
   expect(csvWrappers.length).toBeGreaterThan(0);
   for (const wrapper of csvWrappers) {
@@ -664,23 +663,27 @@ test('CSV and markdown inline references are resolved to inline refs and multi-r
       const rowUid = (rowName.match(/\[\[([a-z0-9]+)\]\]/) || [])[1];
       const target = findById(rowUid);
       expect(target, 'Row reference should resolve to markdown page').toBeDefined();
-      expect((row.children || []).length, 'Row that resolves to a markdown page should not duplicate CSV fields').toBe(0);
+      expect((row.children || []).length, 'Row that resolves to a markdown page should not duplicate CSV fields').toBe(
+        0,
+      );
     }
   }
 });
 
 test('Markdown links with parentheses in URL are handled without breaking text', () => {
   const [file] = importMarkdownDir('links/parentheses');
-  const page = file.nodes.find((n) => n.name === 'Parentheses Links');
+  const page = file.roots.find((n) => n.name === 'Parentheses Links');
   expect(page).toBeDefined();
 
-  const findByContent = (n: TanaIntermediateNode, needle: string): TanaIntermediateNode | undefined => {
+  const findByContent = (n: SourceNode, needle: string): SourceNode | undefined => {
     if (typeof n.name === 'string' && n.name.includes(needle)) {
       return n;
     }
     for (const c of n.children || []) {
       const r = findByContent(c, needle);
-      if (r) { return r; }
+      if (r) {
+        return r;
+      }
     }
   };
 
@@ -696,11 +699,11 @@ test('Markdown links with parentheses in URL are handled without breaking text',
 
 test('Markdown link alias ending with comma converts without hanging', () => {
   const [file] = importMarkdownDir('link_text_comma');
-  const page = file.nodes.find((n) => n.name === 'Meeting Rituals');
+  const page = file.roots.find((n) => n.name === 'Meeting Rituals');
   expect(page).toBeDefined();
 
-  const bullet = (page?.children || []).find((child) =>
-    typeof child.name === 'string' && child.name.includes('From the team at Lattice'),
+  const bullet = (page?.children || []).find(
+    (child) => typeof child.name === 'string' && child.name.includes('From the team at Lattice'),
   );
   expect(bullet, 'Expected bullet with trailing-comma link alias').toBeDefined();
 

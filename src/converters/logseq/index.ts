@@ -1,10 +1,6 @@
-import {
-  NodeType,
-  TanaIntermediateAttribute,
-  TanaIntermediateNode,
-  TanaIntermediateFile,
-  TanaIntermediateSummary,
-} from '../../types/types.js';
+import type { TanaIntermediateFile } from '../../types/types.js';
+import { createTifFile } from '../createTifFile.js';
+import { SourceNodeType, SourceField, SourceNode, SourceGraph, ConversionSummary } from '../sourceGraph.js';
 import {
   markdownToHTML,
   findGroups,
@@ -59,13 +55,13 @@ const LOGSEQ_DATE_FORMATS = [
 ];
 
 export class LogseqConverter implements IConverter {
-  private nodesForImport: Map<string, TanaIntermediateNode> = new Map();
+  private nodesForImport: Map<string, SourceNode> = new Map();
   private originalNodeNames: Map<string, string> = new Map();
-  private attrMap: Map<string, TanaIntermediateAttribute> = new Map();
+  private attrMap: Map<string, SourceField> = new Map();
 
-  private topLevelMap: Map<string, TanaIntermediateNode> = new Map();
+  private topLevelMap: Map<string, SourceNode> = new Map();
 
-  private summary: TanaIntermediateSummary = {
+  private summary: ConversionSummary = {
     leafNodes: 0,
     topLevelNodes: 0,
     totalNodes: 0,
@@ -75,7 +71,12 @@ export class LogseqConverter implements IConverter {
   };
 
   convert(fileContent: string): TanaIntermediateFile | undefined {
-    const rootLevelNodes: TanaIntermediateNode[] = [];
+    const graph = this.parse(fileContent);
+    return graph && createTifFile(graph);
+  }
+
+  parse(fileContent: string): SourceGraph | undefined {
+    const rootLevelNodes: SourceNode[] = [];
     try {
       const logseq: LogseqFile = JSON.parse(fileContent);
       const nodes = logseq.blocks;
@@ -108,20 +109,16 @@ export class LogseqConverter implements IConverter {
       return undefined;
     }
 
-    const file: TanaIntermediateFile = {
-      version: 'TanaIntermediateFile V0.1',
+    const file: SourceGraph = {
       summary: this.summary,
-      nodes: rootLevelNodes,
-      attributes: [...this.attrMap.values()],
+      roots: rootLevelNodes,
+      fields: [...this.attrMap.values()],
     };
 
     return file;
   }
 
-  private extractMetaNodeContentAndGetNumRemaningChildren(
-    theMetaNode: LogseqBlock,
-    parentNode: TanaIntermediateNode,
-  ): number {
+  private extractMetaNodeContentAndGetNumRemaningChildren(theMetaNode: LogseqBlock, parentNode: SourceNode): number {
     const movedChildren: string[] = [];
     if (theMetaNode.children) {
       for (const child of theMetaNode.children) {
@@ -141,7 +138,7 @@ export class LogseqConverter implements IConverter {
     return theMetaNode.children?.length || 0;
   }
 
-  private convertToField(key: string, value: unknown, node: TanaIntermediateNode) {
+  private convertToField(key: string, value: unknown, node: SourceNode) {
     this.summary.fields += 1;
 
     const fieldNode = this.createNodeForImport({
@@ -198,11 +195,11 @@ export class LogseqConverter implements IConverter {
     name: string;
     createdAt: number;
     editedAt: number;
-    type?: NodeType;
+    type?: SourceNodeType;
     url?: string;
     refs?: string[];
-  }): TanaIntermediateNode {
-    const nodeForImport: TanaIntermediateNode = {
+  }): SourceNode {
+    const nodeForImport: SourceNode = {
       uid: n.uid,
       name: n.name,
       // we only care about uids for now,
@@ -244,8 +241,8 @@ export class LogseqConverter implements IConverter {
     return nodeForImport;
   }
 
-  private logseqToIntermediate(node: LogseqBlock, parentNode?: TanaIntermediateNode): TanaIntermediateNode | undefined {
-    const createdChildNodes: TanaIntermediateNode[] = [];
+  private logseqToIntermediate(node: LogseqBlock, parentNode?: SourceNode): SourceNode | undefined {
+    const createdChildNodes: SourceNode[] = [];
 
     if (this.nodesForImport.has(node.id)) {
       return;
@@ -291,7 +288,7 @@ export class LogseqConverter implements IConverter {
 
     const refs: string[] = [];
 
-    let type: NodeType = 'node';
+    let type: SourceNodeType = 'node';
     if (nameToUse.includes('`')) {
       if (nameToUse.startsWith('```')) {
         const newlineIndex = nameToUse.trim().indexOf('\n');
@@ -325,7 +322,7 @@ export class LogseqConverter implements IConverter {
             continue;
           }
 
-          const childImage: TanaIntermediateNode = this.createNodeForImport({
+          const childImage: SourceNode = this.createNodeForImport({
             uid: idgenerator(),
             name: 'image',
             createdAt: Date.now(),
@@ -343,7 +340,7 @@ export class LogseqConverter implements IConverter {
       }
     }
 
-    const intermediateNode: TanaIntermediateNode = {
+    const intermediateNode: SourceNode = {
       uid: node.id,
       name: nameToUse,
       children: createdChildNodes,
@@ -418,7 +415,7 @@ export class LogseqConverter implements IConverter {
     return intermediateNode;
   }
 
-  private normalizeLinksAndSetAliases(nodeForImport: TanaIntermediateNode) {
+  private normalizeLinksAndSetAliases(nodeForImport: SourceNode) {
     // Fix any block refs that are not set
     findGroups(nodeForImport.name, '(((', ')))').forEach((g: { content: string }) => {
       if (!nodeForImport.refs || !nodeForImport.refs.includes(g.content)) {
@@ -453,7 +450,7 @@ export class LogseqConverter implements IConverter {
         }
         return n;
       })
-      .filter((r) => !!r) as TanaIntermediateNode[];
+      .filter((r) => !!r) as SourceNode[];
 
     // we replace nested links first, in case we have links which is present both alone and as part of other links
     refsToParse.sort((a, b) => {
@@ -510,8 +507,8 @@ export class LogseqConverter implements IConverter {
     }
   }
 
-  private fixBrokenLinks(nodeForImport: TanaIntermediateNode): TanaIntermediateNode[] {
-    const createdNodes: TanaIntermediateNode[] = [];
+  private fixBrokenLinks(nodeForImport: SourceNode): SourceNode[] {
+    const createdNodes: SourceNode[] = [];
     // Find all links that are not part of other links
     const outerLinks = getBracketLinks(nodeForImport.name, true);
 
@@ -650,7 +647,7 @@ export class LogseqConverter implements IConverter {
     return createdNodes;
   }
 
-  private ensureAttrMapIsUpdated(node: TanaIntermediateNode): void {
+  private ensureAttrMapIsUpdated(node: SourceNode): void {
     if (!node.name) {
       return;
     }
@@ -659,7 +656,7 @@ export class LogseqConverter implements IConverter {
       throw new Error('Trying to get attr def for non-field node');
     }
 
-    let intermediateAttr: TanaIntermediateAttribute | undefined = this.attrMap.get(node.name);
+    let intermediateAttr: SourceField | undefined = this.attrMap.get(node.name);
 
     if (!intermediateAttr) {
       intermediateAttr = {
@@ -681,7 +678,7 @@ export class LogseqConverter implements IConverter {
     this.attrMap.set(node.name, intermediateAttr);
   }
 
-  private findRefByName(refName: string, node: TanaIntermediateNode): TanaIntermediateNode | undefined {
+  private findRefByName(refName: string, node: SourceNode): SourceNode | undefined {
     if (!node.refs) {
       return;
     }

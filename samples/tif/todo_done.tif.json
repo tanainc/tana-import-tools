@@ -1,21 +1,33 @@
 {
-  "version": "TanaIntermediateFile V0.1",
-  "nodes": [
-    {
-      "uid": "todo",
-      "name": "Task todo",
-
-      "editedAt": 1600000000000,
-      "type": "node",
-      "todoState": "todo"
-    },
-    {
-      "uid": "done",
-      "name": "Task done",
-      "editedAt": 1600000100000,
-      "type": "node",
-      "todoState": "done"
+  "version": "TanaIntermediateFile V2.1",
+  "contents": {
+    "workspace": {
+      "children": [
+        {
+          "id": "fs7rx126bw6cpnpgmwinos",
+          "isDone": false,
+          "type": "node",
+          "nameParts": [
+            {
+              "type": "text",
+              "text": "Task todo",
+              "formats": []
+            }
+          ]
+        },
+        {
+          "id": "v0qqkfapjamyfiq4prt18",
+          "isDone": true,
+          "type": "node",
+          "nameParts": [
+            {
+              "type": "text",
+              "text": "Task done",
+              "formats": []
+            }
+          ]
+        }
+      ]
     }
-  ],
-  "attributes": []
+  }
 }

@@ -1,4 +1,4 @@
-import type { TanaIntermediateNode } from '../../../types/types.ts';
+import type { SourceNode } from '../../sourceGraph.js';
 import { LogseqConverter } from '..';
 import { IdLookupHelper, importFileAndGetHelpers } from '../../../testUtils/testUtils.js';
 
@@ -18,7 +18,7 @@ export function getField(parentId: string | undefined, title: string, f: IdLooku
   return field;
 }
 
-export function hasHeadingField(node: TanaIntermediateNode): boolean {
+export function hasHeadingField(node: SourceNode): boolean {
   if (!node || !node.children) {
     return false;
   }

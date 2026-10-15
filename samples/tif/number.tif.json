@@ -1,26 +1,31 @@
 {
-    "version": "TanaIntermediateFile V0.1",
-    "nodes": [
-      {
-        "uid": "theBugId",
-        "name": 1,
-        "createdAt": 1654674792663,
-        "editedAt": 1654674792663,
-        "type": "node"
-      }
-    ],
-    "supertags": [
-      {
-        "uid": "bugTag",
-        "name": 11
-      }
-    ],
-    "attributes": [
-      {
-        "name": 12,
-        "count": 1,
-        "uid": "attrId"
-      }
-    ]
+  "version": "TanaIntermediateFile V2.1",
+  "contents": {
+    "schema": {
+      "children": [
+        {
+          "type": "fieldDefinition",
+          "uid": "amount",
+          "name": "Amount",
+          "dataType": "number"
+        }
+      ]
+    },
+    "workspace": {
+      "children": [
+        {
+          "name": "Numeric field values",
+          "children": [
+            {
+              "type": "field",
+              "field": {
+                "uid": "amount"
+              },
+              "values": [12.5]
+            }
+          ]
+        }
+      ]
+    }
   }
-  
+}

@@ -1,49 +1,120 @@
 {
-  "version": "TanaIntermediateFile V0.1",
-  "nodes": [
-    {
-      "uid": "hasInlineDate",
-      "name": "See [[date:2022-03-30]]",
-      "type": "node"
-    },
-    {
-      "uid": "hasInlineDate2",
-      "name": "[[date:2022-03-10 20:30]] and week: [[date:2022-W03]]",
-      "type": "node"
-    },
-    {
-      "uid": "hasInlineDate3",
-      "name": "Weird US date format [[date:03-31-2022]]",
-      "type": "node"
-    },
-    {
-      "uid": "hasInlineDate4",
-      "name": "[[date:2022-03-10 20:30+01:00]] with offset, not supported",
-      "type": "node"
-    },
-    {
-      "uid": "hasInlineDate5",
-      "name": "[[date:2022-03-10 20:30[Europe/Oslo]]] with tz",
-      "type": "node"
-    },
-    {
-      "uid": "02-09-2022_mdy_weird",
-      "name": "02-09-2022",
-      "type": "date"
-    },
-    {
-      "uid": "isodate-day",
-      "name": "2022-02-10",
+  "version": "TanaIntermediateFile V2.1",
+  "contents": {
+    "workspace": {
       "children": [
         {
-          "uid": "weekDate",
-          "name": "[[date:2024-W03]]",
-          "type": "node"
+          "id": "4okjdcxtzcf4w2164x9ktj",
+          "type": "node",
+          "nameParts": [
+            {
+              "type": "text",
+              "text": "See ",
+              "formats": []
+            },
+            {
+              "type": "date",
+              "date": "2022-03-30"
+            }
+          ]
+        },
+        {
+          "id": "sagj2hf1vcqa6xsaip54t",
+          "type": "node",
+          "nameParts": [
+            {
+              "type": "date",
+              "date": "2022-03-10 20:30"
+            },
+            {
+              "type": "text",
+              "text": " and week: ",
+              "formats": []
+            },
+            {
+              "type": "date",
+              "date": "2022-W03"
+            }
+          ]
+        },
+        {
+          "id": "cer97gsfcgd4nsxx7emjb6",
+          "type": "node",
+          "nameParts": [
+            {
+              "type": "text",
+              "text": "Weird US date format ",
+              "formats": []
+            },
+            {
+              "type": "date",
+              "date": "03-31-2022"
+            }
+          ]
+        },
+        {
+          "id": "6kry664d1wnenbtw4fadv5",
+          "type": "node",
+          "nameParts": [
+            {
+              "type": "date",
+              "date": "2022-03-10 20:30+01:00"
+            },
+            {
+              "type": "text",
+              "text": " with offset, not supported",
+              "formats": []
+            }
+          ]
+        },
+        {
+          "id": "4r4wfnx4d6rp5nlm9nj2f",
+          "type": "node",
+          "nameParts": [
+            {
+              "type": "date",
+              "date": "2022-03-10 20:30[Europe/Oslo"
+            },
+            {
+              "type": "text",
+              "text": "] with tz",
+              "formats": []
+            }
+          ]
+        },
+        {
+          "id": "8pz1ogdbwyjcp91y111ac5",
+          "type": "node",
+          "nameParts": [
+            {
+              "type": "date",
+              "date": "02-09-2022"
+            }
+          ]
+        },
+        {
+          "id": "y9jt8fn56mdf2ci3kvymb",
+          "type": "node",
+          "children": [
+            {
+              "id": "2gyz000804lwqr4chtg778",
+              "type": "node",
+              "nameParts": [
+                {
+                  "type": "date",
+                  "date": "2024-W03"
+                }
+              ]
+            }
+          ],
+          "nameParts": [
+            {
+              "type": "date",
+              "date": "2022-02-10"
+            }
+          ]
         }
-      ],
-      "createdAt": 1644394759884,
-      "editedAt": 1644394759884,
-      "type": "date"
+      ]
     }
-  ]
+  }
 }

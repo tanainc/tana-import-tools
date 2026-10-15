@@ -11,7 +11,7 @@ describe.runIf(isBrowserEnvironment)('Workflowy converter (browser)', () => {
 
     expect(result.summary.totalNodes).toBeGreaterThan(0);
 
-    const root = findNodeByName(result.nodes, 'Hello how are you');
+    const root = findNodeByName(result.roots, 'Hello how are you');
     expect(root).toBeDefined();
     const childNames = (root?.children ?? []).map((child) => child.name);
     expect(childNames).toEqual(expect.arrayContaining(['Good', 'Great']));

@@ -135,7 +135,7 @@ test('Headings', () => {
 
   // child7: property heading: 1, content: #  double spaced-header
   // (should be flagged, and name stripped)
-  const h7 = file.nodes[0].children?.find(
+  const h7 = file.roots[0].children?.find(
     (n: { uid: string; flags?: string[] }) => n.uid === 'child7' && n.flags?.[0] === 'section',
   );
   expect(h7?.flags).toEqual(['section']);
@@ -153,7 +153,7 @@ test('Fields', () => {
   const [file, f] = importLogseqFile('fields.json');
 
   expect(file.summary.fields).toEqual(5);
-  expect(file.attributes?.length).toEqual(3);
+  expect(file.fields?.length).toEqual(3);
 
   const page1 = f('page1');
   expect(page1?.children?.length).toBe(3);

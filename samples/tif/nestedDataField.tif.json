@@ -1,140 +1,168 @@
 {
-  "version": "TanaIntermediateFile V0.1",
-  "summary": {
-    "leafNodes": 7,
-    "topLevelNodes": 5,
-    "totalNodes": 12,
-    "calendarNodes": 2,
-    "fields": 1,
-    "brokenRefs": 0
-  },
-  "nodes": [
-    {
-      "uid": "QurV43yDX",
-      "name": "Stian Håklev",
-      "children": [],
-      "createdAt": 1708949585676,
-      "editedAt": 1708949585676,
-      "refs": [],
-      "type": "node"
-    },
-    {
-      "uid": "02-26-2023",
-      "name": "02-26-2023",
+  "version": "TanaIntermediateFile V2.1",
+  "contents": {
+    "workspace": {
       "children": [
         {
-          "uid": "2Cygr8dtf",
-          "name": "Attribute",
-          "children": [
+          "id": "kkj3c5uobvgqdmt99hihe",
+          "type": "node",
+          "children": [],
+          "nameParts": [
             {
-              "uid": "kA9kosl8o",
-              "name": "[[YCxUvrYOS]]",
-              "children": [
-                {
-                  "uid": "mfCoZc0ek",
-                  "name": "Content",
-                  "children": [],
-                  "createdAt": 1708951619371,
-                  "editedAt": 1708951619371,
-                  "refs": [],
-                  "type": "node"
-                }
-              ],
-              "createdAt": 1708951619371,
-              "editedAt": 1708951619371,
-              "refs": [
-                "YCxUvrYOS"
-              ],
-              "type": "node"
+              "type": "text",
+              "text": "Stian Håklev",
+              "formats": []
             }
-          ],
-          "createdAt": 1708951619371,
-          "editedAt": 1708951619371,
-          "refs": [
-            "yBJ68eEL1"
-          ],
-          "type": "field"
+          ]
         },
         {
-          "uid": "FkO53OIBB",
-          "name": "[[YCxUvrYOS]]",
+          "id": "qk1y7hj0t877ysuag1eeo",
+          "type": "node",
           "children": [
             {
-              "uid": "jHm6RbNp9",
-              "name": "Content",
-              "children": [],
-              "createdAt": 1708951707793,
-              "editedAt": 1708951709878,
-              "refs": [],
-              "type": "node"
+              "type": "field",
+              "id": "f11ygc0xmt47yg3s86ax0i",
+              "field": {
+                "uid": "xdgqiyjq5pbbc1hym8rpg4"
+              },
+              "values": [
+                {
+                  "id": "x2xxkuztz7482dftwdxu4",
+                  "type": "node",
+                  "children": [
+                    {
+                      "id": "k8c85r6cl0qyuwauk3zw5d",
+                      "type": "node",
+                      "children": [],
+                      "nameParts": [
+                        {
+                          "type": "text",
+                          "text": "Content",
+                          "formats": []
+                        }
+                      ]
+                    }
+                  ],
+                  "nameParts": [
+                    {
+                      "type": "node",
+                      "nodeId": "audo29l62fd6hiz6hcn0qj"
+                    }
+                  ],
+                  "inlineNodes": {}
+                }
+              ]
+            },
+            {
+              "id": "4dkcebs7cag29uqn4r66bf",
+              "type": "node",
+              "children": [
+                {
+                  "id": "r065m0ymo1xvpkwsxp8l",
+                  "type": "node",
+                  "children": [],
+                  "nameParts": [
+                    {
+                      "type": "text",
+                      "text": "Content",
+                      "formats": []
+                    }
+                  ]
+                }
+              ],
+              "nameParts": [
+                {
+                  "type": "node",
+                  "nodeId": "audo29l62fd6hiz6hcn0qj"
+                }
+              ],
+              "inlineNodes": {}
             }
           ],
-          "createdAt": 1708951703270,
-          "editedAt": 1708951707158,
-          "refs": [
-            "YCxUvrYOS"
+          "nameParts": [
+            {
+              "type": "date",
+              "date": "02-26-2023"
+            }
+          ]
+        },
+        {
+          "id": "7qudllsh9qgsj5o8hfby3",
+          "type": "node",
+          "children": [
+            {
+              "id": "8ruv1ta8svuzmeyy8xqnqc",
+              "type": "node",
+              "children": [
+                {
+                  "id": "z1uv4zd7s6hf73gscigtaw",
+                  "type": "node",
+                  "children": [],
+                  "nameParts": [
+                    {
+                      "type": "text",
+                      "text": "this is a nice day",
+                      "formats": []
+                    }
+                  ]
+                }
+              ],
+              "nameParts": [
+                {
+                  "type": "text",
+                  "text": "February 26th, 2023",
+                  "formats": []
+                }
+              ]
+            }
           ],
-          "type": "node"
+          "nameParts": [
+            {
+              "type": "date",
+              "date": "02-27-2023"
+            }
+          ]
+        },
+        {
+          "id": "5hq5d0m1mxq97a31sg01mg",
+          "type": "node",
+          "children": [],
+          "nameParts": [
+            {
+              "type": "text",
+              "text": "Attribute",
+              "formats": []
+            }
+          ]
+        },
+        {
+          "id": "audo29l62fd6hiz6hcn0qj",
+          "type": "node",
+          "children": [],
+          "nameParts": [
+            {
+              "type": "text",
+              "text": "Link to Page",
+              "formats": []
+            }
+          ]
         }
-      ],
-      "createdAt": 1708949585678,
-      "editedAt": 1708949585678,
-      "refs": [],
-      "type": "date"
+      ]
     },
-    {
-      "uid": "02-27-2023",
-      "name": "02-27-2023",
+    "schema": {
       "children": [
         {
-          "uid": "szSGjjABL",
-          "name": "February 26th, 2023",
-          "children": [
+          "type": "fieldDefinition",
+          "uid": "xdgqiyjq5pbbc1hym8rpg4",
+          "nameParts": [
             {
-              "uid": "jSzj0QnLe",
-              "name": "this is a nice day",
-              "children": [],
-              "createdAt": 1708950165332,
-              "editedAt": 1708950167494,
-              "refs": [],
-              "type": "node"
+              "type": "text",
+              "text": "Attribute",
+              "formats": []
             }
-          ],
-          "createdAt": 1708950162320,
-          "editedAt": 1708950164901,
-          "refs": [],
-          "type": "node"
+          ]
         }
-      ],
-      "createdAt": 1708950161606,
-      "editedAt": 1708950161606,
-      "refs": [],
-      "type": "date"
-    },
-    {
-      "uid": "yBJ68eEL1",
-      "name": "Attribute",
-      "children": [],
-      "createdAt": 1708951619370,
-      "editedAt": 1708951619371,
-      "refs": [],
-      "type": "node"
-    },
-    {
-      "uid": "YCxUvrYOS",
-      "name": "Link to Page",
-      "children": [],
-      "createdAt": 1708951619370,
-      "editedAt": 1708951619371,
-      "refs": [],
-      "type": "node"
+      ]
     }
-  ],
-  "attributes": [
-    {
-      "name": "Attribute",
-      "values": [],
-      "count": 1
-    }
-  ]
+  }
 }

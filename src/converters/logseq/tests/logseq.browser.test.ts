@@ -12,9 +12,9 @@ describe.runIf(isBrowserEnvironment)('Logseq converter (browser)', () => {
     expect(result.summary.totalNodes).toBeGreaterThan(0);
     expect(result.summary.calendarNodes).toBeGreaterThan(0);
 
-    const page = findNodeByName(result.nodes, 'Tana test');
+    const page = findNodeByName(result.roots, 'Tana test');
     expect(page).toBeDefined();
-    const inlineRef = findNodeByName(result.nodes, `Inline ref for [[${page!.uid}]]`);
+    const inlineRef = findNodeByName(result.roots, `Inline ref for [[${page!.uid}]]`);
     expect(inlineRef?.refs).toContain(page!.uid);
   });
 });

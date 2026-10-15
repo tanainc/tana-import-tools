@@ -1,11 +1,13 @@
-import { TanaIntermediateFile, TanaIntermediateNode, TanaIntermediateSummary } from '../../types/types.js';
+import type { TanaIntermediateFile } from '../../types/types.js';
+import { createTifFile } from '../createTifFile.js';
+import { SourceGraph, SourceNode, ConversionSummary } from '../sourceGraph.js';
 import { idgenerator } from '../../utils/utils.js';
 import { opml2js, Sub, TheOutline } from './opml2js.js';
 
 export class WorkflowyConverter {
-  private nodesForImport: Map<string, TanaIntermediateNode> = new Map();
+  private nodesForImport: Map<string, SourceNode> = new Map();
 
-  private summary: TanaIntermediateSummary = {
+  private summary: ConversionSummary = {
     leafNodes: 0,
     topLevelNodes: 0,
     totalNodes: 0,
@@ -15,12 +17,17 @@ export class WorkflowyConverter {
   };
 
   convert(fileContent: string): TanaIntermediateFile | undefined {
+    const graph = this.parse(fileContent);
+    return graph && createTifFile(graph);
+  }
+
+  parse(fileContent: string): SourceGraph | undefined {
     const outline: TheOutline = opml2js(fileContent);
     if (!outline) {
       return undefined;
     }
 
-    const rootLevelNodes: TanaIntermediateNode[] = [];
+    const rootLevelNodes: SourceNode[] = [];
     for (const sub of outline.opml.body.subs) {
       rootLevelNodes.push(this.createTanaNode(sub));
     }
@@ -29,15 +36,14 @@ export class WorkflowyConverter {
     const home = rootLevelNodes.map((node) => node.uid);
 
     return {
-      version: 'TanaIntermediateFile V0.1',
       summary: this.summary,
-      nodes: [...rootLevelNodes],
-      homeNodeIds: home,
+      roots: [...rootLevelNodes],
+      homeIds: home,
     };
   }
 
-  private createTanaNode(sub: Sub): TanaIntermediateNode {
-    const nodeForImport: TanaIntermediateNode = {
+  private createTanaNode(sub: Sub): SourceNode {
+    const nodeForImport: SourceNode = {
       uid: idgenerator(),
       name: sub.text,
       description: sub.note,

@@ -1,4 +1,4 @@
-import { TanaIntermediateNode } from '../../types/types.js';
+import { SourceNode } from '../sourceGraph.js';
 
 // TODO and DONE in roam
 const TODO_FLAG = '{{[[TODO]]}} ';
@@ -16,13 +16,13 @@ export function isDone(name: string) {
   return name.substring(0, DONE_FLAG.length) === DONE_FLAG || name.substring(0, DONE_FLAG_ALT.length) === DONE_FLAG_ALT;
 }
 
-export function setNodeAsTodo(node: TanaIntermediateNode) {
+export function setNodeAsTodo(node: SourceNode) {
   node.name = node.name.substring(
     node.name.substring(0, TODO_FLAG.length) === TODO_FLAG ? TODO_FLAG.length : TODO_FLAG_ALT.length,
   );
   node.todoState = 'todo';
 }
-export function setNodeAsDone(node: TanaIntermediateNode) {
+export function setNodeAsDone(node: SourceNode) {
   node.name = node.name.substring(
     node.name.substring(0, TODO_FLAG.length) === DONE_FLAG ? DONE_FLAG.length : DONE_FLAG_ALT.length,
   );

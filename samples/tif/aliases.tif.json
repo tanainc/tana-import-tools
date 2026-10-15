@@ -1,15 +1,42 @@
 {
-  "version": "TanaIntermediateFile V0.1",
-  "nodes": [
-    {
-      "name": "See [my alias]([[testsRefId]])",
-      "refs": ["testsRefId"],
-      "type": "node"
-    },
-    {
-      "uid": "testsRefId",
-      "name": "tests",
-      "type": "node"
+  "version": "TanaIntermediateFile V2.1",
+  "contents": {
+    "workspace": {
+      "children": [
+        {
+          "id": "evpx9q8m1ds8iwekqm0vxo",
+          "type": "node",
+          "nameParts": [
+            {
+              "type": "text",
+              "text": "See ",
+              "formats": []
+            },
+            {
+              "type": "node",
+              "nodeId": "aenu2tyvsg5puek8y4z2x"
+            }
+          ],
+          "inlineNodes": {
+            "aenu2tyvsg5puek8y4z2x": {
+              "isRef": true,
+              "id": "aenu2tyvsg5puek8y4z2x",
+              "alias": "my alias"
+            }
+          }
+        },
+        {
+          "id": "aenu2tyvsg5puek8y4z2x",
+          "type": "node",
+          "nameParts": [
+            {
+              "type": "text",
+              "text": "tests",
+              "formats": []
+            }
+          ]
+        }
+      ]
     }
-  ]
+  }
 }

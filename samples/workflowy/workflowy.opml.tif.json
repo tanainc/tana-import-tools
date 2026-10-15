@@ -1,90 +1,147 @@
 {
-  "version": "TanaIntermediateFile V0.1",
-  "summary": {
-    "leafNodes": 6,
-    "topLevelNodes": 0,
-    "totalNodes": 9,
-    "calendarNodes": 0,
-    "fields": 0,
-    "brokenRefs": 0
-  },
-  "nodes": [
-    {
-      "uid": "etrnap7dc3ayi6bmkfvgc",
-      "name": "Hello",
+  "version": "TanaIntermediateFile V2.1",
+  "contents": {
+    "workspace": {
       "children": [
         {
-          "uid": "3xvy3myb6qsz0eo6qppef",
-          "name": "This is a workflowy node",
+          "id": "4pq8az0j0f4x9ca8droehm",
+          "type": "node",
           "children": [
             {
-              "uid": "pd28b7uh3pn977n5ikwugn",
-              "name": "This is a child with a #tag",
-              "children": [],
-              "createdAt": 1662497981278,
-              "editedAt": 1662497981278,
-              "type": "node"
-            },
-            {
-              "uid": "7w2xlywhef5uti0pr0sxrk",
-              "name": "This is also a child, with the same #tag",
-              "children": [],
-              "createdAt": 1662497981278,
-              "editedAt": 1662497981278,
-              "type": "node"
-            },
-            {
-              "uid": "5j6spol0jcld86ooeq9an",
-              "name": "The <b>bold</b>, the <u>underlined</u> and the <i>italic</i>",
-              "children": [],
-              "createdAt": 1662497981278,
-              "editedAt": 1662497981278,
-              "type": "node"
-            },
-            {
-              "uid": "s6wa74csi4ga0disgi77sp",
-              "name": "More nodes here",
-              "children": [],
-              "createdAt": 1662497981278,
-              "editedAt": 1662497981278,
-              "type": "node"
-            },
-            {
-              "uid": "f0tybu7bn5igkdu7ydm17c",
-              "name": "Tasks",
+              "id": "jxo9w8l1uuirigiwqiz45",
+              "type": "node",
               "children": [
                 {
-                  "uid": "83ak0s59d6ev2ud5psi3hk",
-                  "name": "Completed task 1",
-                  "children": [],
-                  "createdAt": 1662497981278,
-                  "editedAt": 1662497981278,
+                  "id": "lp239dn6x5fn1bmfulx9bc",
                   "type": "node",
-                  "todoState": "done"
+                  "children": [],
+                  "nameParts": [
+                    {
+                      "type": "text",
+                      "text": "This is a child with a #tag",
+                      "formats": []
+                    }
+                  ]
                 },
                 {
-                  "uid": "fvcggvb15750bodlte9t29t",
-                  "name": "Completed task 2",
-                  "children": [],
-                  "createdAt": 1662497981278,
-                  "editedAt": 1662497981278,
+                  "id": "w57jaqs03jf73r9xuk40xy",
                   "type": "node",
-                  "todoState": "done"
+                  "children": [],
+                  "nameParts": [
+                    {
+                      "type": "text",
+                      "text": "This is also a child, with the same #tag",
+                      "formats": []
+                    }
+                  ]
+                },
+                {
+                  "id": "9tu94ttka2ntuopy1qsb",
+                  "type": "node",
+                  "children": [],
+                  "nameParts": [
+                    {
+                      "type": "text",
+                      "text": "The ",
+                      "formats": []
+                    },
+                    {
+                      "type": "text",
+                      "text": "bold",
+                      "formats": ["bold"]
+                    },
+                    {
+                      "type": "text",
+                      "text": ", the ",
+                      "formats": []
+                    },
+                    {
+                      "type": "text",
+                      "text": "underlined",
+                      "formats": ["underline"]
+                    },
+                    {
+                      "type": "text",
+                      "text": " and the ",
+                      "formats": []
+                    },
+                    {
+                      "type": "text",
+                      "text": "italic",
+                      "formats": ["italic"]
+                    }
+                  ]
+                },
+                {
+                  "id": "8m5mj0htit7y57dn6z9yhn",
+                  "type": "node",
+                  "children": [],
+                  "nameParts": [
+                    {
+                      "type": "text",
+                      "text": "More nodes here",
+                      "formats": []
+                    }
+                  ]
+                },
+                {
+                  "id": "s29v5hnarsqmufnw7rffp8",
+                  "type": "node",
+                  "children": [
+                    {
+                      "id": "371buc8g2rmwzuplborw49",
+                      "isDone": true,
+                      "type": "node",
+                      "children": [],
+                      "nameParts": [
+                        {
+                          "type": "text",
+                          "text": "Completed task 1",
+                          "formats": []
+                        }
+                      ]
+                    },
+                    {
+                      "id": "pey3nsubnpnsstth50bzob",
+                      "isDone": true,
+                      "type": "node",
+                      "children": [],
+                      "nameParts": [
+                        {
+                          "type": "text",
+                          "text": "Completed task 2",
+                          "formats": []
+                        }
+                      ]
+                    }
+                  ],
+                  "nameParts": [
+                    {
+                      "type": "text",
+                      "text": "Tasks",
+                      "formats": []
+                    }
+                  ]
                 }
               ],
-              "createdAt": 1662497981278,
-              "editedAt": 1662497981278,
-              "type": "node"
+              "nameParts": [
+                {
+                  "type": "text",
+                  "text": "This is a workflowy node",
+                  "formats": []
+                }
+              ]
             }
           ],
-          "createdAt": 1662497981278,
-          "editedAt": 1662497981278,
-          "type": "node"
+          "nameParts": [
+            {
+              "type": "text",
+              "text": "Hello",
+              "formats": []
+            }
+          ]
         }
-      ],
-      "createdAt": 1662497981278,
-      "editedAt": 1662497981278,
-      "type": "node"
+      ]
     }
-  ]
+  }
 }

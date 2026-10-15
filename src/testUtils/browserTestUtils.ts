@@ -1,23 +1,20 @@
-import { TanaIntermediateFile, TanaIntermediateNode } from '../types/types.js';
+import { SourceGraph, SourceNode } from '../converters/sourceGraph.js';
 import { IConverter } from '../converters/IConverter.js';
 import { MarkdownConverter, type FileSystem, type PathIsh } from '../converters/markdown/index.js';
 
 export const isBrowserEnvironment = typeof window !== 'undefined';
 
-type ConverterLike = Pick<IConverter, 'convert'> | { convert: (content: string) => TanaIntermediateFile | undefined };
+type ConverterLike = Pick<IConverter, 'parse'> | { parse: (content: string) => SourceGraph | undefined };
 
-export function convertFixture(converter: ConverterLike, rawContent: string): TanaIntermediateFile {
-  const result = converter.convert(rawContent);
+export function convertFixture(converter: ConverterLike, rawContent: string): SourceGraph {
+  const result = converter.parse(rawContent);
   if (!result) {
     throw new Error('Converter returned undefined result');
   }
   return result;
 }
 
-export function findNodeByName(
-  nodes: TanaIntermediateNode[] | undefined,
-  name: string,
-): TanaIntermediateNode | undefined {
+export function findNodeByName(nodes: SourceNode[] | undefined, name: string): SourceNode | undefined {
   if (!nodes) {
     return undefined;
   }

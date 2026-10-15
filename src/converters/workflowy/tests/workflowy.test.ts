@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { TanaIntermediateNode, TanaIntermediateFile } from '../../../types/types.js';
+import { SourceNode, SourceGraph } from '../../sourceGraph.js';
 import { importWorkflowyFile } from './testUtils.js';
 
 function createMasker() {
@@ -13,7 +13,7 @@ function createMasker() {
     return uidMap.get(uid)!;
   };
 
-  const maskNode = (node: TanaIntermediateNode): unknown => ({
+  const maskNode = (node: SourceNode): unknown => ({
     ...node,
     uid: maskUid(node.uid),
     createdAt: '<time>',
@@ -21,29 +21,29 @@ function createMasker() {
     children: node.children?.map(maskNode),
   });
 
-  const maskFile = (file: TanaIntermediateFile) => ({
+  const maskFile = (file: SourceGraph) => ({
     ...file,
-    nodes: file.nodes.map(maskNode),
-    homeNodeIds: file.homeNodeIds?.map(maskUid),
+    roots: file.roots.map(maskNode),
+    homeIds: file.homeIds?.map(maskUid),
   });
 
   return { maskFile };
 }
 
-test('TIF output snapshot', () => {
+test('OPML source snapshot', () => {
   const [file] = importWorkflowyFile('smoketest.opml');
   const { maskFile } = createMasker();
 
   expect(maskFile(file)).toMatchInlineSnapshot(`
     {
-      "homeNodeIds": [
+      "homeIds": [
         "x1",
         "x4",
         "x6",
         "x7",
         "x8",
       ],
-      "nodes": [
+      "roots": [
         {
           "children": [
             {
@@ -135,14 +135,13 @@ test('TIF output snapshot', () => {
         "topLevelNodes": 5,
         "totalNodes": 8,
       },
-      "version": "TanaIntermediateFile V0.1",
     }
   `);
 });
 
-test('homeNodeIds matches top-level node UIDs', () => {
+test('homeIds matches top-level node UIDs', () => {
   const [file] = importWorkflowyFile('smoketest.opml');
 
-  expect(file.homeNodeIds).toHaveLength(5);
-  expect(file.nodes.map((n) => n.uid)).toEqual(file.homeNodeIds);
+  expect(file.homeIds).toHaveLength(5);
+  expect(file.roots.map((n) => n.uid)).toEqual(file.homeIds);
 });

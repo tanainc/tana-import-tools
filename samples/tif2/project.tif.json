@@ -1,10 +1,10 @@
 {
-  "version": "TanaIntermediateFile V2",
+  "version": "TanaIntermediateFile V2.1",
   "contents": {
     "schema": {
       "children": [
         {
-          "type": "attributeDef",
+          "type": "fieldDefinition",
           "uid": "status",
           "name": "Status",
           "dataType": "options",
@@ -15,10 +15,10 @@
           }
         },
         {
-          "type": "template",
+          "type": "supertag",
           "uid": "project",
           "name": "project",
-          "children": [{ "type": "tuple", "attributeDef": { "uid": "status" }, "values": [] }]
+          "children": [{ "type": "field", "field": { "uid": "status" }, "values": [] }]
         }
       ]
     },
@@ -30,8 +30,8 @@
           "tags": [{ "uid": "project" }],
           "children": [
             {
-              "type": "tuple",
-              "attributeDef": { "uid": "status" },
+              "type": "field",
+              "field": { "uid": "status" },
               "values": [{ "isRef": true, "uid": "planned" }]
             },
             { "uid": "notes", "name": "Notes" },

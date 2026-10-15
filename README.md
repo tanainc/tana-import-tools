@@ -4,7 +4,7 @@
 
 # 👨‍💻 How to use
 
-This project consists of a [JSON specification](https://github.com/tanainc/tana-import-tools/blob/main/src/types/types.ts) of our common import format for Tana, as well as a set of converters which turn other formats into this format.
+This repository contains the [Tana Intermediate Format 2.1 reference](docs/tif2.md), [TypeScript definitions](src/types/types.ts), and converters for importing data into Tana Outliner.
 
 If you need to do some something special with your data before putting it into Tana you can just fork this project and hack the current converters into doing what you need. As long as the resulting file follows the format you will be able to import it into Tana.
 
@@ -21,18 +21,18 @@ If you are making changes that you think will benefit other users, please create
 7. In Tana, go to the top right menu and `import`
 8. Hopefully everything worked! If not, report back to [#tana-import-tools](https://tanacommunity.slack.com/archives/C044X2ZC335)
 
-# 📤 Supported Formats 
+# 📤 Supported Formats
 
 ### Roam Research
 
- - 🟢 graph
- - 🟢 journal pages
- - 🟢 references
- - 🟢 headings
- - 🟢 todos
- - 🟢 images
- - 🟢 dates
- - 🟡 code blocks (no language support)
+- 🟢 graph
+- 🟢 journal pages as dated outlines
+- 🟢 references
+- 🟢 headings
+- 🟢 todos
+- 🟢 images
+- 🟢 dates
+- 🟡 code blocks (no language support)
 
 1. Click the 3 dots in the upper-right
 
@@ -46,21 +46,21 @@ If you are making changes that you think will benefit other users, please create
 
 ### LogSeq
 
- - 🟢 graph
- - 🟢 journal pages
- - 🟢 references
- - 🟢 headings
- - 🟢 dates
- - 🟡 todos (TODO/LATER/DONE supported, NOW/DOING are made into TODO prefixed with NOW or DOING, and CANCELED is made into DONE prefixed with CANCELED)
- - 🟡 logbook (imported as text)
- - 🟡 images (only remote images without redirect are working. Local images/assets still not working)
- - 🟡 code blocks (no language support)
- - 🔴 simple queries
- - 🔴 advanced queries
- - 🔴 reference to supertag
- - 🔴 favorites (not exported)
- - 🔴 whiteboards
- - 🔴 flashcards
+- 🟢 graph
+- 🟢 journal pages as dated outlines
+- 🟢 references
+- 🟢 headings
+- 🟢 dates
+- 🟡 todos (TODO/LATER/DONE supported, NOW/DOING are made into TODO prefixed with NOW or DOING, and CANCELED is made into DONE prefixed with CANCELED)
+- 🟡 logbook (imported as text)
+- 🟡 images (only remote images without redirect are working. Local images/assets still not working)
+- 🟡 code blocks (no language support)
+- 🔴 simple queries
+- 🔴 advanced queries
+- 🔴 reference to supertag
+- 🔴 favorites (not exported)
+- 🔴 whiteboards
+- 🔴 flashcards
 
 1. Click the three dots in the upper right
 
@@ -72,27 +72,27 @@ If you are making changes that you think will benefit other users, please create
 
 ### Markdown
 
- - 🟢 graph
- - 🟢 tables - first column header will always be "Title" in Tana
- - 🟢 headings
- - 🟢 todos 
- - 🟢 frontmatter 
- - 🟢 code blocks 
- - 🟢 dates
- - 🟢 images 
+- 🟢 graph
+- 🟢 tables - first column header will always be "Title" in Tana
+- 🟢 headings
+- 🟢 todos
+- 🟢 frontmatter
+- 🟢 code blocks
+- 🟢 dates
+- 🟢 images
 
 ### Workflowy
 
- - 🟢 graph
- - 🟢 todos (workflowy incomplete todos are imported as text)
- - 🔴 headings (not distinguished in OPML)
- - 🔴 code blocks (exported as plaintext)
- - 🔴 images (not exported)
- - 🔴 boards (exported as plaintext)
- - 🔴 comments (not exported)
- - 🔴 node notes (exported in OPML)
- - 🔴 favorites (not exported)
- - 🔴 date references (exported in OPML)
+- 🟢 graph
+- 🟢 todos (workflowy incomplete todos are imported as text)
+- 🔴 headings (not distinguished in OPML)
+- 🔴 code blocks (exported as plaintext)
+- 🔴 images (not exported)
+- 🔴 boards (exported as plaintext)
+- 🔴 comments (not exported)
+- 🔴 node notes (exported in OPML)
+- 🔴 favorites (not exported)
+- 🔴 date references (exported in OPML)
 
 1. Click the three dots in the upper right
 
@@ -104,23 +104,23 @@ If you are making changes that you think will benefit other users, please create
 
 ### Evernote
 
- - 🟢 graph (links, inline links)
- - 🟢 journal pages (daily notes)
- - 🟢 todos
- - 🟢 headings
- - 🟢 tables - first column header will always be "Title" in Tana
- - 🟢 code blocks
- - 🟢 tags (converted to supertags)
- - 🟢 highlighted text
- - 🟢 author field
- - 🟡 events - dates are not handled
- - 🟡 flags (marking as important) - converted to fields
- - 🟡 reminders - converted to fields
- - 🔴 images
- - 🔴 comments on nodes
- - 🔴 person assignments
- - 🔴 divider (horizontal line)
- - 🔴 recurring dates
+- 🟢 graph (links, inline links)
+- 🟢 journal pages as dated outlines
+- 🟢 todos
+- 🟢 headings
+- 🟢 tables - first column header will always be "Title" in Tana
+- 🟢 code blocks
+- 🟢 tags (converted to supertags)
+- 🟢 highlighted text
+- 🟢 author field
+- 🟡 events - dates are not handled
+- 🟡 flags (marking as important) - converted to fields
+- 🟡 reminders - converted to fields
+- 🔴 images
+- 🔴 comments on nodes
+- 🔴 person assignments
+- 🔴 divider (horizontal line)
+- 🔴 recurring dates
 
 1. You must be on the Desktop app for export functionality
 
@@ -142,16 +142,16 @@ Imports are placed in a new workspace to prevent potential conflicts.
 
 3. Click "Tana Intermediate Format" and navigate to the generated file.
 
-# Tana Intermediate Format 2
+# Tana Intermediate Format 2.1
 
 TIF2 is JSON for importing structured content into a new Tana Outliner workspace. You can generate it yourself or export it from Tana Outliner. It supports outlines, references, supertags, and fields. Imports create copies of defined nodes and can link to existing nodes outside the file.
 
 - [TIF2 format reference](docs/tif2.md)
-- [TypeScript definitions](src/types/tif2.ts), exported as `TanaIntermediateFileV2` and related types
+- [TypeScript definitions](src/types/types.ts), exported as `TanaIntermediateFile` and related types
 - [Complete example](samples/tif2/project.tif.json), ready to import with no existing node IDs
 - [Tana Outliner guide](https://outliner.tana.inc/learn/features/tana-intermediate-format)
 
-The converters still write V0.1. Its existing types and import path stay supported; changing only the version string does not convert a file to V2.
+The converters write `TanaIntermediateFile V2.1`. See the reference for node ownership, reusable field definitions, and import limits.
 
 # ✍️ Contributing
 

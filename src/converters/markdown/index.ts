@@ -1,10 +1,6 @@
-import {
-  NodeType,
-  TanaIntermediateAttribute,
-  TanaIntermediateFile,
-  TanaIntermediateNode,
-  TanaIntermediateSummary,
-} from '../../types/types.js';
+import type { TanaIntermediateFile } from '../../types/types.js';
+import { createTifFile } from '../createTifFile.js';
+import { SourceNodeType, SourceField, SourceGraph, SourceNode, ConversionSummary } from '../sourceGraph.js';
 import {
   findGroups,
   getBracketLinks,
@@ -31,40 +27,43 @@ type ParsedFile = { filePath: string; content: string; depth: number };
 export type FileSystem = {
   existsSync: typeof fs.existsSync;
   statSync: (path: string) => fs.Stats;
-  readdirSync: (path: string, options: { withFileTypes: true } ) => fs.Dirent[];
-  readFileSync: (path: string, options:
-    | {
-    encoding: BufferEncoding;
-    flag?: string | undefined;
-  }
-    | BufferEncoding) => string;
+  readdirSync: (path: string, options: { withFileTypes: true }) => fs.Dirent[];
+  readFileSync: (
+    path: string,
+    options:
+      | {
+          encoding: BufferEncoding;
+          flag?: string | undefined;
+        }
+      | BufferEncoding,
+  ) => string;
 };
 
 export type PathIsh = {
   dirname: (path: string) => string;
   basename: (path: string) => string;
-  resolve: (...paths:string[]) => string;
+  resolve: (...paths: string[]) => string;
   join: (path: string, name: string) => string;
 };
 
 export class MarkdownConverter implements IConverter {
-  private nodesForImport: Map<string, TanaIntermediateNode> = new Map();
+  private nodesForImport: Map<string, SourceNode> = new Map();
   private originalNodeNames: Map<string, string> = new Map();
-  private attrMap: Map<string, TanaIntermediateAttribute> = new Map();
-  private topLevelMap: Map<string, TanaIntermediateNode> = new Map();
+  private attrMap: Map<string, SourceField> = new Map();
+  private topLevelMap: Map<string, SourceNode> = new Map();
   private mdPathToPageUid: Map<string, string> = new Map();
   private normalizedPathToUid: Map<string, string> = new Map();
   private dirToBasenameToUid: Map<string, Map<string, string>> = new Map();
   private pageUidToBaseDir: Map<string, string> = new Map();
   private pageUidToMarkdownLinkNodeUids: Map<string, Set<string>> = new Map();
-  private csvTablesByParentAndPath: Map<string, TanaIntermediateNode> = new Map();
+  private csvTablesByParentAndPath: Map<string, SourceNode> = new Map();
   private pendingCsvCellResolutions: {
     nodeUid: string;
     rawValue: string;
     sourceDir: string;
   }[] = [];
 
-  private summary: TanaIntermediateSummary = {
+  private summary: ConversionSummary = {
     leafNodes: 0,
     topLevelNodes: 0,
     totalNodes: 0,
@@ -77,7 +76,7 @@ export class MarkdownConverter implements IConverter {
   private path: PathIsh;
   private fileToUrlMap?: Map<string, string>;
 
-  constructor (fileSystem: FileSystem, pathIsh: PathIsh, fileToUrlMap?: Map<string, string>) {
+  constructor(fileSystem: FileSystem, pathIsh: PathIsh, fileToUrlMap?: Map<string, string>) {
     this.fileSystem = fileSystem;
     this.path = pathIsh;
     this.fileToUrlMap = fileToUrlMap;
@@ -85,28 +84,37 @@ export class MarkdownConverter implements IConverter {
 
   // IConverter — treat input as a single markdown file content
   convert(fileContent: string): TanaIntermediateFile | undefined {
+    const graph = this.parse(fileContent);
+    return graph && createTifFile(graph);
+  }
+
+  parse(fileContent: string): SourceGraph | undefined {
     this.pageUidToMarkdownLinkNodeUids.clear();
     const pageNode = this.convertSingleFile({ filePath: 'document.md', content: fileContent, depth: 0 });
     if (!pageNode) {
       return undefined;
     }
 
-    const rootLevelNodes: TanaIntermediateNode[] = [pageNode];
+    const rootLevelNodes: SourceNode[] = [pageNode];
     this.resolvePendingCsvCellReferences();
     this.postProcessAllNodes(rootLevelNodes);
     const home = Array.from(new Set(rootLevelNodes.map((node) => node.uid)));
 
     return {
-      version: 'TanaIntermediateFile V0.1',
       summary: this.summary,
-      nodes: rootLevelNodes,
-      homeNodeIds: home,
-      attributes: [...this.attrMap.values()],
+      roots: rootLevelNodes,
+      homeIds: home,
+      fields: [...this.attrMap.values()],
     };
   }
 
   // Directory mode — build a single TIF from all .md files under dir
   convertDirectory(dirPath: string): TanaIntermediateFile | undefined {
+    const graph = this.parseDirectory(dirPath);
+    return graph && createTifFile(graph);
+  }
+
+  parseDirectory(dirPath: string): SourceGraph | undefined {
     this.pageUidToMarkdownLinkNodeUids.clear();
     if (!this.fileSystem.existsSync(dirPath) || !this.fileSystem.statSync(dirPath).isDirectory()) {
       return undefined;
@@ -125,8 +133,8 @@ export class MarkdownConverter implements IConverter {
     };
     walk(dirPath, 0);
 
-    const rootLevelNodes: TanaIntermediateNode[] = [];
-    const pageNodesByDepth: Map<number, TanaIntermediateNode[]> = new Map();
+    const rootLevelNodes: SourceNode[] = [];
+    const pageNodesByDepth: Map<number, SourceNode[]> = new Map();
     for (const f of files) {
       const page = this.convertSingleFile(f);
       if (page) {
@@ -155,15 +163,14 @@ export class MarkdownConverter implements IConverter {
     const homeSourceNodes = depthEntries.length > 0 ? depthEntries[0][1] : rootLevelNodes;
     const home = Array.from(new Set(homeSourceNodes.map((node) => node.uid)));
     return {
-      version: 'TanaIntermediateFile V0.1',
       summary: this.summary,
-      nodes: rootLevelNodes,
-      homeNodeIds: home,
-      attributes: [...this.attrMap.values()],
+      roots: rootLevelNodes,
+      homeIds: home,
+      fields: [...this.attrMap.values()],
     };
   }
 
-  private postProcessAllNodes(rootLevelNodes: TanaIntermediateNode[]) {
+  private postProcessAllNodes(rootLevelNodes: SourceNode[]) {
     const rootLevelNameToUid = new Map<string, string>();
     const rootLevelUids = new Set(rootLevelNodes.map((n) => n.uid));
     for (const rootNode of rootLevelNodes) {
@@ -234,7 +241,7 @@ export class MarkdownConverter implements IConverter {
             const onlySeparatorsLeft = remaining.replace(/[\s,]+/g, '') === '';
             if (onlySeparatorsLeft) {
               // Replace single value with one per ref
-              const newChildren: TanaIntermediateNode[] = links.map((l) =>
+              const newChildren: SourceNode[] = links.map((l) =>
                 this.createNodeForImport({
                   uid: idgenerator(),
                   name: `[[${l}]]`,
@@ -262,39 +269,42 @@ export class MarkdownConverter implements IConverter {
     nodeSet.add(nodeUid);
   }
 
-  private convertRelativeLinksRecursively(node: TanaIntermediateNode, baseDir: string, depth = 0) {
+  private convertRelativeLinksRecursively(node: SourceNode, baseDir: string, depth = 0) {
     if (node.type !== 'codeblock' && typeof node.name === 'string') {
       // 1) Convert standard markdown links [alias](relative)
       if (node.name.includes('](')) {
-        node.name = node.name.replace(/\[([^\]]*)\]\(((?:[^()]+|\([^()]*\))*)\)/g, (_full, alias: string, link: string) => {
-          // external links left as-is; handled by markdownToHTML later
-          if (/^[a-z]+:\/\//i.test(link) || link.startsWith('mailto:')) {
-            return _full;
-          }
-          const decoded = this.safeDecode(link);
-          const abs = this.path.resolve(baseDir, decoded);
-          if (abs.toLowerCase().endsWith('.md')) {
-            const uid = this.mdPathToPageUid.get(abs);
-            if (uid) {
-              if (!node.refs) {
-                node.refs = [];
-              }
-              if (!node.refs.includes(uid)) {
-                node.refs.push(uid);
-              }
-              if (node.uid) {
-                this.recordMarkdownLinkOccurrence(uid, node.uid);
-              }
-              return `[${alias}]([[${uid}]])`;
+        node.name = node.name.replace(
+          /\[([^\]]*)\]\(((?:[^()]+|\([^()]*\))*)\)/g,
+          (_full, alias: string, link: string) => {
+            // external links left as-is; handled by markdownToHTML later
+            if (/^[a-z]+:\/\//i.test(link) || link.startsWith('mailto:')) {
+              return _full;
             }
-            // If not found, fall back to filename as link text
-            return `[${alias}](${this.asFileUrl(abs)})`;
-          }
-          const mappedUrl = this.fileToUrlMap?.get(abs);
-          // other files => make file:// link if not pre-mapped
-          const url = mappedUrl || this.asFileUrl(abs);
-          return `<a href="${url}">${alias}</a>`;
-        });
+            const decoded = this.safeDecode(link);
+            const abs = this.path.resolve(baseDir, decoded);
+            if (abs.toLowerCase().endsWith('.md')) {
+              const uid = this.mdPathToPageUid.get(abs);
+              if (uid) {
+                if (!node.refs) {
+                  node.refs = [];
+                }
+                if (!node.refs.includes(uid)) {
+                  node.refs.push(uid);
+                }
+                if (node.uid) {
+                  this.recordMarkdownLinkOccurrence(uid, node.uid);
+                }
+                return `[${alias}]([[${uid}]])`;
+              }
+              // If not found, fall back to filename as link text
+              return `[${alias}](${this.asFileUrl(abs)})`;
+            }
+            const mappedUrl = this.fileToUrlMap?.get(abs);
+            // other files => make file:// link if not pre-mapped
+            const url = mappedUrl || this.asFileUrl(abs);
+            return `<a href="${url}">${alias}</a>`;
+          },
+        );
       }
 
       // 2) Convert Notion-style inline references: "Text (relative/path.md)"
@@ -348,17 +358,14 @@ export class MarkdownConverter implements IConverter {
     }
   }
 
-  private inlineSinglyLinkedMarkdownPages(
-    rootLevelNodes: TanaIntermediateNode[],
-    pageNodesByDepth: Map<number, TanaIntermediateNode[]>,
-  ) {
+  private inlineSinglyLinkedMarkdownPages(rootLevelNodes: SourceNode[], pageNodesByDepth: Map<number, SourceNode[]>) {
     if (!this.pageUidToMarkdownLinkNodeUids.size || !rootLevelNodes.length) {
       return;
     }
 
     type RefLocation = {
-      parent?: TanaIntermediateNode;
-      node: TanaIntermediateNode;
+      parent?: SourceNode;
+      node: SourceNode;
       index?: number;
     };
 
@@ -368,10 +375,7 @@ export class MarkdownConverter implements IConverter {
     }
 
     const refLocations = new Map<string, RefLocation[]>();
-    const collectRefLocations = (
-      current: TanaIntermediateNode,
-      parent: TanaIntermediateNode | undefined,
-    ) => {
+    const collectRefLocations = (current: SourceNode, parent: SourceNode | undefined) => {
       if (Array.isArray(current.refs)) {
         for (const ref of current.refs) {
           if (!pageUids.has(ref) || ref === current.uid) {
@@ -476,11 +480,11 @@ export class MarkdownConverter implements IConverter {
   }
 
   private ensureCsvTableForLink(
-    parent: TanaIntermediateNode,
+    parent: SourceNode,
     fileDir: string,
     link: string,
     alias?: string,
-  ): TanaIntermediateNode | undefined {
+  ): SourceNode | undefined {
     try {
       const decoded = this.safeDecode(link);
       let abs = this.path.resolve(fileDir, decoded);
@@ -592,7 +596,7 @@ export class MarkdownConverter implements IConverter {
     }
   }
 
-  private convertSingleFile(file: ParsedFile): TanaIntermediateNode | undefined {
+  private convertSingleFile(file: ParsedFile): SourceNode | undefined {
     const baseName = this.path.basename(file.filePath);
     const pageNode = this.createNodeForImport({
       uid: idgenerator(),
@@ -611,9 +615,9 @@ export class MarkdownConverter implements IConverter {
     const firstLineIsTopLevelHeading = /^#\s+.+$/.test(lines[0] || '');
     let i = 0;
     // heading stack for proper nesting
-    const headingStack: { level: number; node: TanaIntermediateNode }[] = [];
+    const headingStack: { level: number; node: SourceNode }[] = [];
     // list stack tracks indentation based on leading spaces count
-    let listStack: { indent: number; node: TanaIntermediateNode }[] = [];
+    let listStack: { indent: number; node: SourceNode }[] = [];
 
     const fileDir = this.path.dirname(file.filePath);
 
@@ -666,7 +670,7 @@ export class MarkdownConverter implements IConverter {
           pageNode.children = [];
         }
         pageNode.children.push(fieldNode);
-        const children: TanaIntermediateNode[] = [];
+        const children: SourceNode[] = [];
         if (Array.isArray(val)) {
           for (const v of val) {
             children.push(
@@ -817,7 +821,7 @@ export class MarkdownConverter implements IConverter {
             type: 'node',
           });
           hnode.flags = ['section'];
-          let parent: TanaIntermediateNode = pageNode;
+          let parent: SourceNode = pageNode;
           if (headingStack.length) {
             for (let idx = headingStack.length - 1; idx >= 0; idx--) {
               if (headingStack[idx].level < level) {
@@ -865,7 +869,8 @@ export class MarkdownConverter implements IConverter {
           // parse header cells
           const splitCells = (ln: string) => {
             const raw = ln.trim();
-            const inner = raw.startsWith('|') && raw.endsWith('|') ? raw.slice(1, -1) : raw.replace(/^\|/, '').replace(/\|$/, '');
+            const inner =
+              raw.startsWith('|') && raw.endsWith('|') ? raw.slice(1, -1) : raw.replace(/^\|/, '').replace(/\|$/, '');
             return inner.split('|').map((c) => c.trim());
           };
           const headers = splitCells(headerLine);
@@ -890,7 +895,7 @@ export class MarkdownConverter implements IConverter {
           }
 
           // Build table node structure: create a wrapper node named after the current parent (previous node)
-                              const parent = getCurrentParent();
+          const parent = getCurrentParent();
           if (!parent.children) {
             parent.children = [];
           }
@@ -970,8 +975,8 @@ export class MarkdownConverter implements IConverter {
           todoState = 'todo';
         }
 
-        const createdChildren: TanaIntermediateNode[] = [];
-        let nodeType: NodeType = 'node';
+        const createdChildren: SourceNode[] = [];
+        let nodeType: SourceNodeType = 'node';
         let mediaUrl: string | undefined;
 
         // images: match all ![alt](...)
@@ -1057,17 +1062,15 @@ export class MarkdownConverter implements IConverter {
       let paragraph = line;
       // inline code as text preserved; code detection using getCodeIfCodeblock if wrapped fully
       const code = getCodeIfCodeblock(paragraph);
-      let type: NodeType = 'node';
+      let type: SourceNodeType = 'node';
       if (code) {
         paragraph = code;
         type = 'codeblock';
       }
 
-      const csvWrappersForParagraph: TanaIntermediateNode[] = [];
+      const csvWrappersForParagraph: SourceNode[] = [];
       if (type !== 'codeblock') {
-        const standaloneCsvMatch = paragraph
-          .trim()
-          .match(/^\[([^\]]*)\]\(((?:[^()]|\([^()]*\))*)\)$/i);
+        const standaloneCsvMatch = paragraph.trim().match(/^\[([^\]]*)\]\(((?:[^()]|\([^()]*\))*)\)$/i);
         if (standaloneCsvMatch && /\.csv(?:[?#]|$)/i.test(standaloneCsvMatch[2].trim())) {
           const alias = standaloneCsvMatch[1];
           const link = standaloneCsvMatch[2];
@@ -1103,7 +1106,7 @@ export class MarkdownConverter implements IConverter {
       while ((rm = imageRegex.exec(paragraph)) !== null) {
         imgs.push({ full: rm[0], url: rm[1] });
       }
-      const childNodes: TanaIntermediateNode[] = [];
+      const childNodes: SourceNode[] = [];
       if (type !== 'codeblock' && imgs.length) {
         // If the entire paragraph is exactly one image, convert paragraph into an image node directly
         if (imgs.length === 1 && paragraph.trim() === imgs[0].full) {
@@ -1167,7 +1170,7 @@ export class MarkdownConverter implements IConverter {
       this.summary.leafNodes += 1;
 
       if (csvWrappersForParagraph.length) {
-        const uniqueWrappers: TanaIntermediateNode[] = [];
+        const uniqueWrappers: SourceNode[] = [];
         for (const w of csvWrappersForParagraph) {
           if (!uniqueWrappers.some((existing) => existing.uid === w.uid)) {
             uniqueWrappers.push(w);
@@ -1361,12 +1364,8 @@ export class MarkdownConverter implements IConverter {
   }
 
   private normalizePathForComparison(pathLike: string): string {
-    const withoutQuery = this.stripQueryAndFragment(pathLike)
-      .replace(/\\/g, '/')
-      .replace(/\/+/g, '/');
-    const stripDotSegments = withoutQuery
-      .replace(/^(?:\.\/)+/, '')
-      .replace(/^(?:\.\.\/)+/, '');
+    const withoutQuery = this.stripQueryAndFragment(pathLike).replace(/\\/g, '/').replace(/\/+/g, '/');
+    const stripDotSegments = withoutQuery.replace(/^(?:\.\/)+/, '').replace(/^(?:\.\.\/)+/, '');
     return stripDotSegments.toLowerCase();
   }
 
@@ -1471,7 +1470,8 @@ export class MarkdownConverter implements IConverter {
 
     // Only use Date.parse for text that looks like it could be a date
     // (contains month name but not URL-like patterns)
-    const monthPattern = /(january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)/i;
+    const monthPattern =
+      /(january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)/i;
     if (!monthPattern.test(t)) {
       return false;
     }
@@ -1491,11 +1491,11 @@ export class MarkdownConverter implements IConverter {
     name: string;
     createdAt: number;
     editedAt: number;
-    type?: NodeType;
+    type?: SourceNodeType;
     url?: string;
     refs?: string[];
-  }): TanaIntermediateNode {
-    const nodeForImport: TanaIntermediateNode = {
+  }): SourceNode {
+    const nodeForImport: SourceNode = {
       uid: n.uid,
       name: n.name,
       createdAt: n.createdAt,
@@ -1535,7 +1535,7 @@ export class MarkdownConverter implements IConverter {
     return nodeForImport;
   }
 
-  private convertFieldLine(nodeWithField: TanaIntermediateNode, parentNode: TanaIntermediateNode) {
+  private convertFieldLine(nodeWithField: SourceNode, parentNode: SourceNode) {
     const full = nodeWithField.name;
     // Split into multiple possible fields on separate lines in same bullet
     const fieldDefs: string[] = [];
@@ -1549,7 +1549,7 @@ export class MarkdownConverter implements IConverter {
       return;
     }
 
-    let currentFieldNode: TanaIntermediateNode | undefined = nodeWithField;
+    let currentFieldNode: SourceNode | undefined = nodeWithField;
     for (const field of fieldDefs) {
       const value = this.getValueForAttribute(field, full) || '';
       if (!currentFieldNode) {
@@ -1572,7 +1572,7 @@ export class MarkdownConverter implements IConverter {
       for (const l of links) {
         remaining = remaining.replace(`[[${l}]]`, '').trim();
       }
-      const values: TanaIntermediateNode[] = [];
+      const values: SourceNode[] = [];
       // If value consists solely of bracket refs (possibly separated by commas/spaces),
       // create one value node per link
       const onlySeparatorsLeft = remaining.replace(/[\s,]+/g, '') === '';
@@ -1629,11 +1629,11 @@ export class MarkdownConverter implements IConverter {
     }
   }
 
-  private ensureAttrMapIsUpdated(node: TanaIntermediateNode): void {
+  private ensureAttrMapIsUpdated(node: SourceNode): void {
     if (!node.name || node.type !== 'field') {
       return;
     }
-    let intermediateAttr: TanaIntermediateAttribute | undefined = this.attrMap.get(node.name);
+    let intermediateAttr: SourceField | undefined = this.attrMap.get(node.name);
     if (!intermediateAttr) {
       intermediateAttr = { name: node.name, values: [], count: 0 };
     }
@@ -1647,7 +1647,7 @@ export class MarkdownConverter implements IConverter {
     this.attrMap.set(node.name, intermediateAttr);
   }
 
-  private normalizeLinksAndSetAliases(nodeForImport: TanaIntermediateNode) {
+  private normalizeLinksAndSetAliases(nodeForImport: SourceNode) {
     // block refs
     findGroups(nodeForImport.name, '(((', ')))').forEach((g: { content: string }) => {
       if (!nodeForImport.refs || !nodeForImport.refs.includes(g.content)) {
@@ -1680,7 +1680,7 @@ export class MarkdownConverter implements IConverter {
         }
         return n;
       })
-      .filter((r) => !!r) as TanaIntermediateNode[];
+      .filter((r) => !!r) as SourceNode[];
 
     refsToParse.sort((a, b) => {
       const aLinkCount = (a.name.match(/\[/g) || []).length;
@@ -1721,8 +1721,8 @@ export class MarkdownConverter implements IConverter {
     }
   }
 
-  private fixBrokenLinks(nodeForImport: TanaIntermediateNode): TanaIntermediateNode[] {
-    const createdNodes: TanaIntermediateNode[] = [];
+  private fixBrokenLinks(nodeForImport: SourceNode): SourceNode[] {
+    const createdNodes: SourceNode[] = [];
     const outerLinks = getBracketLinks(nodeForImport.name, true);
     const allLinks = getBracketLinks(nodeForImport.name, false);
     const linksInsideOtherLinks = outerLinks.length ? allLinks.filter((l) => !outerLinks.includes(l)) : [];
@@ -1827,7 +1827,7 @@ export class MarkdownConverter implements IConverter {
     return createdNodes;
   }
 
-  private findRefByName(refName: string, node: TanaIntermediateNode): TanaIntermediateNode | undefined {
+  private findRefByName(refName: string, node: SourceNode): SourceNode | undefined {
     if (!node.refs) {
       return;
     }

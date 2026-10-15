@@ -1,14 +1,21 @@
 {
-  "version": "TanaIntermediateFile V0.1",
-  "nodes": [
-    {
-      "uid": "todo",
-      "name": "A simple note",
-      "description": "This is the description",
-      "editedAt": 1654375472356,
-      "type": "node"
+  "version": "TanaIntermediateFile V2.1",
+  "contents": {
+    "workspace": {
+      "children": [
+        {
+          "id": "4ioqqj3afmmacrczyemax",
+          "description": "This is the description",
+          "type": "node",
+          "nameParts": [
+            {
+              "type": "text",
+              "text": "A simple note",
+              "formats": []
+            }
+          ]
+        }
+      ]
     }
-  ],
-  "attributes": []
+  }
 }
-

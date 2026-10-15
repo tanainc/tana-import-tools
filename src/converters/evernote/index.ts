@@ -1,3 +1,5 @@
+import type { TanaIntermediateFile } from '../../types/types.js';
+import { createTifFile } from '../createTifFile.js';
 /**
  * - Each <note> is converted to a Tana node.
  * - The <content> of the <note> has items that are converted to Tana nodes.
@@ -18,14 +20,7 @@ import { parse as parseHtml, HTMLElement, Node as HtmlNode, TextNode } from 'nod
 import { parse as parseDate, isValid as isValidDate } from 'date-fns';
 import md5 from 'md5';
 
-import {
-  NodeType,
-  TanaIntermediateAttribute,
-  TanaIntermediateFile,
-  TanaIntermediateNode,
-  TanaIntermediateSummary,
-  ViewType,
-} from '../../types/types.js';
+import { SourceNodeType, SourceField, SourceGraph, SourceNode, ConversionSummary, SourceView } from '../sourceGraph.js';
 import { idgenerator } from '../../utils/utils.js';
 import { convertDateToTanaDateStr } from '../common.js';
 import { IConverter } from '../IConverter.js';
@@ -72,7 +67,7 @@ type InlineSerialization = {
 
 type StackEntry = {
   indent: number;
-  node: TanaIntermediateNode;
+  node: SourceNode;
 };
 
 const XML_OPTIONS = {
@@ -105,7 +100,7 @@ function base64ToBytes(str: string): Uint8Array {
 export class EvernoteConverter implements IConverter {
   private parser = new XMLParser(XML_OPTIONS);
 
-  private summary: TanaIntermediateSummary = {
+  private summary: ConversionSummary = {
     leafNodes: 0,
     topLevelNodes: 0,
     totalNodes: 0,
@@ -116,9 +111,14 @@ export class EvernoteConverter implements IConverter {
 
   private guidToUid: Map<string, string> = new Map();
   private titleToUid: Map<string, string> = new Map();
-  private attrMap: Map<string, TanaIntermediateAttribute> = new Map();
+  private attrMap: Map<string, SourceField> = new Map();
 
   convert(fileContent: string): TanaIntermediateFile | undefined {
+    const graph = this.parse(fileContent);
+    return graph && createTifFile(graph);
+  }
+
+  parse(fileContent: string): SourceGraph | undefined {
     const parsed = this.parser.parse(fileContent);
     if (!parsed || !parsed['en-export']) {
       return undefined;
@@ -151,7 +151,7 @@ export class EvernoteConverter implements IConverter {
       }
     }
 
-    const rootNodes: TanaIntermediateNode[] = [];
+    const rootNodes: SourceNode[] = [];
     for (const note of notes) {
       const node = this.convertNote(note);
       rootNodes.push(node);
@@ -162,11 +162,10 @@ export class EvernoteConverter implements IConverter {
     const attributes = Array.from(this.attrMap.values());
 
     return {
-      version: 'TanaIntermediateFile V0.1',
       summary: this.summary,
-      nodes: rootNodes,
-      homeNodeIds: home,
-      attributes: attributes.length ? attributes : undefined,
+      roots: rootNodes,
+      homeIds: home,
+      fields: attributes.length ? attributes : undefined,
     };
   }
 
@@ -199,8 +198,8 @@ export class EvernoteConverter implements IConverter {
     };
   }
 
-  private convertNote(note: EvernoteNote): TanaIntermediateNode {
-    const node: TanaIntermediateNode = {
+  private convertNote(note: EvernoteNote): SourceNode {
+    const node: SourceNode = {
       uid: note.uid,
       name: note.title,
       createdAt: note.createdAt,
@@ -232,12 +231,12 @@ export class EvernoteConverter implements IConverter {
       }
     }
 
-    const taskGroupTargets: Map<string, TanaIntermediateNode> = new Map();
-    const noteLevelTargets: Map<string, TanaIntermediateNode> = new Map();
+    const taskGroupTargets: Map<string, SourceNode> = new Map();
+    const noteLevelTargets: Map<string, SourceNode> = new Map();
     this.convertContent(note, node, taskGroupTargets, noteLevelTargets);
 
     if (note.tasks.length) {
-      const ungroupedTaskNodes: TanaIntermediateNode[] = [];
+      const ungroupedTaskNodes: SourceNode[] = [];
       for (const task of note.tasks) {
         const taskNode = this.createNode(task.title, 'node', note.createdAt, note.updatedAt);
         taskNode.todoState = task.status === 'completed' || task.status === 'done' ? 'done' : 'todo';
@@ -275,9 +274,9 @@ export class EvernoteConverter implements IConverter {
 
   private convertContent(
     note: EvernoteNote,
-    parent: TanaIntermediateNode,
-    taskGroupTargets: Map<string, TanaIntermediateNode>,
-    noteLevelTargets: Map<string, TanaIntermediateNode>,
+    parent: SourceNode,
+    taskGroupTargets: Map<string, SourceNode>,
+    noteLevelTargets: Map<string, SourceNode>,
   ) {
     const document = parseHtml(note.content, {
       comment: false,
@@ -288,9 +287,9 @@ export class EvernoteConverter implements IConverter {
     }
 
     const stack: StackEntry[] = [{ indent: -1, node: parent }];
-    let lastSectionNode: TanaIntermediateNode | undefined = undefined;
+    let lastSectionNode: SourceNode | undefined = undefined;
 
-    const registerNoteLevelId = (element: HTMLElement, target: TanaIntermediateNode) => {
+    const registerNoteLevelId = (element: HTMLElement, target: SourceNode) => {
       const style = element.getAttribute('style') ?? '';
       const nodeLevelId = this.extractNodeLevelId(style);
       if (nodeLevelId) {
@@ -380,11 +379,7 @@ export class EvernoteConverter implements IConverter {
     enNote.childNodes.forEach(processChild);
   }
 
-  private convertBlockElement(
-    element: HTMLElement,
-    note: EvernoteNote,
-    parent: TanaIntermediateNode,
-  ): TanaIntermediateNode | undefined {
+  private convertBlockElement(element: HTMLElement, note: EvernoteNote, parent: SourceNode): SourceNode | undefined {
     const tag = element.tagName.toLowerCase();
     if (tag === 'table') {
       return this.convertTable(element, note, parent);
@@ -400,7 +395,7 @@ export class EvernoteConverter implements IConverter {
       return undefined;
     }
 
-    let nodeType: NodeType = 'node';
+    let nodeType: SourceNodeType = 'node';
     const style = element.getAttribute('style') ?? '';
     const codeBlockFlag = /--en-codeblock\s*:\s*true/i.test(style);
     if (codeBlockFlag) {
@@ -434,11 +429,7 @@ export class EvernoteConverter implements IConverter {
     return node;
   }
 
-  private convertTable(
-    element: HTMLElement,
-    note: EvernoteNote,
-    parent: TanaIntermediateNode,
-  ): TanaIntermediateNode | undefined {
+  private convertTable(element: HTMLElement, note: EvernoteNote, parent: SourceNode): SourceNode | undefined {
     const rows = element.querySelectorAll('tr');
     if (!rows.length) {
       return undefined;
@@ -460,7 +451,7 @@ export class EvernoteConverter implements IConverter {
         : 'Table';
 
     const tableNode = this.createNode(tableName, 'node', note.createdAt, note.updatedAt);
-    tableNode.viewType = 'table' as ViewType;
+    tableNode.viewType = 'table' as SourceView;
     tableNode.children = [];
 
     const dataStartIndex = 1;
@@ -494,7 +485,7 @@ export class EvernoteConverter implements IConverter {
     return cells.map((cell: HTMLElement) => this.serializeInline(cell, undefined).text.trim());
   }
 
-  private processList(listElement: HTMLElement, parent: TanaIntermediateNode, note: EvernoteNote, indentLevel: number) {
+  private processList(listElement: HTMLElement, parent: SourceNode, note: EvernoteNote, indentLevel: number) {
     const items = listElement.querySelectorAll(':scope > li');
     for (const li of items) {
       const nestedLists = li.querySelectorAll(':scope > ul, :scope > ol');
@@ -520,7 +511,7 @@ export class EvernoteConverter implements IConverter {
     }
   }
 
-  private convertImageElement(element: HTMLElement, note: EvernoteNote): TanaIntermediateNode | undefined {
+  private convertImageElement(element: HTMLElement, note: EvernoteNote): SourceNode | undefined {
     const hash = element.getAttribute('hash');
     if (!hash) {
       return undefined;
@@ -644,13 +635,7 @@ export class EvernoteConverter implements IConverter {
     }
   }
 
-  private addField(
-    parent: TanaIntermediateNode,
-    fieldName: string,
-    value: string,
-    createdAt: number,
-    editedAt: number,
-  ) {
+  private addField(parent: SourceNode, fieldName: string, value: string, createdAt: number, editedAt: number) {
     const fieldNode = this.createNode(fieldName, 'field', createdAt, editedAt);
     fieldNode.children = fieldNode.children ?? [];
 
@@ -683,7 +668,7 @@ export class EvernoteConverter implements IConverter {
     this.attrMap.set(fieldName, attribute);
   }
 
-  private createNode(name: string, type: NodeType, createdAt: number, editedAt: number): TanaIntermediateNode {
+  private createNode(name: string, type: SourceNodeType, createdAt: number, editedAt: number): SourceNode {
     return {
       uid: idgenerator(),
       name,
@@ -840,10 +825,10 @@ export class EvernoteConverter implements IConverter {
     return convertDateToTanaDateStr(new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
   }
 
-  private computeSummary(rootNodes: TanaIntermediateNode[]) {
+  private computeSummary(rootNodes: SourceNode[]) {
     let total = 0;
     let leaf = 0;
-    const walk = (node: TanaIntermediateNode) => {
+    const walk = (node: SourceNode) => {
       total += 1;
       if (!node.children || node.children.length === 0) {
         leaf += 1;

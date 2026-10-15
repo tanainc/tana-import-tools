@@ -1,4 +1,4 @@
-import { TanaIntermediateNode } from '../../types/types.js';
+import { SourceNode } from '../sourceGraph.js';
 import { LogseqBlock } from './types.js';
 
 /**
@@ -23,13 +23,13 @@ export function isDone(name: string) {
   return DONE_OR_CANCELED_REGEX.test(name);
 }
 
-export function setNodeAsTodo(node: TanaIntermediateNode) {
+export function setNodeAsTodo(node: SourceNode) {
   node.name = node.name.replace(TODO_REGEX, '');
   // if DOING/NOW treat it as a TODO item but leave the DOING or NOW in the name
   // so it remains clear to the user that it's an in progressk item
   node.todoState = 'todo';
 }
-export function setNodeAsDone(node: TanaIntermediateNode) {
+export function setNodeAsDone(node: SourceNode) {
   node.name = node.name.replace(DONE_REGEX, '');
   // if canceled, leave the name as is so it remains clear that it's a canceled
   // task to the user, but set todoState to done

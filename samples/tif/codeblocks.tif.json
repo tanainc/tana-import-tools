@@ -1,35 +1,76 @@
 {
-  "version": "TanaIntermediateFile V0.1",
-  "nodes": [
-    {
-      "uid": "1",
-      "name": "Jack Black",
-      "type": "node"
-    },
-    {
-      "uid": "2",
-      "name": "do not touch [[Jack Black]] inside this one",
-      "type": "codeblock"
-    },
-    {
-      "uid": "3",
-      "name": "before ```do not touch [[Jack Black]] inside this one``` after",
-      "type": "node"
-    },
-    {
-      "uid": "4",
-      "name": "before `do not touch [[Jack Black]] #Jack Black inside this one either` after",
-      "type": "node"
-    },
-    {
-      "uid": "withCodeLanguage",
-      "name": "console.log(\"hi tana\");",
-      "children": [],
-      "createdAt": 1588863716938,
-      "editedAt": 1647535641290,
-      "refs": [],
-      "type": "codeblock",
-      "codeLanguage": "javascript"
+  "version": "TanaIntermediateFile V2.1",
+  "contents": {
+    "workspace": {
+      "children": [
+        {
+          "id": "96j267byr697i3x3jbz4sk",
+          "type": "node",
+          "nameParts": [
+            {
+              "type": "text",
+              "text": "Jack Black",
+              "formats": []
+            }
+          ]
+        },
+        {
+          "id": "k0bj3w97ikip206ak5wxb",
+          "type": "codeBlock",
+          "content": "do not touch [[Jack Black]] inside this one",
+          "plainText": true
+        },
+        {
+          "id": "rjqa1f5dtxailii8mwbeng",
+          "type": "node",
+          "nameParts": [
+            {
+              "type": "text",
+              "text": "before ",
+              "formats": []
+            },
+            {
+              "type": "text",
+              "text": "do not touch [[Jack Black]] inside this one",
+              "formats": ["code"]
+            },
+            {
+              "type": "text",
+              "text": " after",
+              "formats": []
+            }
+          ]
+        },
+        {
+          "id": "e3p9cl8ozxpti6tgyokah",
+          "type": "node",
+          "nameParts": [
+            {
+              "type": "text",
+              "text": "before ",
+              "formats": []
+            },
+            {
+              "type": "text",
+              "text": "do not touch [[Jack Black]] #Jack Black inside this one either",
+              "formats": ["code"]
+            },
+            {
+              "type": "text",
+              "text": " after",
+              "formats": []
+            }
+          ]
+        },
+        {
+          "id": "hvz9ojjfn46ymwwx3ef61",
+          "type": "codeBlock",
+          "content": "console.log(\"hi tana\");",
+          "plainText": true,
+          "language": "javascript",
+          "children": []
+        }
+      ]
     }
-  ]
+  }
 }

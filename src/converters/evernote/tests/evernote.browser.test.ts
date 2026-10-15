@@ -12,11 +12,11 @@ describe.runIf(isBrowserEnvironment)('Evernote converter (browser)', () => {
     expect(result.summary.totalNodes).toBeGreaterThan(0);
     expect(result.summary.calendarNodes).toBe(2);
 
-    const imageNode = findNodeByName(result.nodes, 'unsplash-shrunk.jpg');
+    const imageNode = findNodeByName(result.roots, 'unsplash-shrunk.jpg');
     expect(imageNode).toBeDefined();
     expect(imageNode?.mediaUrl?.startsWith('data:image/jpeg;base64,')).toBe(true);
 
-    const dateNode = findNodeByName(result.nodes, '2025-09-30');
+    const dateNode = findNodeByName(result.roots, '2025-09-30');
     expect(dateNode).toBeDefined();
     expect(dateNode?.type).toBe('date');
   });

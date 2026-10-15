@@ -1,19 +1,40 @@
 {
-  "version": "TanaIntermediateFile V0.1",
-  "nodes": [
-    {
-      "uid": "someMeetingId",
-      "name": "Some meeting",
-      "createdAt": 1654674792663,
-      "editedAt": 1654674792663,
-      "supertags": ["meetingTagId"],
-      "type": "node"
+  "version": "TanaIntermediateFile V2.1",
+  "contents": {
+    "workspace": {
+      "children": [
+        {
+          "id": "s1form3vdi64v1rd9c8c",
+          "tags": [
+            {
+              "uid": "wbrk1btwyr75dlhekfmdg"
+            }
+          ],
+          "type": "node",
+          "nameParts": [
+            {
+              "type": "text",
+              "text": "Some meeting",
+              "formats": []
+            }
+          ]
+        }
+      ]
+    },
+    "schema": {
+      "children": [
+        {
+          "type": "supertag",
+          "uid": "wbrk1btwyr75dlhekfmdg",
+          "nameParts": [
+            {
+              "type": "text",
+              "text": "Meeting",
+              "formats": []
+            }
+          ]
+        }
+      ]
     }
-  ],
-  "supertags": [
-    {
-      "uid": "meetingTagId",
-      "name": "Meeting"
-    }
-  ]
+  }
 }

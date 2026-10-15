@@ -1,20 +1,20 @@
 import * as fs from 'fs';
 import { expect } from 'vitest';
 import { fail } from 'assert';
-import { TanaIntermediateNode, TanaIntermediateFile } from '../types/types.js';
+import { SourceNode, SourceGraph } from '../converters/sourceGraph.js';
 import { IConverter } from '../converters/IConverter.js';
 
-export type IdLookupHelper = (id: string | undefined) => TanaIntermediateNode | undefined;
+export type IdLookupHelper = (id: string | undefined) => SourceNode | undefined;
 
-export type NameLookupHelper = (name: string | undefined) => TanaIntermediateNode | undefined;
+export type NameLookupHelper = (name: string | undefined) => SourceNode | undefined;
 
 export function importFileAndGetHelpers(
   importer: IConverter,
   fileToLoad: string,
-): [TanaIntermediateFile, IdLookupHelper, NameLookupHelper] {
+): [SourceGraph, IdLookupHelper, NameLookupHelper] {
   const content = fs.readFileSync(`${fileToLoad}`, 'utf8');
 
-  const file = importer.convert(content);
+  const file = importer.parse(content);
   if (!file) {
     throw new Error('File is empty');
   }
@@ -25,7 +25,7 @@ export function importFileAndGetHelpers(
       if (!id) {
         return undefined;
       }
-      const match = findNodeById(file.nodes, id);
+      const match = findNodeById(file.roots, id);
 
       return match;
     },
@@ -33,17 +33,12 @@ export function importFileAndGetHelpers(
       if (!name) {
         return undefined;
       }
-      return findNodeByName(file.nodes, name);
+      return findNodeByName(file.roots, name);
     },
   ];
 }
 
-export function expectField(
-  id: string | undefined,
-  title: string,
-  values: (string | TanaIntermediateNode)[],
-  f: IdLookupHelper,
-) {
+export function expectField(id: string | undefined, title: string, values: (string | SourceNode)[], f: IdLookupHelper) {
   const field = f(id);
   if (!field) {
     throw new Error(`Field ${id} not found`);
@@ -59,7 +54,7 @@ export function expectField(
     if (typeof values[i] === 'string') {
       expect(field?.children[i].name).toBe(values[i]);
     } else {
-      expect(field?.children[i].name).toBe(`[[${(values[i] as TanaIntermediateNode).uid}]]`);
+      expect(field?.children[i].name).toBe(`[[${(values[i] as SourceNode).uid}]]`);
     }
   }
 }
@@ -75,7 +70,7 @@ export function expectImage(id: string | undefined, url: string, f: IdLookupHelp
   expect(field?.mediaUrl).toBe(url);
 }
 
-function findNodeById(nodes: TanaIntermediateNode[], id: string): TanaIntermediateNode | undefined {
+function findNodeById(nodes: SourceNode[], id: string): SourceNode | undefined {
   for (let i = 0; i < nodes.length; i++) {
     const node = nodes[i];
     if (node.uid === id) {
@@ -89,7 +84,7 @@ function findNodeById(nodes: TanaIntermediateNode[], id: string): TanaIntermedia
   }
 }
 
-function findNodeByName(nodes: TanaIntermediateNode[], name: string): TanaIntermediateNode | undefined {
+function findNodeByName(nodes: SourceNode[], name: string): SourceNode | undefined {
   for (let i = 0; i < nodes.length; i++) {
     const node = nodes[i];
     if (node.name === name) {

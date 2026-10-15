@@ -1,10 +1,6 @@
-import {
-  NodeType,
-  TanaIntermediateAttribute,
-  TanaIntermediateNode,
-  TanaIntermediateFile,
-  TanaIntermediateSummary,
-} from '../../types/types.js';
+import type { TanaIntermediateFile } from '../../types/types.js';
+import { createTifFile } from '../createTifFile.js';
+import { SourceNodeType, SourceField, SourceNode, SourceGraph, ConversionSummary } from '../sourceGraph.js';
 import {
   markdownToHTML,
   findGroups,
@@ -44,13 +40,13 @@ const ROAM_DATE_FORMATS = [
 ];
 
 export class RoamConverter implements IConverter {
-  private nodesForImport: Map<string, TanaIntermediateNode> = new Map();
+  private nodesForImport: Map<string, SourceNode> = new Map();
   private originalNodeNames: Map<string, string> = new Map();
-  private attrMap: Map<string, TanaIntermediateAttribute> = new Map();
+  private attrMap: Map<string, SourceField> = new Map();
 
-  private topLevelMap: Map<string, TanaIntermediateNode> = new Map();
+  private topLevelMap: Map<string, SourceNode> = new Map();
 
-  private summary: TanaIntermediateSummary = {
+  private summary: ConversionSummary = {
     leafNodes: 0,
     topLevelNodes: 0,
     totalNodes: 0,
@@ -60,7 +56,12 @@ export class RoamConverter implements IConverter {
   };
 
   convert(fileContent: string): TanaIntermediateFile | undefined {
-    const rootLevelNodes: TanaIntermediateNode[] = [];
+    const graph = this.parse(fileContent);
+    return graph && createTifFile(graph);
+  }
+
+  parse(fileContent: string): SourceGraph | undefined {
+    const rootLevelNodes: SourceNode[] = [];
     try {
       const nodes: RoamNode[] = JSON.parse(fileContent);
       for (let i = 0; i < nodes.length; i++) {
@@ -91,20 +92,16 @@ export class RoamConverter implements IConverter {
       return undefined;
     }
 
-    const file: TanaIntermediateFile = {
-      version: 'TanaIntermediateFile V0.1',
+    const file: SourceGraph = {
       summary: this.summary,
-      nodes: rootLevelNodes,
-      attributes: [...this.attrMap.values()],
+      roots: rootLevelNodes,
+      fields: [...this.attrMap.values()],
     };
 
     return file;
   }
 
-  private extractMetaNodeContentAndGetNumRemaningChildren(
-    theMetaNode: RoamNode,
-    parentNode: TanaIntermediateNode,
-  ): number {
+  private extractMetaNodeContentAndGetNumRemaningChildren(theMetaNode: RoamNode, parentNode: SourceNode): number {
     const movedChildren: string[] = [];
     if (theMetaNode.children) {
       for (const child of theMetaNode.children) {
@@ -125,11 +122,11 @@ export class RoamConverter implements IConverter {
   }
 
   // convers "foo::bar bas::bam" into two fileds with values
-  private convertToField(nodeWithField: TanaIntermediateNode, parentNode: TanaIntermediateNode) {
+  private convertToField(nodeWithField: SourceNode, parentNode: SourceNode) {
     const fullNodeTitle = nodeWithField.name;
 
     // if we have more fields this will be unset after each created field
-    let currentFiledNode: TanaIntermediateNode | undefined = nodeWithField;
+    let currentFiledNode: SourceNode | undefined = nodeWithField;
 
     const attriuteDefintions = getAttributeDefinitionsFromName(currentFiledNode.name);
 
@@ -221,11 +218,11 @@ export class RoamConverter implements IConverter {
     name: string;
     createdAt: number;
     editedAt: number;
-    type?: NodeType;
+    type?: SourceNodeType;
     url?: string;
     refs?: string[];
-  }): TanaIntermediateNode {
-    const nodeForImport: TanaIntermediateNode = {
+  }): SourceNode {
+    const nodeForImport: SourceNode = {
       uid: n.uid,
       name: n.name,
       // we only care about uids for now,
@@ -267,8 +264,8 @@ export class RoamConverter implements IConverter {
     return nodeForImport;
   }
 
-  private roamToIntermediate(node: RoamNode, parentNode?: TanaIntermediateNode): TanaIntermediateNode | undefined {
-    const createdChildNodes: TanaIntermediateNode[] = [];
+  private roamToIntermediate(node: RoamNode, parentNode?: SourceNode): SourceNode | undefined {
+    const createdChildNodes: SourceNode[] = [];
 
     if (!node.uid) {
       node.uid = node.title;
@@ -308,7 +305,7 @@ export class RoamConverter implements IConverter {
 
     const refs: string[] = [];
 
-    let type: NodeType = 'node';
+    let type: SourceNodeType = 'node';
     if (nameToUse.includes('`')) {
       const code = getCodeIfCodeblock(nameToUse);
       if (code) {
@@ -333,7 +330,7 @@ export class RoamConverter implements IConverter {
             continue;
           }
 
-          const childImage: TanaIntermediateNode = this.createNodeForImport({
+          const childImage: SourceNode = this.createNodeForImport({
             uid: idgenerator(),
             name: 'image',
             createdAt: node['create-time'],
@@ -351,7 +348,7 @@ export class RoamConverter implements IConverter {
       }
     }
 
-    const intermediateNode: TanaIntermediateNode = {
+    const intermediateNode: SourceNode = {
       uid: node.uid,
       name: nameToUse,
       children: createdChildNodes,
@@ -445,7 +442,7 @@ export class RoamConverter implements IConverter {
     return intermediateNode;
   }
 
-  private normalizeLinksAndSetAliases(nodeForImport: TanaIntermediateNode) {
+  private normalizeLinksAndSetAliases(nodeForImport: SourceNode) {
     if (!nodeForImport.refs) {
       return;
     }
@@ -459,7 +456,7 @@ export class RoamConverter implements IConverter {
         }
         return n;
       })
-      .filter((r) => !!r) as TanaIntermediateNode[];
+      .filter((r) => !!r) as SourceNode[];
 
     // we replace nested links first, in case we have links which is present both alone and as part of other links
     refsToParse.sort((a, b) => {
@@ -512,8 +509,8 @@ export class RoamConverter implements IConverter {
     }
   }
 
-  private fixBrokenLinks(nodeForImport: TanaIntermediateNode): TanaIntermediateNode[] {
-    const createdNodes: TanaIntermediateNode[] = [];
+  private fixBrokenLinks(nodeForImport: SourceNode): SourceNode[] {
+    const createdNodes: SourceNode[] = [];
 
     // Find all links that are not part of other links
     const outerLinks = getBracketLinks(nodeForImport.name, true);
@@ -655,7 +652,7 @@ export class RoamConverter implements IConverter {
     return createdNodes;
   }
 
-  private ensureAttrMapIsUpdated(node: TanaIntermediateNode): void {
+  private ensureAttrMapIsUpdated(node: SourceNode): void {
     if (!node.name) {
       return;
     }
@@ -664,7 +661,7 @@ export class RoamConverter implements IConverter {
       throw new Error('Trying to get attr def for non-field node');
     }
 
-    let intermediateAttr: TanaIntermediateAttribute | undefined = this.attrMap.get(node.name);
+    let intermediateAttr: SourceField | undefined = this.attrMap.get(node.name);
 
     if (!intermediateAttr) {
       intermediateAttr = {
@@ -686,7 +683,7 @@ export class RoamConverter implements IConverter {
     this.attrMap.set(node.name, intermediateAttr);
   }
 
-  private findRefByName(refName: string, node: TanaIntermediateNode): TanaIntermediateNode | undefined {
+  private findRefByName(refName: string, node: SourceNode): SourceNode | undefined {
     if (!node.refs) {
       return;
     }

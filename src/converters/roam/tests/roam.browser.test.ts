@@ -12,9 +12,9 @@ describe.runIf(isBrowserEnvironment)('Roam converter (browser)', () => {
     expect(result.summary.totalNodes).toBeGreaterThan(0);
     expect(result.summary.calendarNodes).toBeGreaterThan(0);
 
-  const datePage = findNodeByName(result.nodes, '2022-02-08');
+    const datePage = findNodeByName(result.roots, '2022-02-08');
     expect(datePage?.type).toBe('date');
-    const referencedNode = findNodeByName(result.nodes, '[*]([[y7Tvpja6V]])');
+    const referencedNode = findNodeByName(result.roots, '[*]([[y7Tvpja6V]])');
     expect(referencedNode?.refs).toContain('y7Tvpja6V');
   });
 });

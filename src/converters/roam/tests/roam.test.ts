@@ -14,7 +14,7 @@ test('Smoke test import preview ', async () => {
     calendarNodes: 13,
   });
 
-  expect(file.attributes).toEqual([
+  expect(file.fields).toEqual([
     { count: 2, name: 'Email', values: ['john@dutton.com', 'jack@black.com'] },
     { name: 'State', count: 2, values: ['Montana', 'California'] },
 
@@ -27,7 +27,7 @@ test('fields', () => {
   const [file, f, fn] = importRoamFile('fields.json');
   // TODO: We do not set fixed values yet
 
-  expect(file.attributes).toEqual([
+  expect(file.fields).toEqual([
     { count: 1, name: 'Owner', values: ['[[Jack]]'] },
     { count: 1, name: 'Contact', values: ['[[Jack]]'] },
     { count: 1, name: 'definition', values: ['Now an alias for [foo](((someRefId)))'] },
@@ -61,13 +61,13 @@ test('fields', () => {
 
 test('meta node extraction', () => {
   const [file, f, fn] = importRoamFile('meta_extract.json');
-  expect(file.attributes).toEqual([{ count: 2, name: 'SomeField', values: ['SomeValue', 'SomeValue'] }]);
+  expect(file.fields).toEqual([{ count: 2, name: 'SomeField', values: ['SomeValue', 'SomeValue'] }]);
 
   const fieldAndNode = fn('Testcase: Fields+nodes in meta');
 
-  const onlyField = file.nodes.find((n) => n.name === 'Testcase: Meta with only field');
+  const onlyField = file.roots.find((n) => n.name === 'Testcase: Meta with only field');
 
-  const onlyNode = file.nodes.find((n) => n.name === 'Testcase: Meta with only node');
+  const onlyNode = file.roots.find((n) => n.name === 'Testcase: Meta with only node');
 
   expect(fieldAndNode?.children!.length).toBe(2);
 

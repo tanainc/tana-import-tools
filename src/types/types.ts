@@ -1,111 +1,225 @@
+/** Tana Intermediate Format 2.1. See docs/tif2.md for identity and ownership rules. */
 export type TanaIntermediateFile = {
-  // version flag for the import format.
-  version: 'TanaIntermediateFile V0.1';
-
-  // summary of the contents in the file
-  summary: TanaIntermediateSummary;
-
-  // all nodes
-  nodes: TanaIntermediateNode[];
-
-  // Node IDs that will be added to the home node
-  homeNodeIds?: string[];
-
-  // all attributes
-  attributes?: TanaIntermediateAttribute[];
-
-  // all attributes
-  supertags?: TanaIntermediateSupertag[];
+  version: 'TanaIntermediateFile V2.1';
+  contents: {
+    workspace?: TanaIntermediateRegularNode;
+    inbox?: TanaIntermediateRegularNode;
+    library?: TanaIntermediateRegularNode;
+    schema?: TanaIntermediateRegularNode;
+    additionalRoots?: TanaIntermediateNode[];
+  };
 };
 
-export type TanaIntermediateSummary = {
-  // the number of leaf nodes
-  leafNodes: number;
+export type TanaIntermediateIdentifier = { id: string; uid?: never } | { uid: string; id?: never };
+type DeclarationIdentity = { id: string; uid?: string } | { uid: string; id?: string };
+export type TanaIntermediateNamePart =
+  | {
+      type: 'text';
+      text: string;
+      formats?: ('bold' | 'italic' | 'underline' | 'strikethrough' | 'highlight' | 'code')[];
+    }
+  | { type: 'node'; nodeId: string }
+  | { type: 'date'; date: string }
+  | { type: 'user'; user: string }
+  | { type: 'link'; url: string; text: string };
 
-  // the number of root level nodes (will go into Library)
-  topLevelNodes: number;
+type Name = { name: string; nameParts?: never } | { name?: never; nameParts?: TanaIntermediateNamePart[] };
 
-  // the total number of nodes found
-  totalNodes: number;
-
-  // number of nodes that will end up as day nodes in the calendar
-  calendarNodes: number;
-
-  // the number of fields
-  fields: number;
-
-  // number of broken references
-  brokenRefs: number;
-};
-
-export type TanaIntermediateAttribute = {
-  name: string;
-  values: string[];
-  count: number;
-  // will default to any
-  dataType?: 'any' | 'url' | 'email' | 'number' | 'date' | 'checkbox';
-};
-
-export type TanaIntermediateSupertag = {
-  uid: string;
-  name: string;
-};
-
-export type NodeType = 'field' | 'image' | 'codeblock' | 'node' | 'date';
-
-export type FlagType = 'section';
-
-export type ViewType = 'list' | 'table';
-
-export type TanaIntermediateNode = {
-  // uid of the node, only used during import. There is no mapping to the Tana Node id
-  uid: string;
-
-  /**
-   * Contents of the node.
-   *
-   * For type=date this must contain the date : "YYYY-MM-DD"
-   *
-   * Supported text formatting: **bold** __italic__ ~~striked~~ ^^highlighted^^
-   *
-   * Link formats:
-   * - external content: [See Tana](https://wwww.tana.inc)
-   * - internal: [[uid]]
-   * - internal with alias: [test page]([[uid]])
-   */
-  name: string;
-
-  // Description of the node
+type NodeMetadata = {
+  id?: string;
+  uid?: string;
   description?: string;
-
-  // children
-  children?: TanaIntermediateNode[];
-
-  // reference uids
-  refs?: string[];
-
-  // created at timestamp
-  createdAt: number;
-
-  // edited at timestamp
-  editedAt: number;
-
-  // the various types of nodes we support
-  type: NodeType;
-
-  // used for media url
-  mediaUrl?: string;
-
-  // for code blocks
-  codeLanguage?: string;
-
-  supertags?: string[];
-
-  // for section/heading nodes
-  flags?: FlagType[];
-
-  viewType?: ViewType;
-
-  // if set, we will create TODO / DONE for this node
-  todoState?: 'todo' | 'done';
+  alias?: string;
+  /** Export metadata. This does not choose the destination workspace. */
+  workspaceId?: string;
+  /** Content omitted from an export cannot be recovered by importing. */
+  childrenOmitted?: number;
 };
+
+type OwnedNode = NodeMetadata &
+  Name & {
+    isRef?: false;
+    tags?: TanaIntermediateTagReference[];
+    inlineNodes?: Record<string, TanaIntermediateNode>;
+    isSection?: boolean;
+    isDone?: boolean;
+    transcripts?: TanaIntermediateTranscript[];
+  };
+
+export type TanaIntermediateNodeType =
+  | 'node'
+  | 'field'
+  | 'fieldDefinition'
+  | 'supertag'
+  | 'codeBlock'
+  | 'url'
+  | 'visual'
+  | 'search'
+  | 'journalPart'
+  | 'chat';
+
+type AsReference<Node> = Node extends unknown
+  ? TanaIntermediateIdentifier & Partial<Omit<Node, 'id' | 'uid' | 'isRef'>> & { isRef: true }
+  : never;
+export type TanaIntermediateReference = AsReference<TanaIntermediateOwnedNode>;
+
+export type TanaIntermediateExternalReference = TanaIntermediateIdentifier & {
+  type: 'external';
+  isRef?: true;
+  alias?: string;
+  nameParts?: TanaIntermediateNamePart[];
+  workspaceId?: string;
+};
+
+export type TanaIntermediateRegularNode = OwnedNode & {
+  type?: 'node';
+  children?: TanaIntermediateNode[];
+};
+
+export type TanaIntermediateBaseType =
+  | 'meeting'
+  | 'person'
+  | 'task'
+  | 'organization'
+  | 'location'
+  | 'event'
+  | 'project'
+  | 'topic'
+  | 'article'
+  | 'memo'
+  | 'reflection'
+  | 'day'
+  | 'week';
+
+export type TanaIntermediateSupertag = OwnedNode & {
+  type: 'supertag';
+  extends?: (string | TanaIntermediateIdentifier)[];
+  children?: TanaIntermediateNode[];
+  /** Readable export labels for built-in base types. Import uses extends. */
+  baseTypes?: TanaIntermediateBaseType[];
+  /** Appearance metadata from exports; the importer does not restore it. */
+  color?: string;
+  avatar?: { type: 'string'; string: string } | { type: 'image'; url: string } | { type: 'icon'; id: string };
+  backgroundImageUrl?: string;
+};
+
+export type TanaIntermediateTagReference =
+  | string
+  | TanaIntermediateIdentifier
+  | (Omit<TanaIntermediateSupertag, 'isRef'> & TanaIntermediateIdentifier & { isRef?: boolean })
+  | TanaIntermediateExternalReference;
+
+export type TanaIntermediateDataType =
+  | 'list'
+  | 'number'
+  | 'integer'
+  | 'boolean'
+  | 'date'
+  | 'user'
+  | 'instance'
+  | 'formula'
+  | 'url'
+  | 'email'
+  | 'options';
+
+export type TanaIntermediateFieldDefinition = OwnedNode &
+  DeclarationIdentity & {
+    type: 'fieldDefinition';
+    dataType?: TanaIntermediateDataType;
+    fixedOptionIds?: (string | TanaIntermediateIdentifier)[];
+    children?: never;
+  };
+
+export type TanaIntermediateFieldReference =
+  | string
+  | (TanaIntermediateIdentifier & { type?: never; isRef?: true; name?: never; nameParts?: never; inlineNodes?: never })
+  | (TanaIntermediateIdentifier &
+      Name & {
+        type: 'fieldDefinition';
+        isRef: true;
+        dataType?: TanaIntermediateDataType;
+        description?: string;
+        fixedOptionIds?: (string | TanaIntermediateIdentifier)[];
+        inlineNodes?: never;
+        workspaceId?: string;
+      })
+  | TanaIntermediateExternalReference;
+
+export type TanaIntermediateField = NodeMetadata & {
+  type: 'field';
+  isRef?: false;
+  field: TanaIntermediateFieldReference;
+  values: TanaIntermediateValue[];
+  inlineNodes?: Record<string, TanaIntermediateNode>;
+  children?: never;
+};
+
+export type TanaIntermediateValue =
+  | TanaIntermediateNode
+  | string
+  | number
+  | boolean
+  | { type: 'computedValue'; value: string }
+  | { type: 'checkbox'; checked: boolean };
+
+export type TanaIntermediateCodeBlock = OwnedNode & {
+  type: 'codeBlock';
+  content: string;
+  language?: string;
+  /** True for literal source. Otherwise HTML entities in content are decoded. */
+  plainText?: boolean;
+  children?: TanaIntermediateNode[];
+  truncated?: boolean;
+  byteCount?: number;
+};
+
+export type TanaIntermediateUrl = OwnedNode & {
+  type: 'url';
+  url?: string;
+  children?: TanaIntermediateNode[];
+};
+export type TanaIntermediateVisual = OwnedNode & {
+  type: 'visual';
+  url: string;
+  visualType?: 'image' | 'video';
+  children?: TanaIntermediateNode[];
+};
+export type TanaIntermediateSearch = OwnedNode & {
+  type: 'search';
+  children?: TanaIntermediateNode[];
+};
+export type TanaIntermediateJournalPart = OwnedNode & {
+  type: 'journalPart';
+  date?: string;
+  granularity?: 'millisecond' | 'second' | 'minute' | 'hour' | 'day' | 'week' | 'month' | 'year';
+  children?: TanaIntermediateNode[];
+};
+export type TanaIntermediateChat = OwnedNode & {
+  type: 'chat';
+  content: TanaIntermediateNode[];
+  replies?: (TanaIntermediateChat | TanaIntermediateReference | TanaIntermediateExternalReference)[];
+  author?: { type: 'user' | 'bot'; name: string };
+};
+export type TanaIntermediateTranscript = {
+  id: string;
+  title: string;
+  source: 'field' | 'sourceMaterial' | 'previous';
+  lines: { id: string; text: string; speaker?: string; startTime?: string; endTime?: string }[];
+};
+
+export type TanaIntermediateOwnedNode =
+  | TanaIntermediateRegularNode
+  | TanaIntermediateSupertag
+  | TanaIntermediateFieldDefinition
+  | TanaIntermediateField
+  | TanaIntermediateCodeBlock
+  | TanaIntermediateUrl
+  | TanaIntermediateVisual
+  | TanaIntermediateSearch
+  | TanaIntermediateJournalPart
+  | TanaIntermediateChat;
+
+export type TanaIntermediateNode =
+  | TanaIntermediateOwnedNode
+  | TanaIntermediateReference
+  | TanaIntermediateExternalReference;

@@ -1,45 +1,88 @@
 {
-  "version": "TanaIntermediateFile V0.1",
-  "nodes": [
-    {
-      "uid": "boldNodeId",
-      "name": "<b>the bold</b>",
-      "type": "node"
-    },
-    {
-      "uid": "underlineNodeId",
-      "name": "<i>the underlined</i>",
-      "type": "node"
-    },
-    {
-      "uid": "highlightNodeId",
-      "name": "<mark>the highlighted</mark>",
-      "type": "node"
-    },
-    {
-      "uid": "strikedNodeId",
-      "name": "<del>the striked</del>",
-
-      "type": "node"
-    },
-
-    {
-      "uid": "boldFielId",
-      "name": "Cool",
+  "version": "TanaIntermediateFile V2.1",
+  "contents": {
+    "workspace": {
       "children": [
         {
-          "uid": "boldFiledValueId",
-          "name": "<b>a bold field value</b>",
-          "type": "node"
+          "id": "hnj8pn1hg586mqrhatxf6",
+          "type": "node",
+          "nameParts": [
+            {
+              "type": "text",
+              "text": "the bold",
+              "formats": ["bold"]
+            }
+          ]
+        },
+        {
+          "id": "nvo8smtq96n61f35hbaf1l",
+          "type": "node",
+          "nameParts": [
+            {
+              "type": "text",
+              "text": "the underlined",
+              "formats": ["italic"]
+            }
+          ]
+        },
+        {
+          "id": "js1atd1aawgjzwvqz79sn8",
+          "type": "node",
+          "nameParts": [
+            {
+              "type": "text",
+              "text": "the highlighted",
+              "formats": ["highlight"]
+            }
+          ]
+        },
+        {
+          "id": "led5ziapod8tn3hyk7zps",
+          "type": "node",
+          "nameParts": [
+            {
+              "type": "text",
+              "text": "the striked",
+              "formats": ["strikethrough"]
+            }
+          ]
+        },
+        {
+          "type": "field",
+          "id": "q7ve9tbxlrrfi471lct1",
+          "field": {
+            "uid": "lvqjxzcteyci23t1zr2lj"
+          },
+          "values": [
+            {
+              "id": "jwh633iaehcs4wic8dcv",
+              "type": "node",
+              "nameParts": [
+                {
+                  "type": "text",
+                  "text": "a bold field value",
+                  "formats": ["bold"]
+                }
+              ]
+            }
+          ]
         }
-      ],
-      "type": "field"
+      ]
+    },
+    "schema": {
+      "children": [
+        {
+          "type": "fieldDefinition",
+          "uid": "lvqjxzcteyci23t1zr2lj",
+          "nameParts": [
+            {
+              "type": "text",
+              "text": "Cool",
+              "formats": []
+            }
+          ]
+        }
+      ]
     }
-  ],
-  "attributes": [
-    {
-      "name": "Cool",
-      "count": 1
-    }
-  ]
+  }
 }

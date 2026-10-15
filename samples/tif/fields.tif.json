@@ -1,34 +1,48 @@
 {
-  "version": "TanaIntermediateFile V0.1",
-  "attributes": [
-    {
-      "name": "Holder",
-      "_comment1": "the field will be ignored by Tana's TIF importer unless its name is included in the attributes array",
-      "values": [
-        "Jack"
-      ],
-      "count": 1,
-      "_comment2": "Tana's TIF importer will handle fields just fine without 'values' or 'count' keys"
-    }
-  ],
-
-  "nodes": [
-    {
-      "uid": "jackId",
-      "name": "Jack",
-      "type": "node"
-    },
-    {
-      "name": "Holder",
+  "version": "TanaIntermediateFile V2.1",
+  "contents": {
+    "workspace": {
       "children": [
         {
-          "uid": "holderId",
-          "name": "[[jackId]]",
-          "refs": ["jackId"],
-          "type": "node"
+          "id": "g7fk1g3o59iki4hve2prbr",
+          "type": "node",
+          "nameParts": [
+            {
+              "type": "text",
+              "text": "Jack",
+              "formats": []
+            }
+          ]
+        },
+        {
+          "type": "field",
+          "id": "4q92tca1v5rxgx34z4qn8i",
+          "field": {
+            "uid": "ag1vbye4dcz7jh8rctdeq"
+          },
+          "values": [
+            {
+              "isRef": true,
+              "id": "g7fk1g3o59iki4hve2prbr"
+            }
+          ]
         }
-      ],
-      "type": "field"
+      ]
+    },
+    "schema": {
+      "children": [
+        {
+          "type": "fieldDefinition",
+          "uid": "ag1vbye4dcz7jh8rctdeq",
+          "nameParts": [
+            {
+              "type": "text",
+              "text": "Holder",
+              "formats": []
+            }
+          ]
+        }
+      ]
     }
-  ]
+  }
 }

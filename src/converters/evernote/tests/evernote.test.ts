@@ -8,12 +8,12 @@ import {
   IdLookupHelper,
   NameLookupHelper,
 } from '../../../testUtils/testUtils.js';
-import { TanaIntermediateFile } from '../../../types/types.js';
+import { SourceGraph } from '../../sourceGraph.js';
 
 const FIXTURE = path.resolve(__dirname, 'fixtures/smoketest.enex');
 
 describe('Evernote converter', () => {
-  let file: TanaIntermediateFile;
+  let file: SourceGraph;
   let byId: IdLookupHelper;
   let byName: NameLookupHelper;
 
@@ -40,7 +40,7 @@ describe('Evernote converter', () => {
   });
 
   it('excludes calendar nodes from home node ids', () => {
-    const homeIds = new Set(file.homeNodeIds);
+    const homeIds = new Set(file.homeIds);
     const firstCalendar = byName('2025-09-30');
     const anotherNote = byName('Another note');
 
@@ -120,7 +120,7 @@ describe('Evernote converter', () => {
   });
 
   it('aggregates fields into attributes summary', () => {
-    const attributes = file.attributes || [];
+    const attributes = file.fields || [];
     const ageAttribute = attributes.find((attr) => attr.name === 'Age');
     expect(ageAttribute).toBeDefined();
     expect(ageAttribute?.values).toEqual(['59', '36']);
@@ -128,7 +128,7 @@ describe('Evernote converter', () => {
   });
 
   it('deduplicates attribute values while maintaining count', () => {
-    const attributes = file.attributes || [];
+    const attributes = file.fields || [];
     const authorAttribute = attributes.find((attr) => attr.name === 'Author');
     expect(authorAttribute).toBeDefined();
     // Should have only one unique value despite appearing 6 times

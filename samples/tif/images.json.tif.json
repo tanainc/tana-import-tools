@@ -1,57 +1,127 @@
 {
-  "version": "TanaIntermediateFile V0.1",
-
-  "nodes": [
-    {
-      "uid": "container",
-      "name": "Photo demo",
+  "version": "TanaIntermediateFile V2.1",
+  "contents": {
+    "workspace": {
       "children": [
         {
-          "name": "some image",
-          "type": "image",
-          "mediaUrl": "https://tana.inc/photo/1"
-        },
-        {
-          "name": "some other image",
-          "type": "image",
-          "mediaUrl": "https://tana.inc/photo/2"
-        },
-        {
-          "name": "[[firstImageId]] [[secondImageId]]",
+          "id": "nvla3x95ib9iigj57sn5b",
+          "type": "node",
           "children": [
             {
-              "uid": "firstImageId",
-              "name": "some image",
-              "type": "image",
-              "mediaUrl": "https://tana.inc/photo/3"
+              "id": "yx3aov5zmueo959gyea7n8",
+              "type": "visual",
+              "visualType": "image",
+              "url": "https://tana.inc/photo/1",
+              "nameParts": [
+                {
+                  "type": "text",
+                  "text": "some image",
+                  "formats": []
+                }
+              ]
             },
             {
-              "uid": "secondImageId",
-              "name": "some other image",
-              "type": "image",
-              "mediaUrl": "https://tana.inc/photo/4"
+              "id": "smmem4sc1frf5wul2ld0f",
+              "type": "visual",
+              "visualType": "image",
+              "url": "https://tana.inc/photo/2",
+              "nameParts": [
+                {
+                  "type": "text",
+                  "text": "some other image",
+                  "formats": []
+                }
+              ]
+            },
+            {
+              "id": "shde3k0z9tndeh2uf6o4h7",
+              "type": "node",
+              "children": [
+                {
+                  "id": "jmlsadxcqug8v50h8zlsim",
+                  "type": "visual",
+                  "visualType": "image",
+                  "url": "https://tana.inc/photo/3",
+                  "nameParts": [
+                    {
+                      "type": "text",
+                      "text": "some image",
+                      "formats": []
+                    }
+                  ]
+                },
+                {
+                  "id": "iwtkeylua4re7xa6aq368",
+                  "type": "visual",
+                  "visualType": "image",
+                  "url": "https://tana.inc/photo/4",
+                  "nameParts": [
+                    {
+                      "type": "text",
+                      "text": "some other image",
+                      "formats": []
+                    }
+                  ]
+                }
+              ],
+              "nameParts": [
+                {
+                  "type": "node",
+                  "nodeId": "jmlsadxcqug8v50h8zlsim"
+                },
+                {
+                  "type": "text",
+                  "text": " ",
+                  "formats": []
+                },
+                {
+                  "type": "node",
+                  "nodeId": "iwtkeylua4re7xa6aq368"
+                }
+              ],
+              "inlineNodes": {}
             }
           ],
-
-          "refs": ["firstImageId", "secondImageId"],
-          "type": "node"
-        }
-      ],
-      "type": "node"
-    },
-    {
-      "name": "[[myImageId]] with text following",
-      "children": [
+          "nameParts": [
+            {
+              "type": "text",
+              "text": "Photo demo",
+              "formats": []
+            }
+          ]
+        },
         {
-          "uid": "myImageId",
-          "name": "image",
-
-          "type": "image",
-          "mediaUrl": "https://tana.inc/photo/1"
+          "id": "gn89cm6ydydvanqcp2qtfb",
+          "type": "node",
+          "children": [
+            {
+              "id": "wscpt2dlydd47f765sw1am",
+              "type": "visual",
+              "visualType": "image",
+              "url": "https://tana.inc/photo/1",
+              "nameParts": [
+                {
+                  "type": "text",
+                  "text": "image",
+                  "formats": []
+                }
+              ]
+            }
+          ],
+          "nameParts": [
+            {
+              "type": "node",
+              "nodeId": "wscpt2dlydd47f765sw1am"
+            },
+            {
+              "type": "text",
+              "text": " with text following",
+              "formats": []
+            }
+          ],
+          "inlineNodes": {}
         }
-      ],
-      "refs": ["myImageId"],
-      "type": "node"
+      ]
     }
-  ]
+  }
 }

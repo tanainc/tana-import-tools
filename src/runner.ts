@@ -112,6 +112,6 @@ if (!tanaIntermediteFile) {
   exit(0);
 }
 
-console.dir(tanaIntermediteFile.summary);
+console.log(`Format: ${tanaIntermediteFile.version}`);
 
 saveFile(file, tanaIntermediteFile);
